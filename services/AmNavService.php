@@ -46,7 +46,7 @@ class AmNavService extends BaseApplicationComponent
             $menuRecord = AmNav_MenuRecord::model()->findById($menu->id);
 
             if (! $menuRecord) {
-                throw new Exception(Craft::t('No event exists with the ID “{id}”', array('id' => $event->id)));
+                throw new Exception(Craft::t('No menu exists with the ID “{id}”.', array('id' => $menu->id)));
             }
         }
         else {
