@@ -1,0 +1,56 @@
+{% extends "_layouts/cp" %}
+
+{% set title = craft.amNav.name %}
+{% set docsUrl = 'https://github.com/am-impact/amnav' %}
+
+{% set sidebar %}
+    <div class="buttons">
+        <a href="{{ url('amnav/new') }}"><div class="btn submit add icon">{{ 'New menu'|t }}</div></a>
+    </div>
+{% endset %}
+
+{% set content %}
+    <h1>{{ 'Created menus'|t }}</h1>
+
+    <div id="nomenus"{% if menus %} class="hidden"{% endif %}>
+        <p>{{ 'There are no menus yet.' }}</p>
+    </div>
+
+    {% if menus %}
+        <table id="menus" class="data fullwidth">
+            <thead>
+                <tr>
+                    <th scope="col" data-attribute="title">{{ 'Title'|t }}</th>
+                    <th scope="col" data-attribute="uri">{{ 'Handle'|t }}</th>
+                    <th scope="col" data-attribute="postDate">{{ 'Create Date'|t }}</th>
+                    <th scope="col" data-attribute="editDate">{{ 'Last Updated'|t }}</th>
+                    <th scope="col" data-attribute="actions">{{ 'Actions'|t }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for menu in menus %}
+                    <tr data-id="{{ menu.id }}" data-name="{{ menu.name|t }}">
+                        <td><a href="{{ url('amnav/build/' ~ menu.id) }}">{{ menu.name }}</a></td>
+                        <td>{{ menu.handle }}</td>
+                        <td>{{ menu.dateCreated|date('d-m-Y') }}</td>
+                        <td>{{ menu.dateUpdated|date('d-m-Y') }}</td>
+                        <td class="thin">
+                            <a href="{{ url('amnav/edit/' ~ menu.id) }}" class="settings icon" title="{{ 'Settings'|t }}"></a>
+                            <a class="delete icon" title="{{ 'Delete'|t }}" role="button"></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endset %}
+
+{% set js %}
+    var adminTable = new Craft.AdminTable({
+        tableSelector: '#menus',
+        noObjectsSelector: '#nomenus',
+        deleteAction: 'amNav/deleteMenu',
+        confirmDeleteMessage: '{{ "Are you sure you want to delete “{name}”?"|t }}'
+    });
+{% endset %}
+{% includeJs js %}

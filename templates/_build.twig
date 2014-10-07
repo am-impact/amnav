@@ -1,0 +1,36 @@
+{% extends "_layouts/cp" %}
+
+{% set pluginName = craft.amNav.name %}
+{% set title = 'Build menu'|t %}
+{% set docsUrl = 'https://github.com/am-impact/amnav' %}
+
+{% set crumbs = [
+    { label: pluginName, url: url('amnav') },
+    { label: menu.name, url: url('amnav/build/' ~ menu.id) },
+] %}
+
+{% set sidebar %}
+    <div class="buttons">
+        <div class="btn submit add icon amnav--button">{{ 'Add an entry'|t }}</div>
+    </div>
+{% endset %}
+
+{% set content %}
+    <div class="amnav">
+        <h1>{{ menu.name }}</h1>
+
+        <div class="amnav--empty">
+            <p>{{ 'There are no pages yet.'|t }}</p>
+        </div>
+
+        <form method="post">
+            <div class="amnav--builder">
+
+            </div>
+        </form>
+
+        <div class="buttons">
+            <div class="btn submit amnav--submit hidden">{{ 'Save'|t }}</div>
+        </div>
+    </div>
+{% endset %}
