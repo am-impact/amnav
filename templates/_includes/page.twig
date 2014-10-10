@@ -1,0 +1,10 @@
+<div class="amnav__page element" data-id="{{ '%%id%%'|replace(replaceWith) }}" data-entry-id="{{ '%%entryid%%'|replace(replaceWith) }}" data-url="{{ '%%url%%'|replace(replaceWith) }}" data-label="{{ '%%label%%'|replace(replaceWith) }}">
+    <div class="label">
+        <span class="status {{ '%%status%%'|replace(replaceWith) }}"></span>
+        <span class="title">{{ '%%label%%'|replace(replaceWith) }}</span>
+    </div>
+</div>
+{% if replaceWith|length %}
+    <a class="move icon" title="{{ 'Move'|t }}"></a>
+    <a class="delete icon" title="{{ 'Delete'|t }}"></a>
+{% endif %}

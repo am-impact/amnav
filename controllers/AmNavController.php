@@ -23,7 +23,7 @@ class AmNavController extends BaseController
      */
     public function actionEditMenu(array $variables = array())
     {
-        // Retrieve menu if available
+        // Get menu if available
         if (! empty($variables['menuId'])) {
             $variables['menu'] = craft()->amNav->getMenuById($variables['menuId']);
 
@@ -50,17 +50,22 @@ class AmNavController extends BaseController
             throw new HttpException(404);
         }
 
-        // Retrieve menu
+        // Get menu
         $variables['menu'] = craft()->amNav->getMenuById($variables['menuId']);
 
         if (! $variables['menu']) {
             throw new HttpException(404);
         }
 
+        // Get saved pages
+        $variables['pages'] = craft()->amNav->getPagesByMenuId($variables['menuId']);
+
         // Load javascript
-        $js = 'new Craft.AmNav();';
+        $js = sprintf('new Craft.AmNav(%d);', $variables['menuId']);
         craft()->templates->includeJs($js);
         craft()->templates->includeJsResource('amnav/js/AmNav.js');
+        craft()->templates->includeCssResource('amnav/css/AmNav.css');
+        craft()->templates->includeTranslations('Are you sure you want to delete “{name}” and its descendants?');
 
         // Render the template
         $this->renderTemplate('amNav/_build', $variables);
@@ -87,7 +92,7 @@ class AmNavController extends BaseController
     {
         $this->requirePostRequest();
 
-        // Retrieve menu if available
+        // Get menu if available
         $menuId = craft()->request->getPost('menuId');
         if ($menuId) {
             $menu = craft()->amNav->getMenuById($menuId);

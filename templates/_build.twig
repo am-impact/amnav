@@ -1,36 +1,98 @@
 {% extends "_layouts/cp" %}
 
+{% import "_includes/forms" as forms %}
+
 {% set pluginName = craft.amNav.name %}
 {% set title = 'Build menu'|t %}
-{% set docsUrl = 'https://github.com/am-impact/amnav' %}
 
 {% set crumbs = [
     { label: pluginName, url: url('amnav') },
     { label: menu.name, url: url('amnav/build/' ~ menu.id) },
 ] %}
 
-{% set sidebar %}
-    <div class="buttons">
-        <div class="btn submit add icon amnav--button">{{ 'Add an entry'|t }}</div>
-    </div>
-{% endset %}
-
-{% set content %}
-    <div class="amnav">
-        <h1>{{ menu.name }}</h1>
-
-        <div class="amnav--empty">
-            <p>{{ 'There are no pages yet.'|t }}</p>
+{% macro addPageToStructure(page) %}
+    <li data-level="{{ page.level }}">
+        {% set indent = 8 + (page.level - 1) * 35 %}
+        {% set replaceWith = {
+            '%%id%%':       page.id,
+            '%%entryid%%':  page.entryId,
+            '%%label%%':    page.name,
+            '%%url%%':      page.url,
+            '%%status%%':   (page.enabled ? 'live' : 'expired')
+        } %}
+        <div class="row" style="margin-left: -{{ indent }}px; padding-left: {{ indent }}px;">
+            {% include 'amnav/_includes/page' with { replaceWith: replaceWith } only %}
         </div>
+        {% if page.children is defined %}
+            <ul>
+            {% for subpage in page.children %}
+                {{ _self.addPageToStructure(subpage) }}
+            {% endfor %}
+            </ul>
+        {% endif %}
+    </li>
+{% endmacro %}
 
-        <form method="post">
-            <div class="amnav--builder">
+{% block main %}
+    <div class="grid first">
+        <div class="item" data-position="left" data-min-colspan="2" data-max-colspan="3">
+            <div class="amnav pane">
+                <div class="amnav__empty{% if pages|length %} hidden{% endif %}">
+                    <p>{{ 'There are no pages yet.'|t }}</p>
+                </div>
 
+                <ul id="amnav__builder" class="amnav__builder structure">
+                    {% for page in pages %}
+                        {{ _self.addPageToStructure(page) }}
+                    {% endfor %}
+                </ul>
+
+                <div class="buttons">
+                    <div class="btn submit amnav__submit hidden">{{ 'Save'|t }}</div>
+                </div>
+
+                <script id="amnav__row" type="text/template">
+                    {% include 'amnav/_includes/page' with { replaceWith: {} } only %}
+                </script>
             </div>
-        </form>
+        </div>
+        <div class="item" data-position="right" data-colspan="1">
+            <div class="pane">
+                <h1>{{ menu.name }}</h1>
+                <p class="light">{{ 'Twig: {{ craft.amNav.getNav("' ~ menu.handle ~ '") }}' }}</p>
+            </div>
 
-        <div class="buttons">
-            <div class="btn submit amnav--submit hidden">{{ 'Save'|t }}</div>
+            <div class="pane buttons">
+                <h1>{{ 'Entries'|t }}</h1>
+                <div class="btn submit add icon amnav__button">{{ 'Add an entry'|t }}</div>
+                <div class="spinner hidden"></div>
+            </div>
+
+            <div class="pane">
+                <h1>{{ 'Manual'|t }}</h1>
+                <form id="manual-form" method="post" accept-charset="UTF-8">
+                    {{ forms.textField({
+                        label: "Name"|t,
+                        id: 'name',
+                        name: 'name',
+                        first: true,
+                        required: true,
+                        instructions: 'Name of this button in the menu.'|t
+                    }) }}
+                    {{ forms.textField({
+                        label: "URL"|t,
+                        id: 'url',
+                        name: 'url',
+                        required: true,
+                        instructions: 'The URL of this button.'|t
+                    }) }}
+
+                    <div class="buttons">
+                        <input type="submit" class="btn submit" value="{{ 'Save'|t }}">
+                        <div class="spinner hidden"></div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-{% endset %}
+{% endblock %}

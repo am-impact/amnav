@@ -2,30 +2,43 @@
 
 Craft.AmNav = Garnish.Base.extend(
 {
+    id: null,
     modal: null,
+    structure: null,
 
-    $emptyContainer: $('.amnav--empty'),
-    $buildContainer: $('.amnav--builder'),
-    $addPageButton: $('.amnav--button'),
-    $saveBuildButton: $('.amnav--submit'),
+    siteUrl: Craft.getSiteUrl(),
+    savingPage: false,
+
+    $template: $('#amnav__row').html(),
+    $buildContainer: $('.amnav__builder'),
+    $addEntryButton: $('.amnav__button'),
+    $addEntryLoader: $('.amnav__button').parent().find('.spinner'),
+    $manualForm: $('#manual-form'),
+    $manualLoader: $('#manual-form').find('.spinner'),
 
     /**
      * Initiate AmNav.
      */
-    init: function() {
-        this.addListener(this.$addPageButton, 'activate', 'showModal');
-        this.addListener(this.$saveBuildButton, 'click', 'saveBuildNav');
+    init: function(id) {
+        this.id        = id;
+        this.structure = new Craft.AmNavStructure(id, '#amnav__builder', '.amnav__builder');
+
+        this.addListener(this.$addEntryButton, 'activate', 'showModal');
+        this.addListener(this.$manualForm, 'submit', 'onManualSubmit');
     },
 
     /**
      * Display EntrySelectorModal.
      */
     showModal: function() {
-        if (! this.modal) {
-            this.modal = this.createModal();
-        }
-        else {
-            this.modal.show();
+        // Make sure we can't select entries while a page is being saved
+        if (! this.savingPage) {
+            if (! this.modal) {
+                this.modal = this.createModal();
+            }
+            else {
+                this.modal.show();
+            }
         }
     },
 
@@ -43,42 +56,400 @@ Craft.AmNav = Garnish.Base.extend(
      * Handle selected entries from the EntrySelectorModal.
      */
     onModalSelect: function(entries) {
-        console.log(entries);
         for (var i = 0; i < entries.length; i++) {
             var entry = entries[i];
 
-            this.addEntryAsPage(entry);
+            // We can't get the URI without much hassle
+            // Transform the URL of the selected Entry to {siteUrl}uri
+            entry.url = entry.url.replace(this.siteUrl, '{siteUrl}');
+
+            var data = {
+                navId:   this.id,
+                name:    entry.label,
+                url:     entry.url,
+                enabled: entry.status == 'live',
+                entryId: entry.id
+            };
+
+            this.saveNewPage(data, false);
         }
     },
 
-    addEntryAsPage: function(entry) {
-        var $page = $('<div class="amnav--page"' +
-            ' data-entry-id="'+entry.id+'"' +
-            ' data-url="'+entry.url+'">' +
-            '<input type="hidden" name="amnav_pages[]" value="'+entry.id+'">' +
-            '<div class="label">' +
-                '<span class="status '+entry.status+'"></span>' +
-                '<span class="title">'+entry.label+'</span>' +
-            '</div>' +
-        '</div>');
+    /**
+     * Handle manual page form submission.
+     *
+     * @param object ev
+     */
+    onManualSubmit: function(ev) {
+        if (! this.savingPage) {
+            var data = {
+                navId: this.id,
+                name:  this.$manualForm.find('#name').val(),
+                url:   this.$manualForm.find('#url').val()
+            };
 
-        if (! this.$buildContainer.find('amnav--page').length) {
-            this.$emptyContainer.hide();
-            this.$saveBuildButton.removeClass('hidden');
+            this.saveNewPage(data, true);
         }
+        ev.preventDefault();
+    },
+
+    /**
+     * Save a new page to the database.
+     *
+     * @param array data
+     * @param bool  isManualPage
+     */
+    saveNewPage: function(data, isManualPage) {
+        // Make sure we can only save one page at a time
+        this.savingPage = true;
+        if (isManualPage) {
+            this.$manualLoader.removeClass('hidden');
+        }
+        else {
+            this.$addEntryLoader.removeClass('hidden');
+        }
+
+        Craft.postActionRequest('amNav/pages/saveNewPage', data, $.proxy(function(response, textStatus) {
+            if (textStatus == 'success') {
+                this.savingPage = false;
+                if (isManualPage) {
+                    this.$manualLoader.addClass('hidden');
+                }
+                else {
+                    this.$addEntryLoader.addClass('hidden');
+                }
+
+                if (response.success) {
+                    if (isManualPage) {
+                        // Reset fields
+                        this.$manualForm.find('#name').val('');
+                        this.$manualForm.find('#url').val('');
+                    }
+
+                    // Add page to structure!
+                    this.addPage(response.pageData);
+
+                    Craft.cp.displayNotice(response.message);
+                }
+                else {
+                    Craft.cp.displayError(response.message);
+                }
+            }
+        }, this));
+    },
+
+    /**
+     * Add a page to the structure.
+     *
+     * @param array pageData
+     */
+    addPage: function(pageData) {
+        var pageHtml = this.$template
+           .replace(/%%id%%/ig, pageData.id)
+           .replace(/%%status%%/ig, (pageData.enabled ? "live" : "expired"))
+           .replace(/%%label%%/ig, pageData.name)
+           .replace(/%%url%%/ig, pageData.url),
+           $page = $(pageHtml);
 
         // Add it to the structure
-        this.$buildContainer.append($page);
+        this.structure.addElement($page);
+    }
+});
+
+Craft.AmNavStructure = Craft.Structure.extend(
+{
+    navId: null,
+
+    $emptyContainer: $('.amnav__empty'),
+
+    /**
+     * Initiate AmNavStructure.
+     *
+     * @param string id
+     * @param string container
+     */
+    init: function(navId, id, container) {
+        this.navId = navId;
+
+        this.base(id, container);
+
+        this.structureDrag = new Craft.AmNavStructureDrag(this, this.settings.maxLevels);
+
+        $(container).find('.delete').on('click', $.proxy(function(ev) {
+            this.removeElement($(ev.currentTarget));
+        }, this));
+
+        this.addListener($('.amnav__page'), 'dblclick', function(ev)
+        {
+            this.showPageEditor($(ev.currentTarget));
+        });
     },
 
-    saveBuildNav: function() {
-        var pages = $('input[name="amnav_pages[]"]').serialize();
-        console.log(pages);
-        // Craft.postActionRequest('amCommand/commands/triggerCommand', {pages: pages}, $.proxy(function(response, textStatus) {
-        //     if (textStatus == 'success') {
-        //         Craft.cp.displayNotice('Gelukt');
-        //     }
-        // }, this));
+    /**
+     * Add an element to the structure.
+     *
+     * @param object $element
+     */
+    addElement: function($element) {
+        var $li = $('<li data-level="1"/>').appendTo(this.$container),
+            $row = $('<div class="row" style="margin-'+Craft.left+': -'+Craft.Structure.baseIndent+'px; padding-'+Craft.left+': '+Craft.Structure.baseIndent+'px;">').appendTo($li);
+
+        $row.append($element);
+
+        $row.append('<a class="move icon" title="'+Craft.t('Move')+'"></a>');
+        $row.append('<a class="delete icon" title="'+Craft.t('Delete')+'"></a>');
+        this.structureDrag.addItems($li);
+
+        $row.find('.delete').on('click', $.proxy(function(ev) {
+            this.removeElement($(ev.currentTarget));
+        }, this));
+
+        $row.css('margin-bottom', -30);
+        $row.velocity({ 'margin-bottom': 0 }, 'fast');
+
+        if (this.$container.find('.amnav__page').length) {
+            this.$emptyContainer.hide();
+        }
+    },
+
+    /**
+     * Remove an element from the structure.
+     *
+     * @param object $element
+     */
+    removeElement: function($element) {
+        var $li = $element.closest('li');
+            confirmation = confirm(Craft.t('Are you sure you want to delete “{name}” and its descendants?', { name: $li.find('.amnav__page').data('label') }));
+        if (confirmation) {
+            this.removePage($element.parent().find('.amnav__page'));
+
+            this.structureDrag.removeItems($li);
+
+            if (!$li.siblings().length)
+            {
+                var $parentUl = $li.parent();
+            }
+
+            $li.css('visibility', 'hidden').velocity({ marginBottom: -$li.height() }, 'fast', $.proxy(function()
+            {
+                $li.remove();
+
+                if (! this.$container.find('.amnav__page').length) {
+                    this.$emptyContainer.show();
+                }
+
+                if (typeof $parentUl != 'undefined' && $parentUl.attr('id') != 'amnav__builder')
+                {
+                    this._removeUl($parentUl);
+                }
+            }, this));
+        }
+    },
+
+    /**
+     * Remove a page from the database.
+     *
+     * @param object $element
+     */
+    removePage: function($element) {
+        var pageId = $element.data('id'),
+            data = { pageId: pageId };
+
+        Craft.postActionRequest('amNav/pages/deletePage', data, $.proxy(function(response, textStatus) {
+            if (textStatus == 'success' && response.success) {
+                Craft.cp.displayNotice(response.message);
+            }
+        }, this));
+    },
+
+    /**
+     * Edit the data of a page.
+     *
+     * @param object $element
+     */
+    showPageEditor: function($element) {
+        new Craft.AmNavEditor($element);
+    }
+});
+
+Craft.AmNavStructureDrag = Craft.StructureDrag.extend(
+{
+    onDragStop: function()
+    {
+        // Are we repositioning the draggee?
+        if (this._.$closestTarget && (this.$insertion.parent().length || this._.$closestTarget.hasClass('draghover')))
+        {
+            // Are we about to leave the draggee's original parent childless?
+            if (!this.$draggee.siblings().length)
+            {
+                var $draggeeParent = this.$draggee.parent();
+            }
+            else
+            {
+                var $draggeeParent = null;
+            }
+
+            if (this.$insertion.parent().length)
+            {
+                // Make sure the insertion isn't right next to the draggee
+                var $closestSiblings = this.$insertion.next().add(this.$insertion.prev());
+
+                if ($.inArray(this.$draggee[0], $closestSiblings) == -1)
+                {
+                    this.$insertion.replaceWith(this.$draggee);
+                    var moved = true;
+                }
+                else
+                {
+                    this.$insertion.remove();
+                    var moved = false;
+                }
+            }
+            else
+            {
+                var $ul = this._.$closestTargetLi.children('ul');
+
+                // Make sure this is a different parent than the draggee's
+                if (!$draggeeParent || !$ul.length || $ul[0] != $draggeeParent[0])
+                {
+                    if (!$ul.length)
+                    {
+                        var $toggle = $('<div class="toggle" title="'+Craft.t('Show/hide children')+'"/>').prependTo(this._.$closestTarget);
+                        this.structure.initToggle($toggle);
+
+                        $ul = $('<ul>').appendTo(this._.$closestTargetLi);
+                    }
+                    else if (this._.$closestTargetLi.hasClass('collapsed'))
+                    {
+                        this._.$closestTarget.children('.toggle').trigger('click');
+                    }
+
+                    this.$draggee.appendTo($ul);
+                    var moved = true;
+                }
+                else
+                {
+                    var moved = false;
+                }
+            }
+
+            // Remove the class either way
+            this._.$closestTarget.removeClass('draghover');
+
+            if (moved)
+            {
+                // Now deal with the now-childless parent
+                if ($draggeeParent)
+                {
+                    this.structure._removeUl($draggeeParent);
+                }
+
+                // Has the level changed?
+                var newLevel = this.$draggee.parentsUntil(this.structure.$container, 'li').length + 1;
+
+                if (newLevel != this.$draggee.data('level'))
+                {
+                    // Correct the helper's padding if moving to/from level 1
+                    if (this.$draggee.data('level') == 1)
+                    {
+                        var animateCss = {};
+                        animateCss['padding-'+Craft.left] = 38;
+                        this.$helperLi.velocity(animateCss, 'fast');
+                    }
+                    else if (newLevel == 1)
+                    {
+                        var animateCss = {};
+                        animateCss['padding-'+Craft.left] = Craft.Structure.baseIndent;
+                        this.$helperLi.velocity(animateCss, 'fast');
+                    }
+
+                    this.setLevel(this.$draggee, newLevel);
+                }
+
+                // Make it real
+                var $element = this.$draggee.children('.row').children('.element');
+
+                var data = {
+                    navId:    this.structure.navId,
+                    pageId:   $element.data('id'),
+                    prevId:   $element.closest('li').prev().children('.row').children('.element').data('id'),
+                    parentId: this.$draggee.parent('ul').parent('li').children('.row').children('.element').data('id')
+                };
+
+                console.log(data);
+
+                Craft.postActionRequest('amNav/pages/movePage', data, function(response, textStatus)
+                {
+                    if (textStatus == 'success')
+                    {
+                        Craft.cp.displayNotice(Craft.t('New order saved.'));
+                    }
+                });
+            }
+        }
+
+        // Animate things back into place
+        this.$draggee.stop().removeClass('hidden').velocity({
+            height: this.draggeeHeight
+        }, 'fast', $.proxy(function() {
+            this.$draggee.css('height', 'auto');
+        }, this));
+
+        this.returnHelpersToDraggees();
+
+        this.base();
+    }
+});
+
+Craft.AmNavEditor = Garnish.Base.extend(
+{
+    $page: null,
+    pageId: null,
+
+    $form: null,
+    $fieldsContainer: null,
+
+    init: function($page) {
+        this.$page = $page;
+        this.pageId = $page.data('id');
+
+        this.$page.addClass('loading');
+
+        var data = {
+            pageId: this.pageId
+        };
+
+        Craft.postActionRequest('amNav/pages/getEditorHtml', data, $.proxy(this, 'showHud'));
+    },
+
+    showHud: function(response, textStatus) {
+        this.$page.removeClass('loading');
+
+        if (textStatus == 'success') {
+            var $hudContents = $();
+
+            this.$form = $('<form/>');
+            this.$fieldsContainer = $('<div class="fields"/>').appendTo(this.$form);
+
+            this.$fieldsContainer.html(response.html)
+            Craft.initUiElements(this.$fieldsContainer);
+
+            $hudContents = $hudContents.add(this.$form);
+
+            this.hud = new Garnish.HUD(this.$page, $hudContents, {
+                bodyClass: 'body elementeditor',
+                closeOtherHUDs: false
+            });
+
+            this.hud.on('hide', $.proxy(function() {
+                delete this.hud;
+            }, this));
+
+            this.addListener(this.$form, 'submit', 'savePage');
+            this.addListener(this.$cancelBtn, 'click', function() {
+                this.hud.hide()
+            });
+        }
     }
 });
 

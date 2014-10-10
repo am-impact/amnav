@@ -33,10 +33,24 @@ class AmNavService extends BaseApplicationComponent
     }
 
     /**
+     * Get all pages by its menu ID.
+     *
+     * @param int $navId
+     *
+     * @return array
+     */
+    public function getPagesByMenuId($navId)
+    {
+        $pages = craft()->amNav_page->getAllPagesByMenuId($navId);
+        return $this->_buildNav($pages);
+    }
+
+    /**
      * Saves a menu.
      *
      * @param AmNav_MenuModel $menu
      *
+     * @throws Exception
      * @return bool
      */
     public function saveMenu(AmNav_MenuModel $menu)
@@ -51,13 +65,10 @@ class AmNavService extends BaseApplicationComponent
         }
         else {
             $menuRecord = new AmNav_MenuRecord();
-            $menuRecord->name = $menu->name;
-            $menuRecord->handle = $menu->handle;
         }
 
         // Set attributes
-        $menuRecord->name = $menu->name;
-        $menuRecord->handle = $menu->handle;
+        $menuRecord->setAttributes($menu->getAttributes());
 
         // Validate
         $menuRecord->validate();
@@ -81,5 +92,30 @@ class AmNavService extends BaseApplicationComponent
     public function deleteMenuById($menuId)
     {
         return craft()->db->createCommand()->delete('amnav_navs', array('id' => $menuId));
+    }
+
+    /**
+     * Create the navigation based on parent IDs and order.
+     *
+     * @param array $pages
+     * @param int   $parentId
+     * @param int   $level
+     *
+     * @return array
+     */
+    private function _buildNav($pages, $parentId = 0, $level = 1)
+    {
+        $nav = array();
+        foreach ($pages as $page) {
+            if ($page['parentId'] == $parentId) {
+                $page['level'] = $level;
+                $children = $this->_buildNav($pages, $page['id'], $level + 1);
+                if ($children) {
+                    $page['children'] = $children;
+                }
+                $nav[] = $page;
+            }
+        }
+        return $nav;
     }
 }
