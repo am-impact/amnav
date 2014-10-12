@@ -175,6 +175,10 @@ Craft.AmNavStructure = Craft.Structure.extend(
 
         this.structureDrag = new Craft.AmNavStructureDrag(this, this.settings.maxLevels);
 
+        $(container).find('.settings').on('click', $.proxy(function(ev) {
+            this.showPageEditor($(ev.currentTarget).parent().children('.amnav__page'));
+        }, this));
+
         $(container).find('.delete').on('click', $.proxy(function(ev) {
             this.removeElement($(ev.currentTarget));
         }, this));
@@ -196,8 +200,13 @@ Craft.AmNavStructure = Craft.Structure.extend(
         $row.append($element);
 
         $row.append('<a class="move icon" title="'+Craft.t('Move')+'"></a>');
+        $row.append('<a class="settings icon" title="'+Craft.t('Settings')+'"></a>');
         $row.append('<a class="delete icon" title="'+Craft.t('Delete')+'"></a>');
         this.structureDrag.addItems($li);
+
+        $row.find('.settings').on('click', $.proxy(function(ev) {
+            this.showPageEditor($(ev.currentTarget).parent().children('.amnav__page'));
+        }, this));
 
         $row.find('.delete').on('click', $.proxy(function(ev) {
             this.removeElement($(ev.currentTarget));

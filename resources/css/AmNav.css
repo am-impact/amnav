@@ -1,3 +1,11 @@
 .amnav__builder .hidden {
     display: list-item !important;
 }
+
+.amnav__builder .icon.settings:before {
+	color: rgba(0, 0, 0, 0.2);
+}
+
+.amnav__builder .icon.settings:hover:before {
+	color: #0d78f2;
+}
