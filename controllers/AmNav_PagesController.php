@@ -7,7 +7,7 @@ namespace Craft;
 class AmNav_PagesController extends BaseController
 {
     /**
-     * Add a new page.
+     * Saves a new page.
      */
     public function actionSaveNewPage()
     {
@@ -44,7 +44,7 @@ class AmNav_PagesController extends BaseController
             ));
 
             // Save the page!
-            if (($page = craft()->amNav_page->savePage($page)) !== false) {
+            if (($page = craft()->amNav_page->savePage($page, true)) !== false) {
                 $returnData['success']  = true;
                 $returnData['message']  = Craft::t('Page added.');
                 $returnData['pageData'] = array(
@@ -60,6 +60,48 @@ class AmNav_PagesController extends BaseController
         }
 
         // Return result
+        $this->returnJson($returnData);
+    }
+
+    /**
+     * Saves a page.
+     */
+    public function actionSavePage()
+    {
+        $this->requirePostRequest();
+        $this->requireAjaxRequest();
+
+        $pageId = craft()->request->getRequiredPost('pageId');
+
+        // Get page
+        $page = craft()->amNav_page->getPageById($pageId);
+        if (! $page) {
+            throw new HttpException(404);
+        }
+
+        // Set attributes
+        $attributes = craft()->request->getPost();
+        $page->setAttributes(array(
+            'name'     => $attributes['name'],
+            'blank'    => $attributes['blank'],
+            'enabled'  => $attributes['enabled']
+        ));
+        // Is there an URL available?
+        if (isset($attributes['url'])) {
+            // Make sure we save a valid URL
+            if (substr($attributes['url'], 0, 3) == 'www') {
+                $attributes['url'] = 'http://' . $attributes['url'];
+            }
+            $page->setAttribute('url', $attributes['url']);
+        }
+
+        // Save the page!
+        $returnData = array('success' => false);
+        if (($page = craft()->amNav_page->savePage($page)) !== false) {
+            $returnData['success'] = true;
+            $returnData['message'] = Craft::t('Page saved.');
+            $returnData['enabled'] = $page->enabled;
+        }
         $this->returnJson($returnData);
     }
 

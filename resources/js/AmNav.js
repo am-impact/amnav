@@ -179,8 +179,7 @@ Craft.AmNavStructure = Craft.Structure.extend(
             this.removeElement($(ev.currentTarget));
         }, this));
 
-        this.addListener($('.amnav__page'), 'dblclick', function(ev)
-        {
+        this.addListener($('.amnav__page'), 'dblclick', function(ev) {
             this.showPageEditor($(ev.currentTarget));
         });
     },
@@ -202,6 +201,10 @@ Craft.AmNavStructure = Craft.Structure.extend(
 
         $row.find('.delete').on('click', $.proxy(function(ev) {
             this.removeElement($(ev.currentTarget));
+        }, this));
+
+        $element.on('dblclick', $.proxy(function(ev) {
+            this.showPageEditor($(ev.currentTarget));
         }, this));
 
         $row.css('margin-bottom', -30);
@@ -376,8 +379,6 @@ Craft.AmNavStructureDrag = Craft.StructureDrag.extend(
                     parentId: this.$draggee.parent('ul').parent('li').children('.row').children('.element').data('id')
                 };
 
-                console.log(data);
-
                 Craft.postActionRequest('amNav/pages/movePage', data, function(response, textStatus)
                 {
                     if (textStatus == 'success')
@@ -408,6 +409,11 @@ Craft.AmNavEditor = Garnish.Base.extend(
 
     $form: null,
     $fieldsContainer: null,
+    $cancelBtn: null,
+    $saveBtn: null,
+    $spinner: null,
+
+    hud: null,
 
     init: function($page) {
         this.$page = $page;
@@ -429,10 +435,19 @@ Craft.AmNavEditor = Garnish.Base.extend(
             var $hudContents = $();
 
             this.$form = $('<form/>');
+            $('<input type="hidden" name="pageId" value="'+this.pageId+'">').appendTo(this.$form);
             this.$fieldsContainer = $('<div class="fields"/>').appendTo(this.$form);
 
             this.$fieldsContainer.html(response.html)
             Craft.initUiElements(this.$fieldsContainer);
+
+            var $buttonsOuterContainer = $('<div class="footer"/>').appendTo(this.$form);
+
+            this.$spinner = $('<div class="spinner hidden"/>').appendTo($buttonsOuterContainer);
+
+            var $buttonsContainer = $('<div class="buttons right"/>').appendTo($buttonsOuterContainer);
+            this.$cancelBtn = $('<div class="btn">'+Craft.t('Cancel')+'</div>').appendTo($buttonsContainer);
+            this.$saveBtn = $('<input class="btn submit" type="submit" value="'+Craft.t('Save')+'"/>').appendTo($buttonsContainer);
 
             $hudContents = $hudContents.add(this.$form);
 
@@ -450,6 +465,44 @@ Craft.AmNavEditor = Garnish.Base.extend(
                 this.hud.hide()
             });
         }
+    },
+
+    savePage: function(ev) {
+        ev.preventDefault();
+
+        this.$spinner.removeClass('hidden');
+
+        var data    = this.$form.serialize(),
+            $status = this.$page.find('.status');
+
+        Craft.postActionRequest('amNav/pages/savePage', data, $.proxy(function(response, textStatus) {
+            this.$spinner.addClass('hidden');
+
+            if (textStatus == 'success') {
+                if (textStatus == 'success' && response.success) {
+                    Craft.cp.displayNotice(response.message);
+
+                    if (response.enabled) {
+                        $status.addClass('live');
+                        $status.removeClass('expired');
+                    } else {
+                        $status.addClass('expired');
+                        $status.removeClass('live');
+                    }
+
+                    this.closeHud();
+                }
+                else
+                {
+                    Garnish.shake(this.hud.$hud);
+                }
+            }
+        }, this));
+    },
+
+    closeHud: function() {
+        this.hud.hide();
+        delete this.hud;
     }
 });
 

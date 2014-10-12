@@ -50,11 +50,12 @@ class AmNav_PageService extends BaseApplicationComponent
      * Saves a page.
      *
      * @param AmNav_PageModel $page
+     * @param bool            $isNew
      *
      * @throws Exception
      * @return bool|AmNav_PageRecord
      */
-    public function savePage(AmNav_PageModel $page)
+    public function savePage(AmNav_PageModel $page, $isNew = false)
     {
         // Page data
         if ($page->id) {
@@ -70,7 +71,9 @@ class AmNav_PageService extends BaseApplicationComponent
 
         // Set attributes
         $pageRecord->setAttributes($page->getAttributes());
-        $pageRecord->order = $this->_getNewOrderNumber($page->navId, $page->parentId);
+        if ($isNew) {
+            $pageRecord->order = $this->_getNewOrderNumber($page->navId, $page->parentId);
+        }
 
         // Validate
         $pageRecord->validate();

@@ -47,10 +47,6 @@
                     {% endfor %}
                 </ul>
 
-                <div class="buttons">
-                    <div class="btn submit amnav__submit hidden">{{ 'Save'|t }}</div>
-                </div>
-
                 <script id="amnav__row" type="text/template">
                     {% include 'amnav/_includes/page' with { replaceWith: {} } only %}
                 </script>
@@ -77,14 +73,14 @@
                         name: 'name',
                         first: true,
                         required: true,
-                        instructions: 'Name of this button in the menu.'|t
+                        instructions: 'Name of this page in the menu.'|t
                     }) }}
                     {{ forms.textField({
                         label: "URL"|t,
                         id: 'url',
                         name: 'url',
                         required: true,
-                        instructions: 'The URL of this button.'|t
+                        instructions: 'The URL of this page.'|t
                     }) }}
 
                     <div class="buttons">

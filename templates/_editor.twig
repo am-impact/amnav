@@ -1,9 +1,35 @@
 {% import "_includes/forms" as forms %}
 
+{{ forms.textField({
+    id: 'name',
+    name: 'name',
+    label: "Name"|t,
+    value: page.name,
+    instructions: 'Name of this page in the menu.'|t
+}) }}
+
+{% if not page.entryId|length %}
+	{{ forms.textField({
+	    id: 'url',
+	    name: 'url',
+	    label: "URL"|t,
+	    value: page.url,
+	    instructions: 'The URL of this page.'|t
+	}) }}
+{% endif %}
+
 {{ forms.lightswitchField({
-    id:           'id',
-    name:         'name',
-    label:        'label',
-    on:           'yes',
-    instructions: 'Instructies'
+    id:           'enabled',
+    name:         'enabled',
+    label:        'Enabled'|t,
+    on:           page.enabled,
+    instructions: 'Display in menu.'|t
+}) }}
+
+{{ forms.lightswitchField({
+    id:           'blank',
+    name:         'blank',
+    label:        'New screen'|t,
+    on:           page.blank,
+    instructions: 'Whether to open this page in a new screen.'|t
 }) }}
