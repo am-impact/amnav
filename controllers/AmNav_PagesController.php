@@ -47,15 +47,7 @@ class AmNav_PagesController extends BaseController
             if (($page = craft()->amNav_page->savePage($page, true)) !== false) {
                 $returnData['success']  = true;
                 $returnData['message']  = Craft::t('Page added.');
-                $returnData['pageData'] = array(
-                    'id'       => $page->id,
-                    'parentId' => $page->parentId,
-                    'order'    => $page->order,
-                    'name'     => $page->name,
-                    'url'      => $page->url,
-                    'blank'    => $page->blank,
-                    'enabled'  => $page->enabled
-                );
+                $returnData['pageData'] = $page;
             }
         }
 
@@ -98,9 +90,9 @@ class AmNav_PagesController extends BaseController
         // Save the page!
         $returnData = array('success' => false);
         if (($page = craft()->amNav_page->savePage($page)) !== false) {
-            $returnData['success'] = true;
-            $returnData['message'] = Craft::t('Page saved.');
-            $returnData['enabled'] = $page->enabled;
+            $returnData['success']  = true;
+            $returnData['message']  = Craft::t('Page saved.');
+            $returnData['pageData'] = $page;
         }
         $this->returnJson($returnData);
     }

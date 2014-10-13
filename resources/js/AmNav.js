@@ -491,7 +491,8 @@ Craft.AmNavEditor = Garnish.Base.extend(
                 if (textStatus == 'success' && response.success) {
                     Craft.cp.displayNotice(response.message);
 
-                    if (response.enabled) {
+                    this.$page.find('.title').text(response.pageData.name);
+                    if (response.pageData.enabled) {
                         $status.addClass('live');
                         $status.removeClass('expired');
                     } else {
