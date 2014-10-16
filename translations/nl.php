@@ -14,6 +14,7 @@ return array(
     'Name of this menu in the templates.' => 'Naam van dit menu in de sjablonen.',
     'New menu' => 'Nieuw menu',
     'New screen' => 'Nieuw venster',
+    'No menu exists with the handle “{handle}”.' => 'Er bestaat geen menu met de handle “{handle}”.',
     'No menu exists with the ID “{id}”.' => 'Er bestaat geen menu met het ID “{id}”.',
     'No page exists with the ID “{id}”.' => 'Er bestaat geen pagina met het ID “{id}”.',
     'Not all required fields are filled out.' => 'Niet alle verplichte velden zijn ingevuld.',

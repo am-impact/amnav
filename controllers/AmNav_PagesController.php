@@ -39,7 +39,7 @@ class AmNav_PagesController extends BaseController
                 'parentId' => 0,
                 'name'     => $attributes['name'],
                 'url'      => $attributes['url'],
-                'blank'    => false,
+                'blank'    => isset($attributes['blank']) ? $attributes['blank'] == 'true' : false,
                 'enabled'  => true
             ));
 

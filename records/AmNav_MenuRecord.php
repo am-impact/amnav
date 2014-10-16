@@ -15,4 +15,11 @@ class AmNav_MenuRecord extends BaseRecord
             'handle' => array(AttributeType::String, 'required' => true)
         );
     }
+
+    public function defineIndexes()
+    {
+        return array(
+            array('columns' => array('handle'), 'unique' => true)
+        );
+    }
 }

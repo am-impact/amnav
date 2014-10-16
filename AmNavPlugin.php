@@ -53,4 +53,17 @@ class AmNavPlugin extends BasePlugin
             'amnav/build/(?P<menuId>\d+)' => array('action' => 'amNav/buildMenu')
         );
     }
+
+    /**
+     * Load a&m nav.
+     */
+    public function init()
+    {
+        // Update an Entry URL in our navigation if necessary
+        craft()->on('entries.saveEntry', function(Event $event) {
+            if (! $event->params['isNewEntry']) {
+                craft()->amNav_page->updateUrlForEntry($event->params['entry']);
+            }
+        });
+    }
 }

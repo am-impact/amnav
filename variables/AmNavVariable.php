@@ -14,4 +14,29 @@ class AmNavVariable
         $plugin = craft()->plugins->getPlugin('amnav');
         return $plugin->getName();
     }
+
+    /**
+     * Get a navigation structure as HTML.
+     *
+     * @param string $handle
+     * @param array  $params
+     *
+     * @return string
+     */
+    public function getNav($handle, $params = array())
+    {
+        return craft()->amNav->getNav($handle, $params);
+    }
+
+    /**
+     * Get a navigation structure without any HTML.
+     *
+     * @param string $handle
+     *
+     * @return array
+     */
+    public function getNavRaw($handle)
+    {
+        return craft()->amNav->getNavRaw($handle);
+    }
 }

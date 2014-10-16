@@ -47,7 +47,7 @@ Craft.AmNav = Garnish.Base.extend(
      */
     createModal: function() {
         return Craft.createElementSelectorModal("Entry", {
-            multiSelect: false,
+            multiSelect: true,
             onSelect:    $.proxy(this, 'onModalSelect')
         });
     },
@@ -58,6 +58,9 @@ Craft.AmNav = Garnish.Base.extend(
     onModalSelect: function(entries) {
         for (var i = 0; i < entries.length; i++) {
             var entry = entries[i];
+
+            // Unselect entry in modal
+            this.modal.$body.find('.element[data-id="' + entry.id + '"]').closest('tr').removeClass('sel');
 
             // We can't get the URI without much hassle
             // Transform the URL of the selected Entry to {siteUrl}uri
@@ -85,7 +88,8 @@ Craft.AmNav = Garnish.Base.extend(
             var data = {
                 navId: this.id,
                 name:  this.$manualForm.find('#name').val(),
-                url:   this.$manualForm.find('#url').val()
+                url:   this.$manualForm.find('#url').val(),
+                blank: this.$manualForm.find('input[name="blank"]').val() == '1'
             };
 
             this.saveNewPage(data, true);
@@ -220,7 +224,7 @@ Craft.AmNavStructure = Craft.Structure.extend(
         $row.velocity({ 'margin-bottom': 0 }, 'fast');
 
         if (this.$container.find('.amnav__page').length) {
-            this.$emptyContainer.hide();
+            this.$emptyContainer.addClass('hidden');
         }
     },
 
@@ -247,7 +251,7 @@ Craft.AmNavStructure = Craft.Structure.extend(
                 $li.remove();
 
                 if (! this.$container.find('.amnav__page').length) {
-                    this.$emptyContainer.show();
+                    this.$emptyContainer.removeClass('hidden');
                 }
 
                 if (typeof $parentUl != 'undefined' && $parentUl.attr('id') != 'amnav__builder')
@@ -491,7 +495,10 @@ Craft.AmNavEditor = Garnish.Base.extend(
                 if (textStatus == 'success' && response.success) {
                     Craft.cp.displayNotice(response.message);
 
+                    // Update name
+                    this.$page.data('label', response.pageData.name);
                     this.$page.find('.title').text(response.pageData.name);
+                    // Update status
                     if (response.pageData.enabled) {
                         $status.addClass('live');
                         $status.removeClass('expired');
