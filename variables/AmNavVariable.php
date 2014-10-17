@@ -45,11 +45,6 @@ class AmNavVariable
      * @param array  $params
      *
      * Params possibilities:
-     * - id                 ID for the navigation UL.
-     * - class              Class for the navigation UL.
-     * - classActive        The class for the active pages.
-     * - classLevel2        Class for children. You can add a classLevel for every level you need
-     *
      * - maxLevel           Build the navigation till a certain level.
      * - overrideStatus     Includes every page whatever the status.
      * - startFromId        Begin the navigation at a specifc page ID.
