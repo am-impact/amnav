@@ -13,6 +13,8 @@
 
 {% set content %}
     <form id="nav-form" method="post" accept-charset="UTF-8" data-saveshortcut="1" data-saveshortcut-redirect="amnav">
+        {{ getCsrfInput() }}
+
         <input type="hidden" name="action" value="amNav/saveMenu">
         <input type="hidden" name="redirect" value="amnav">
         {% if menuId is defined %}<input type="hidden" name="menuId" value="{{ menuId }}">{% endif %}
