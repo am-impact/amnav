@@ -11,7 +11,11 @@ class AmNavPlugin extends BasePlugin
 {
     public function getName()
     {
-         return Craft::t('a&m nav');
+        $settings = $this->getSettings();
+        if ($settings->pluginName) {
+            return $settings->pluginName;
+        }
+        return Craft::t('a&m nav');
     }
 
     public function getVersion()
@@ -27,6 +31,13 @@ class AmNavPlugin extends BasePlugin
     public function getDeveloperUrl()
     {
         return 'http://www.am-impact.nl';
+    }
+
+    public function getSettingsHtml()
+    {
+        return craft()->templates->render('amnav/settings', array(
+            'settings' => $this->getSettings()
+        ));
     }
 
     /**
@@ -65,5 +76,17 @@ class AmNavPlugin extends BasePlugin
                 craft()->amNav_page->updateUrlForEntry($event->params['entry']);
             }
         });
+    }
+
+    /**
+     * Plugin settings.
+     *
+     * @return array
+     */
+    protected function defineSettings()
+    {
+        return array(
+            'pluginName' => array(AttributeType::String)
+        );
     }
 }

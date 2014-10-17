@@ -23,13 +23,14 @@ class AmNavVariable
      *
      * Params possibilities:
      * - id                 ID for the navigation UL.
-     * - class              Class for the navigation UL.
-     * - classActive        The class for the active pages.
-     * - classLevel2        Class for children. You can add a classLevel for every level you need
+     * - class              Class name for the navigation UL.
+     * - classActive        Class name for the active pages.
+     * - classBlank         Class name for hyperlinks that have a _blank target.
+     * - classLevel2        Class name for children. You can add a classLevel for every level you need
      *
      * - maxLevel           Build the navigation till a certain level.
      * - overrideStatus     Includes every page whatever the status.
-     * - startFromId        Begin the navigation at a specifc page ID.
+     * - startFromId        Begin the navigation at a specific page ID.
      *
      * @return string
      */
@@ -47,7 +48,7 @@ class AmNavVariable
      * Params possibilities:
      * - maxLevel           Build the navigation till a certain level.
      * - overrideStatus     Includes every page whatever the status.
-     * - startFromId        Begin the navigation at a specifc page ID.
+     * - startFromId        Begin the navigation at a specific page ID.
      *
      * @return array
      */

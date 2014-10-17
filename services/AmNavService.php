@@ -282,11 +282,12 @@ class AmNavService extends BaseApplicationComponent
         foreach ($pages as $page) {
             if ($page['parentId'] == $parentId && ($page['enabled'] || $this->_getParam('overrideStatus', false))) {
                 $foundPages = true;
-                $nav .= sprintf("\n" . '<li%1$s><a href="%2$s"%3$s>%4$s</a>',
+                $nav .= sprintf("\n" . '<li%1$s><a%5$s href="%2$s"%3$s>%4$s</a>',
                     $this->_isPageActive($page['url']) ? ' class="' . $this->_getParam('classActive', 'active') . '"' : '',
                     craft()->config->parseEnvironmentString($page['url']),
                     $page['blank'] ? ' target="_blank"' : '',
-                    $page['name']
+                    $page['name'],
+                    $this->_getParam('classBlank', false) !== false ? ' class="' . $this->_getParam('classBlank', false) . '"' : ''
                 );
 
                 // Get the child pages and add them to the navigation

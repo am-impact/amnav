@@ -1,0 +1,11 @@
+{% import "_includes/forms" as forms %}
+
+{{ forms.textField({
+    id: 'pluginName',
+    name: 'pluginName',
+    label: 'Plugin name'|t,
+    value: settings.pluginName,
+    first: true,
+    autofocus: true,
+    instructions: 'Plugin name for the end user.'|t
+}) }}
