@@ -19,9 +19,9 @@ Craft.AmNav = Garnish.Base.extend(
     /**
      * Initiate AmNav.
      */
-    init: function(id) {
+    init: function(id, settings) {
         this.id        = id;
-        this.structure = new Craft.AmNavStructure(id, '#amnav__builder', '.amnav__builder');
+        this.structure = new Craft.AmNavStructure(id, '#amnav__builder', '.amnav__builder', settings);
 
         this.addListener(this.$addEntryButton, 'activate', 'showModal');
         this.addListener(this.$manualForm, 'submit', 'onManualSubmit');
@@ -169,13 +169,15 @@ Craft.AmNavStructure = Craft.Structure.extend(
     /**
      * Initiate AmNavStructure.
      *
+     * @param int    navId
      * @param string id
+     * @param array  settings
      * @param string container
      */
-    init: function(navId, id, container) {
+    init: function(navId, id, settings, container) {
         this.navId = navId;
 
-        this.base(id, container);
+        this.base(id, container, settings);
 
         this.structureDrag = new Craft.AmNavStructureDrag(this, this.settings.maxLevels);
 

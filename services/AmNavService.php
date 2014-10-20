@@ -102,6 +102,7 @@ class AmNavService extends BaseApplicationComponent
 
         // Set attributes
         $menuRecord->setAttributes($menu->getAttributes());
+        $menuRecord->setAttribute('settings', json_encode($menu->settings));
 
         // Validate
         $menuRecord->validate();

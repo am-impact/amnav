@@ -39,6 +39,30 @@
             required: true,
             instructions: 'Name of this menu in the templates.'|t
         }) }}
+        <hr>
+        {{ forms.textField({
+            label: "Max Levels"|t,
+            id: 'settingsMaxLevels',
+            name: 'settings[maxLevels]',
+            size: 5,
+            value: menu.settings.maxLevels,
+            instructions: 'The maximum number of levels this menu can have. Leave blank if you don’t care.'|t
+        }) }}
+        <hr>
+        {{ forms.lightSwitchField({
+            label: "Can move first level"|t,
+            id: 'handle',
+            name: 'settings[canMoveFirstLevel]',
+            on: menu.settings.canMoveFirstLevel,
+            instructions: 'Whether non-admins can move first level pages.'|t
+        }) }}
+        {{ forms.lightSwitchField({
+            label: "Can delete first level"|t,
+            id: 'handle',
+            name: 'settings[canDeleteFirstLevel]',
+            on: menu.settings.canDeleteFirstLevel,
+            instructions: 'Whether non-admins can delete first level pages.'|t
+        }) }}
 
         <div class="buttons">
             <input type="submit" class="btn submit" value="{{ 'Save'|t }}">

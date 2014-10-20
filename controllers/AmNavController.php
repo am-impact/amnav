@@ -61,7 +61,7 @@ class AmNavController extends BaseController
         $variables['pages'] = craft()->amNav->getPagesByMenuId($variables['menuId']);
 
         // Load javascript
-        $js = sprintf('new Craft.AmNav(%d);', $variables['menuId']);
+        $js = sprintf('new Craft.AmNav(%d, %s);', $variables['menuId'], $variables['menu']->settings);
         craft()->templates->includeJs($js);
         craft()->templates->includeJsResource('amnav/js/AmNav.js');
         craft()->templates->includeCssResource('amnav/css/AmNav.css');
@@ -107,9 +107,13 @@ class AmNavController extends BaseController
 
         // Set attributes
         $attributes = craft()->request->getPost();
+        if (! is_numeric($attributes['settings']['maxLevels'])) {
+            $attributes['settings']['maxLevels'] = '';
+        }
         $menu->setAttributes(array(
             'name' => $attributes['name'],
-            'handle' => $attributes['handle']
+            'handle' => $attributes['handle'],
+            'settings' => $attributes['settings']
         ));
 
         // Save menu

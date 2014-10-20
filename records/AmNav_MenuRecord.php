@@ -11,8 +11,9 @@ class AmNav_MenuRecord extends BaseRecord
     protected function defineAttributes()
     {
         return array(
-            'name'   => array(AttributeType::String, 'required' => true),
-            'handle' => array(AttributeType::String, 'required' => true)
+            'name'     => array(AttributeType::String, 'required' => true),
+            'handle'   => array(AttributeType::String, 'required' => true),
+            'settings' => array(AttributeType::Mixed)
         );
     }
 
