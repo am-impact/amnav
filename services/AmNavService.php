@@ -124,6 +124,7 @@ class AmNavService extends BaseApplicationComponent
      */
     public function deleteMenuById($menuId)
     {
+        craft()->db->createCommand()->delete('amnav_pages', array('navId' => $menuId));
         return craft()->db->createCommand()->delete('amnav_navs', array('id' => $menuId));
     }
 
