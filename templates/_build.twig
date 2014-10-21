@@ -10,7 +10,7 @@
     { label: menu.name, url: url('amnav/build/' ~ menu.id) },
 ] %}
 
-{% macro addPageToStructure(page) %}
+{% macro addPageToStructure(menu, page) %}
     <li data-level="{{ page.level }}">
         {% set indent = 8 + (page.level - 1) * 35 %}
         {% set replaceWith = {
@@ -21,12 +21,12 @@
             '%%status%%':   (page.enabled ? 'live' : 'expired')
         } %}
         <div class="row" style="margin-left: -{{ indent }}px; padding-left: {{ indent }}px;">
-            {% include 'amnav/_includes/page' with { replaceWith: replaceWith } only %}
+            {% include 'amnav/_includes/page' with { replaceWith: replaceWith, level: page.level, settings: menu.settings } only %}
         </div>
         {% if page.children is defined %}
             <ul>
             {% for subpage in page.children %}
-                {{ _self.addPageToStructure(subpage) }}
+                {{ _self.addPageToStructure(menu, subpage) }}
             {% endfor %}
             </ul>
         {% endif %}
@@ -43,7 +43,7 @@
 
                 <ul id="amnav__builder" class="amnav__builder structure">
                     {% for page in pages %}
-                        {{ _self.addPageToStructure(page) }}
+                        {{ _self.addPageToStructure(menu, page) }}
                     {% endfor %}
                 </ul>
 

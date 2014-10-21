@@ -171,27 +171,36 @@ Craft.AmNavStructure = Craft.Structure.extend(
      *
      * @param int    navId
      * @param string id
-     * @param array  settings
      * @param string container
+     * @param array  settings
      */
-    init: function(navId, id, settings, container) {
+    init: function(navId, id, container, settings) {
         this.navId = navId;
 
         this.base(id, container, settings);
 
         this.structureDrag = new Craft.AmNavStructureDrag(this, this.settings.maxLevels);
 
-        $(container).find('.settings').on('click', $.proxy(function(ev) {
+        this.$container.find('.settings').on('click', $.proxy(function(ev) {
             this.showPageEditor($(ev.currentTarget).parent().children('.amnav__page'));
         }, this));
 
-        $(container).find('.delete').on('click', $.proxy(function(ev) {
+        this.$container.find('.delete').on('click', $.proxy(function(ev) {
             this.removeElement($(ev.currentTarget));
         }, this));
 
         this.addListener($('.amnav__page'), 'dblclick', function(ev) {
             this.showPageEditor($(ev.currentTarget));
         });
+
+        // User rights: move
+        if (! this.settings.isAdmin && this.settings.canMoveFromLevel > 1) {
+            var self = this,
+                $items = this.$container.find('li').filter(function() {
+                return $(this).data('level') < self.settings.canMoveFromLevel;
+            });
+            this.structureDrag.removeItems($items);
+        }
     },
 
     /**
@@ -208,6 +217,7 @@ Craft.AmNavStructure = Craft.Structure.extend(
         $row.append('<a class="move icon" title="'+Craft.t('Move')+'"></a>');
         $row.append('<a class="settings icon" title="'+Craft.t('Settings')+'"></a>');
         $row.append('<a class="delete icon" title="'+Craft.t('Delete')+'"></a>');
+
         this.structureDrag.addItems($li);
 
         $row.find('.settings').on('click', $.proxy(function(ev) {

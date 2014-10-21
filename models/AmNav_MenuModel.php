@@ -10,8 +10,8 @@ class AmNav_MenuModel extends BaseModel
             'name'     => AttributeType::String,
             'handle'   => AttributeType::String,
             'settings' => array(AttributeType::Mixed, 'default' => array(
-                'canDeleteFirstLevel' => true,
-                'canMoveFirstLevel' => true,
+                'canDeleteFromLevel' => '',
+                'canMoveFromLevel' => '',
                 'maxLevels' => ''
             ))
         );

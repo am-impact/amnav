@@ -1,7 +1,7 @@
 <?php
 return array(
-    'Can delete first level' => 'Kan eerste niveau verwijderen',
-    'Can move first level' => 'Kan eerste niveau verplaatsen',
+    'Can delete from level' => 'Kan verwijderen vanaf niveau',
+    'Can move from level' => 'Kan verplaatsen vanaf niveau',
     'Couldn’t delete menu.' => 'Kon menu niet verwijderen.',
     'Couldn’t save menu.' => 'Kon menu niet opslaan.',
     'Create Date' => 'Aanmaakdatum',
@@ -31,7 +31,7 @@ return array(
     'The URL of this page.' => 'De URL van deze pagina.',
     'There are no menus yet.' => 'Er zijn nog geen menu\'s.',
     'There are no pages yet.' => 'Er zijn nog geen pagina\'s.',
-    'Whether non-admins can delete first level pages.' => 'Of niet systeembeheerders het eerste niveau van de pagina\'s kunnen verwijderen.',
-    'Whether non-admins can move first level pages.' => 'Of niet systeembeheerders het eerste niveau van de pagina\'s kunnen verplaatsen.',
+    'Whether non-admins can delete pages from a specific level. Leave blank if you don’t care.' => 'Of gebruikers die geen systeembeheerders zijn, de pagina\'s vanaf een specifiek niveau kunnen verwijderen. Laat leeg als dit niet uitmaakt.',
+    'Whether non-admins can move pages from a specific level. Leave blank if you don’t care.' => 'Of gebruikers die geen systeembeheerders zijn, de pagina\'s vanaf een specifiek niveau kunnen verplaatsen. Laat leeg als dit niet uitmaakt.',
     'Whether to open this page in a new screen.' => 'Of deze pagina in een nieuw venster geopend moet worden.'
 );

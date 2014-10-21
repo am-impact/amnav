@@ -5,7 +5,13 @@
     </div>
 </div>
 {% if replaceWith|length %}
-    <a class="move icon" title="{{ 'Move'|t }}"></a>
+	{% if currentUser.admin or level >= settings.canMoveFromLevel %}
+    	<a class="move icon" title="{{ 'Move'|t }}"></a>
+    {% endif %}
+
     <a class="settings icon" title="{{ 'Settings'|t }}"></a>
-    <a class="delete icon" title="{{ 'Delete'|t }}"></a>
+
+    {% if currentUser.admin or level >= settings.canDeleteFromLevel %}
+    	<a class="delete icon" title="{{ 'Delete'|t }}"></a>
+    {% endif %}
 {% endif %}

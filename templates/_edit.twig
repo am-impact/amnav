@@ -49,19 +49,21 @@
             instructions: 'The maximum number of levels this menu can have. Leave blank if you don’t care.'|t
         }) }}
         <hr>
-        {{ forms.lightSwitchField({
-            label: "Can move first level"|t,
+        {{ forms.textField({
+            label: "Can move from level"|t,
             id: 'handle',
-            name: 'settings[canMoveFirstLevel]',
-            on: menu.settings.canMoveFirstLevel,
-            instructions: 'Whether non-admins can move first level pages.'|t
+            name: 'settings[canMoveFromLevel]',
+            size: 5,
+            value: menu.settings.canMoveFromLevel,
+            instructions: 'Whether non-admins can move pages from a specific level. Leave blank if you don’t care.'|t
         }) }}
-        {{ forms.lightSwitchField({
-            label: "Can delete first level"|t,
+        {{ forms.textField({
+            label: "Can delete from level"|t,
             id: 'handle',
-            name: 'settings[canDeleteFirstLevel]',
-            on: menu.settings.canDeleteFirstLevel,
-            instructions: 'Whether non-admins can delete first level pages.'|t
+            name: 'settings[canDeleteFromLevel]',
+            size: 5,
+            value: menu.settings.canDeleteFromLevel,
+            instructions: 'Whether non-admins can delete pages from a specific level. Leave blank if you don’t care.'|t
         }) }}
 
         <div class="buttons">

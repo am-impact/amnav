@@ -61,7 +61,19 @@ class AmNavController extends BaseController
         $variables['pages'] = craft()->amNav->getPagesByMenuId($variables['menuId']);
 
         // Load javascript
-        $js = sprintf('new Craft.AmNav(%d, %s);', $variables['menuId'], $variables['menu']->settings);
+        $js = sprintf(
+            'new Craft.AmNav(%d, {
+                isAdmin: %s,
+                maxLevels: %s,
+                canDeleteFromLevel: %d,
+                canMoveFromLevel: %d
+            });',
+            $variables['menuId'],
+            craft()->userSession->isAdmin() ? 'true' : 'false',
+            $variables['menu']->settings['maxLevels'] ?: 'null',
+            $variables['menu']->settings['canDeleteFromLevel'] ?: 0,
+            $variables['menu']->settings['canMoveFromLevel'] ?: 0
+        );
         craft()->templates->includeJs($js);
         craft()->templates->includeJsResource('amnav/js/AmNav.js');
         craft()->templates->includeCssResource('amnav/css/AmNav.css');
@@ -109,6 +121,12 @@ class AmNavController extends BaseController
         $attributes = craft()->request->getPost();
         if (! is_numeric($attributes['settings']['maxLevels'])) {
             $attributes['settings']['maxLevels'] = '';
+        }
+        if (! is_numeric($attributes['settings']['canDeleteFromLevel'])) {
+            $attributes['settings']['canDeleteFromLevel'] = '';
+        }
+        if (! is_numeric($attributes['settings']['canMoveFromLevel'])) {
+            $attributes['settings']['canMoveFromLevel'] = '';
         }
         $menu->setAttributes(array(
             'name' => $attributes['name'],
