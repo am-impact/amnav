@@ -284,16 +284,29 @@ class AmNavService extends BaseApplicationComponent
         foreach ($pages as $page) {
             if ($page['parentId'] == $parentId && ($page['enabled'] || $this->_getParam('overrideStatus', false))) {
                 $foundPages = true;
+
+                // Get children
+                $children = $this->_buildNavHtml($pages, $page['id'], $level + 1);
+
+                // Set page classes
+                $pageClasses = array();
+                if ($children) {
+                    $pageClasses[] = $this->_getParam('classChildren', 'has-children');
+                }
+                if ($this->_isPageActive($page['url'])) {
+                    $pageClasses[] = $this->_getParam('classActive', 'active');
+                }
+
+                // Add curent page
                 $nav .= sprintf("\n" . '<li%1$s><a%5$s href="%2$s"%3$s>%4$s</a>',
-                    $this->_isPageActive($page['url']) ? ' class="' . $this->_getParam('classActive', 'active') . '"' : '',
+                    count($pageClasses) ? ' class="' . implode(' ', $pageClasses) . '"' : '',
                     craft()->config->parseEnvironmentString($page['url']),
                     $page['blank'] ? ' target="_blank"' : '',
                     $page['name'],
                     $this->_getParam('classBlank', false) !== false ? ' class="' . $this->_getParam('classBlank', false) . '"' : ''
                 );
 
-                // Get the child pages and add them to the navigation
-                $children = $this->_buildNavHtml($pages, $page['id'], $level + 1);
+                // Add children to the navigation
                 if ($children) {
                     $nav .= $children;
                 }
