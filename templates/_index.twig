@@ -3,11 +3,13 @@
 {% set title = craft.amNav.name %}
 {% set docsUrl = 'https://github.com/am-impact/amnav' %}
 
-{% set sidebar %}
-    <div class="buttons">
-        <a href="{{ url('amnav/new') }}"><div class="btn submit add icon">{{ 'New menu'|t }}</div></a>
-    </div>
-{% endset %}
+{% if currentUser.admin or settings.canDoActions %}
+    {% set sidebar %}
+        <div class="buttons">
+            <a href="{{ url('amnav/new') }}"><div class="btn submit add icon">{{ 'New menu'|t }}</div></a>
+        </div>
+    {% endset %}
+{% endif %}
 
 {% set content %}
     <h1>{{ 'Created menus'|t }}</h1>
@@ -24,7 +26,7 @@
                     <th scope="col" data-attribute="uri">{{ 'Handle'|t }}</th>
                     <th scope="col" data-attribute="postDate">{{ 'Create Date'|t }}</th>
                     <th scope="col" data-attribute="editDate">{{ 'Date Modified'|t }}</th>
-                    <th scope="col" data-attribute="actions">{{ 'Actions'|t }}</th>
+                    {% if currentUser.admin or settings.canDoActions %}<th scope="col" data-attribute="actions">{{ 'Actions'|t }}</th>{% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -34,10 +36,12 @@
                         <td>{{ menu.handle }}</td>
                         <td>{{ menu.dateCreated|date('d-m-Y') }}</td>
                         <td>{{ menu.dateUpdated|date('d-m-Y') }}</td>
+                        {% if currentUser.admin or settings.canDoActions %}
                         <td class="thin">
                             <a href="{{ url('amnav/edit/' ~ menu.id) }}" class="settings icon" title="{{ 'Settings'|t }}"></a>
                             <a class="delete icon" title="{{ 'Delete'|t }}" role="button"></a>
                         </td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             </tbody>

@@ -86,7 +86,8 @@ class AmNavPlugin extends BasePlugin
     protected function defineSettings()
     {
         return array(
-            'pluginName' => array(AttributeType::String)
+            'pluginName'   => array(AttributeType::String),
+            'canDoActions' => array(AttributeType::Bool, 'default' => false)
         );
     }
 }

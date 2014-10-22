@@ -9,3 +9,11 @@
     autofocus: true,
     instructions: 'Plugin name for the end user.'|t
 }) }}
+<hr>
+{{ forms.lightswitchField({
+    id: 'canDoActions',
+    name: 'canDoActions',
+    label: 'Can add, edit and delete'|t,
+    on: settings.canDoActions,
+    instructions: 'Whether non-admins can add, edit and delete menus.'|t
+}) }}

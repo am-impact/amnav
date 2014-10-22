@@ -11,7 +11,10 @@ class AmNavController extends BaseController
      */
     public function actionNavIndex()
     {
+        $plugin = craft()->plugins->getPlugin('amnav');
+
         $variables['menus'] = craft()->amNav->getMenus();
+        $variables['settings'] = $plugin->getSettings();
 
         $this->renderTemplate('amNav/_index', $variables);
     }

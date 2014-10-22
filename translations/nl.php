@@ -1,5 +1,6 @@
 <?php
 return array(
+    'Can add, edit and delete' => 'Kan toevoegen, wijzigen en verwijderen',
     'Can delete from level' => 'Kan verwijderen vanaf niveau',
     'Can move from level' => 'Kan verplaatsen vanaf niveau',
     'Couldn’t delete menu.' => 'Kon menu niet verwijderen.',
@@ -31,6 +32,7 @@ return array(
     'The URL of this page.' => 'De URL van deze pagina.',
     'There are no menus yet.' => 'Er zijn nog geen menu\'s.',
     'There are no pages yet.' => 'Er zijn nog geen pagina\'s.',
+    'Whether non-admins can add, edit and delete menus.' => 'Of gebruikers die geen systeembeheerders zijn, menu\'s kunnen toevoegen, wijzigen en verwijderen.',
     'Whether non-admins can delete pages from a specific level. Leave blank if you don’t care.' => 'Of gebruikers die geen systeembeheerders zijn, de pagina\'s vanaf een specifiek niveau kunnen verwijderen. Laat leeg als dit niet uitmaakt.',
     'Whether non-admins can move pages from a specific level. Leave blank if you don’t care.' => 'Of gebruikers die geen systeembeheerders zijn, de pagina\'s vanaf een specifiek niveau kunnen verplaatsen. Laat leeg als dit niet uitmaakt.',
     'Whether to open this page in a new screen.' => 'Of deze pagina in een nieuw venster geopend moet worden.'
