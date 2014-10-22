@@ -78,7 +78,7 @@ class AmNavController extends BaseController
             $variables['menu']->settings['canMoveFromLevel'] ?: 0
         );
         craft()->templates->includeJs($js);
-        craft()->templates->includeJsResource('amnav/js/AmNav.js');
+        craft()->templates->includeJsResource('amnav/js/AmNav.min.js');
         craft()->templates->includeCssResource('amnav/css/AmNav.css');
         craft()->templates->includeTranslations('Are you sure you want to delete “{name}” and its descendants?');
 
