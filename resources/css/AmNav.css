@@ -2,6 +2,10 @@
     display: list-item !important;
 }
 
+.amnav__builder .icon.settings {
+    display: inline-block;
+}
+
 .amnav__builder .icon.settings:before {
 	color: rgba(0, 0, 0, 0.2);
 }

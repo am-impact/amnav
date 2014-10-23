@@ -61,43 +61,51 @@
                 </div>
             {% endif %}
 
-            <div class="pane buttons">
-                <h1>{{ 'Existing entries'|t }}</h1>
-                <div class="btn submit add icon amnav__button">{{ 'Add an entry'|t }}</div>
-                <div class="spinner hidden"></div>
-            </div>
-
             <div class="pane">
-                <h1>{{ 'My own URL'|t }}</h1>
-                <form id="manual-form" method="post" accept-charset="UTF-8">
-                    {{ forms.textField({
-                        label: "Name"|t,
-                        id: 'name',
-                        name: 'name',
-                        first: true,
-                        required: true,
-                        instructions: 'Name of this page in the menu.'|t
-                    }) }}
-                    {{ forms.textField({
-                        label: "URL"|t,
-                        id: 'url',
-                        name: 'url',
-                        required: true,
-                        instructions: 'The URL of this page.'|t
-                    }) }}
-                    {{ forms.lightswitchField({
-                        id: 'blank',
-                        name: 'blank',
-                        label: 'New screen'|t,
-                        on: false,
-                        instructions: 'Whether to open this page in a new screen.'|t
-                    }) }}
+                {% set paneTabs = {
+                    entries: { label: "Existing entries"|t, url: '#amnav-entries' },
+                    url: { label: "My own URL"|t, url: '#amnav-url' },
+                } %}
+                {% include "_includes/tabs" with { tabs: paneTabs } %}
 
+                <div id="amnav-entries">
                     <div class="buttons">
-                        <input type="submit" class="btn submit" value="{{ 'Add'|t }}">
+                        <div class="btn submit add icon amnav__button">{{ 'Add an entry'|t }}</div>
                         <div class="spinner hidden"></div>
                     </div>
-                </form>
+                </div>
+
+                <div id="amnav-url" class="hidden">
+                    <form id="manual-form" method="post" accept-charset="UTF-8">
+                        {{ forms.textField({
+                            label: "Name"|t,
+                            id: 'name',
+                            name: 'name',
+                            first: true,
+                            required: true,
+                            instructions: 'Name of this page in the menu.'|t
+                        }) }}
+                        {{ forms.textField({
+                            label: "URL"|t,
+                            id: 'url',
+                            name: 'url',
+                            required: true,
+                            instructions: 'The URL of this page.'|t
+                        }) }}
+                        {{ forms.lightswitchField({
+                            id: 'blank',
+                            name: 'blank',
+                            label: 'New screen'|t,
+                            on: false,
+                            instructions: 'Whether to open this page in a new screen.'|t
+                        }) }}
+
+                        <div class="buttons">
+                            <input type="submit" class="btn submit" value="{{ 'Add'|t }}">
+                            <div class="spinner hidden"></div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
