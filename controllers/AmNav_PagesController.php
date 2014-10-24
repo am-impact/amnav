@@ -84,6 +84,7 @@ class AmNav_PagesController extends BaseController
             if (substr($attributes['url'], 0, 3) == 'www') {
                 $attributes['url'] = 'http://' . $attributes['url'];
             }
+            $attributes['url'] = str_ireplace('__home__', '', $attributes['url']);
             $page->setAttribute('url', $attributes['url']);
         }
 
