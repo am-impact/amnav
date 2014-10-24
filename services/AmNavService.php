@@ -7,7 +7,7 @@ namespace Craft;
 class AmNavService extends BaseApplicationComponent
 {
     private $_menu;
-    private $_params = array();
+    private $_params;
     private $_parseHtml = false;
     private $_parseEnvironment = false;
 
@@ -185,6 +185,7 @@ class AmNavService extends BaseApplicationComponent
      */
     private function _setParams($params)
     {
+        $this->_params = array();
         foreach ($params as $paramKey => $paramValue) {
             $this->_params[$paramKey] = $paramValue;
         }
