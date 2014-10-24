@@ -10,6 +10,7 @@ class AmNavService extends BaseApplicationComponent
     private $_params;
     private $_parseHtml = false;
     private $_parseEnvironment = false;
+    private $_siteUrl;
 
     /**
      * Get all build menus.
@@ -62,6 +63,9 @@ class AmNavService extends BaseApplicationComponent
      */
     public function getPagesByMenuId($navId)
     {
+        // Set siteUrl
+        $this->_siteUrl = craft()->getSiteUrl();
+
         // Start at the root by default
         $parentId = 0;
 
@@ -205,6 +209,18 @@ class AmNavService extends BaseApplicationComponent
     }
 
     /**
+     * Parse URL.
+     *
+     * @param string $url
+     *
+     * @return string
+     */
+    private function _parseUrl($url)
+    {
+        return str_replace('{siteUrl}', $this->_siteUrl, $url);
+    }
+
+    /**
      * Create the navigation based on parent IDs and order.
      *
      * @param array $pages
@@ -230,7 +246,7 @@ class AmNavService extends BaseApplicationComponent
                 if ($this->_parseEnvironment) {
                     if ($page['enabled'] || $this->_getParam('overrideStatus', false)) {
                         $page['active'] = $this->_isPageActive($page['url']);
-                        $page['url'] = craft()->config->parseEnvironmentString($page['url']);
+                        $page['url'] = $this->_parseUrl($page['url']);
                     }
                     else {
                         // Skip this page
@@ -304,7 +320,7 @@ class AmNavService extends BaseApplicationComponent
                 // Add curent page
                 $nav .= sprintf("\n" . '<li%1$s><a%5$s href="%2$s"%3$s>%4$s</a>',
                     count($pageClasses) ? ' class="' . implode(' ', $pageClasses) . '"' : '',
-                    craft()->config->parseEnvironmentString($page['url']),
+                    $this->_parseUrl($page['url']),
                     $page['blank'] ? ' target="_blank"' : '',
                     $page['name'],
                     $this->_getParam('classBlank', false) !== false ? ' class="' . $this->_getParam('classBlank', false) . '"' : ''
