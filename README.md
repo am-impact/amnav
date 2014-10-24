@@ -9,14 +9,23 @@ In the plugin's settings you can adjust the plugin's name for your customers and
 ![Settings](https://raw.githubusercontent.com/am-impact/am-impact.github.io/master/img/readme/amnav/settings.jpg "Settings")
 
 The menus overview.
+If you disabled the **Can add, edit and delete** setting in the plugin's settings, non-admins will only see the created menus and the link to start building their navigation.
 
 ![Menus](https://raw.githubusercontent.com/am-impact/am-impact.github.io/master/img/readme/amnav/menus.jpg "Menus")
 
 When you create or edit a menu, you can set the following settings:
 
+| Setting | Explanation |
+| --------- | ----------- |
+| Max Levels | The maximum number of levels this menu can have. Leave blank if you don’t care. |
+| Can move from level | Whether non-admins can move pages from a specific level. Leave blank if you don’t care. |
+| Can delete from level | Whether non-admins can delete pages from a specific level. Leave blank if you don’t care. |
+
 ![Edit](https://raw.githubusercontent.com/am-impact/am-impact.github.io/master/img/readme/amnav/edit.jpg "Edit")
 
-Let's start building a navigation! You have the option to add existing entries or..
+Let's start building a navigation!
+Non-admins don't see the **Display menu** section. This is for admins only so they know what to put in the templates.
+You have the option to add existing entries or..
 
 ![Build](https://raw.githubusercontent.com/am-impact/am-impact.github.io/master/img/readme/amnav/build.jpg "Build")
 
@@ -40,7 +49,7 @@ or
 {{ craft.amNav.getNav("yourMenuHandle") }}
 ```
 
-## Do it yourself way
+## Build the way you like it
 
 Now you can add your own HTML if necessary!
 
@@ -81,7 +90,7 @@ Now you can add your own HTML if necessary!
 | overrideStatus | Includes every page whatever the status. |
 | startFromId | Begin the navigation at a specific page ID. |
 
-## Let a&m nav do the trick
+## Let amnav do the trick
 
 ```
 {{ craft.amNav.getNav("yourMenuHandle") }}
