@@ -29,6 +29,7 @@ class AmNavVariable
      * - classLevel2        Class name for the children UL. You can add a classLevel for every level you need (e.g.: classLevel2, classLevel3).
      * - classChildren      Class name for a page that has children.
      *
+     * - excludeUl          Exclude the main UL wrapper.
      * - maxLevel           Build the navigation till a certain level.
      * - overrideStatus     Includes every page whatever the status.
      * - startFromId        Begin the navigation at a specific page ID.

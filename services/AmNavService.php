@@ -269,11 +269,14 @@ class AmNavService extends BaseApplicationComponent
         $foundPages = false;
 
         // Create UL
+        $nav = '';
         if ($level == 1) {
-            $nav = sprintf("\n" . '<ul id="%1$s" class="%2$s">',
-                $this->_getParam('id', $this->_menu->handle),
-                $this->_getParam('class', 'nav')
-            );
+            if (! $this->_getParam('excludeUl', false)) {
+                $nav = sprintf("\n" . '<ul id="%1$s" class="%2$s">',
+                    $this->_getParam('id', $this->_menu->handle),
+                    $this->_getParam('class', 'nav')
+                );
+            }
         } else {
             $nav = sprintf("\n" . '<ul class="%1$s">',
                 $this->_getParam('classLevel' . $level, 'nav__level' . $level)
@@ -313,7 +316,14 @@ class AmNavService extends BaseApplicationComponent
                 $nav .= '</li>';
             }
         }
-        $nav .= "\n</ul>";
+        if ($level == 1) {
+            if (! $this->_getParam('excludeUl', false)) {
+                $nav .= "\n</ul>";
+            }
+        }
+        else {
+            $nav .= "\n</ul>";
+        }
         if ($foundPages) {
             return TemplateHelper::getRaw($nav);
         }
