@@ -73,15 +73,13 @@
                 {% include "_includes/tabs" with { tabs: paneTabs } %}
 
                 <div class="amnav__parent">
-                    {% if parentOptions|length %}
-                        {{ forms.selectField({
-                            label: "Parent page"|t,
-                            id: 'parent',
-                            class: 'fullwidth',
-                            name: 'parent',
-                            options: parentOptions
-                        }) }}
-                    {% endif %}
+                    {{ forms.selectField({
+                        label: "Parent page"|t,
+                        id: 'parent',
+                        class: 'fullwidth',
+                        name: 'parent',
+                        options: parentOptions
+                    }) }}
                 </div>
 
                 <div id="amnav-entries">
