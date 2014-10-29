@@ -25,6 +25,7 @@ return array(
     'No menu exists with the ID “{id}”.' => 'Er bestaat geen menu met het ID “{id}”.',
     'No page exists with the ID “{id}”.' => 'Er bestaat geen pagina met het ID “{id}”.',
     'Not all required fields are filled out.' => 'Niet alle verplichte velden zijn ingevuld.',
+    'Opens in a new window' => 'Opent in een nieuw venster',
     'Page added.' => 'Pagina toegevoegd.',
     'Page deleted.' => 'Pagina verwijderd.',
     'Page saved.' => 'Pagina opgeslagen.',

@@ -536,7 +536,7 @@ Craft.AmNavEditor = Garnish.Base.extend(
 
         var data    = this.$form.serialize(),
             $status = this.$page.find('.status'),
-            $blank  = this.$page.find('.blank');
+            $blank  = this.$page.find('.amnav__blank');
 
         Craft.postActionRequest('amNav/pages/savePage', data, $.proxy(function(response, textStatus) {
             this.$spinner.addClass('hidden');

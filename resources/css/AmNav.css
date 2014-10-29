@@ -1,5 +1,5 @@
 .visuallyhidden {
-    display: none;
+    display: none !important;
 }
 
 .amnav__builder .hidden {
@@ -8,6 +8,13 @@
 
 .amnav .amnav__parent {
     margin: 24px 0;
+}
+
+.amnav .amnav__blank {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background: url(../img/blank.png);
 }
 
 .amnav__builder .icon.settings {

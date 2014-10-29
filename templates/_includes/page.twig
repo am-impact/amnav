@@ -3,7 +3,7 @@
         <span class="amnav__id visuallyhidden"><strong>{{ '%%id%%'|replace(replaceWith) }}</strong></span>
         <span class="status {{ '%%status%%'|replace(replaceWith) }}"></span>
         <span class="title">{{ '%%label%%'|replace(replaceWith) }}</span>
-        <span class="blank light {{ '%%blank%%'|replace(replaceWith) }}" data-icon="routes"></span>
+        <span class="amnav__blank {{ '%%blank%%'|replace(replaceWith) }}" title="{{ 'Opens in a new window'|t }}"></span>
     </div>
 </div>
 {% if replaceWith|length %}
