@@ -9,8 +9,10 @@ return array(
     'Created menus' => 'Aangemaakte menu\'s',
     'Display in menu.' => 'Weergeven in het menu.',
     'Display menu' => 'Menu weergeven',
+    'Display page IDs' => 'Toon pagina ID\'s',
     'Edit menu' => 'Menu bewerken',
     'Existing entries' => 'Bestaande inhoud',
+    'Linked to' => 'Gekoppeld aan',
     'Menu deleted.' => 'Menu verwijderd.',
     'Menu saved.' => 'Menu opgeslagen.',
     'My own URL' => 'Mijn eigen URL',
@@ -18,7 +20,7 @@ return array(
     'Name of this menu in the CP.' => 'Naam van dit menu in de CP.',
     'Name of this menu in the templates.' => 'Naam van dit menu in de templates.',
     'New menu' => 'Nieuw menu',
-    'New screen' => 'Nieuw venster',
+    'New window' => 'Nieuw venster',
     'No menu exists with the handle “{handle}”.' => 'Er bestaat geen menu met de handle “{handle}”.',
     'No menu exists with the ID “{id}”.' => 'Er bestaat geen menu met het ID “{id}”.',
     'No page exists with the ID “{id}”.' => 'Er bestaat geen pagina met het ID “{id}”.',
@@ -26,6 +28,7 @@ return array(
     'Page added.' => 'Pagina toegevoegd.',
     'Page deleted.' => 'Pagina verwijderd.',
     'Page saved.' => 'Pagina opgeslagen.',
+    'Parent page' => 'Bovenliggende pagina',
     'Plugin name' => 'Plugin naam',
     'Plugin name for the end user.' => 'Plugin naam voor de eind gebruiker.',
     'The maximum number of levels this menu can have. Leave blank if you don’t care.' => 'Het maximum aantal niveau\'s dat dit menu kan hebben. Laat leeg als dit niet uitmaakt.',
@@ -35,5 +38,5 @@ return array(
     'Whether non-admins can add, edit and delete menus.' => 'Of gebruikers die geen systeembeheerders zijn, menu\'s kunnen toevoegen, wijzigen en verwijderen.',
     'Whether non-admins can delete pages from a specific level. Leave blank if you don’t care.' => 'Of gebruikers die geen systeembeheerders zijn, de pagina\'s vanaf een specifiek niveau kunnen verwijderen. Laat leeg als dit niet uitmaakt.',
     'Whether non-admins can move pages from a specific level. Leave blank if you don’t care.' => 'Of gebruikers die geen systeembeheerders zijn, de pagina\'s vanaf een specifiek niveau kunnen verplaatsen. Laat leeg als dit niet uitmaakt.',
-    'Whether to open this page in a new screen.' => 'Of deze pagina in een nieuw venster geopend moet worden.'
+    'Whether to open this page in a new window.' => 'Of deze pagina in een nieuw venster geopend moet worden.'
 );

@@ -1,0 +1,10 @@
+{% import "_includes/forms" as forms %}
+
+{{ forms.selectField({
+    label: "Parent page"|t,
+    id: 'parent',
+    class: 'fullwidth',
+    name: 'parent',
+    value: selected,
+    options: parentOptions
+}) }}

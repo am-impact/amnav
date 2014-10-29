@@ -1,7 +1,9 @@
 <div class="amnav__page element" data-id="{{ '%%id%%'|replace(replaceWith) }}" data-label="{{ '%%label%%'|replace(replaceWith) }}">
     <div class="label">
+        <span class="amnav__id visuallyhidden"><strong>{{ '%%id%%'|replace(replaceWith) }}</strong></span>
         <span class="status {{ '%%status%%'|replace(replaceWith) }}"></span>
         <span class="title">{{ '%%label%%'|replace(replaceWith) }}</span>
+        <span class="blank light {{ '%%blank%%'|replace(replaceWith) }}" data-icon="routes"></span>
     </div>
 </div>
 {% if replaceWith|length %}

@@ -36,7 +36,7 @@ class AmNav_PagesController extends BaseController
 
             $page->setAttributes(array(
                 'navId'    => $attributes['navId'],
-                'parentId' => 0,
+                'parentId' => (int)$attributes['parentId'],
                 'name'     => $attributes['name'],
                 'url'      => $attributes['url'],
                 'blank'    => isset($attributes['blank']) ? $attributes['blank'] == 'true' : false,
@@ -48,6 +48,12 @@ class AmNav_PagesController extends BaseController
                 $returnData['success']  = true;
                 $returnData['message']  = Craft::t('Page added.');
                 $returnData['pageData'] = $page;
+
+                // Get parent options
+                $pages = craft()->amNav->getPagesByMenuId($page->navId);
+                $variables['selected'] = $page->parentId;
+                $variables['parentOptions'] = craft()->amNav->getParentOptions($pages);
+                $returnData['parentOptions'] = $this->renderTemplate('amNav/_build/parent', $variables, true);
             }
         }
 
@@ -121,7 +127,17 @@ class AmNav_PagesController extends BaseController
         // Move page!
         $result = craft()->amNav_page->movePage($page, $parentId, $prevId);
 
-        $this->returnJson(array('success' => $result));
+        // Get parent options
+        $pages = craft()->amNav->getPagesByMenuId($page->navId);
+        $variables['selected'] = $page->id;
+        $variables['parentOptions'] = craft()->amNav->getParentOptions($pages);
+        $parentOptions = $this->renderTemplate('amNav/_build/parent', $variables, true);
+
+        $returnData = array(
+            'success'       => $result,
+            'parentOptions' => $parentOptions
+        );
+        $this->returnJson($returnData);
     }
 
     /**
@@ -134,10 +150,24 @@ class AmNav_PagesController extends BaseController
 
         $pageId = craft()->request->getRequiredPost('pageId');
 
+        // Get page
+        $page = craft()->amNav_page->getPageById($pageId);
+        if (! $page) {
+            throw new HttpException(404);
+        }
+
         $result = craft()->amNav_page->deletePageById($pageId);
+
+        // Get parent options
+        $pages = craft()->amNav->getPagesByMenuId($page->navId);
+        $variables['selected'] = 0;
+        $variables['parentOptions'] = craft()->amNav->getParentOptions($pages);
+        $parentOptions = $this->renderTemplate('amNav/_build/parent', $variables, true);
+
         $returnData = array(
-            'success' => $result,
-            'message' => Craft::t('Page deleted.')
+            'success'       => $result,
+            'message'       => Craft::t('Page deleted.'),
+            'parentOptions' => $parentOptions
         );
         $this->returnJson($returnData);
     }
@@ -158,7 +188,7 @@ class AmNav_PagesController extends BaseController
             throw new HttpException(404);
         }
 
-        $returnData['html'] = $this->renderTemplate('amNav/_editor', $variables, true);
+        $returnData['html'] = $this->renderTemplate('amNav/_build/editor', $variables, true);
 
         $this->returnJson($returnData);
     }

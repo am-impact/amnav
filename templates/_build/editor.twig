@@ -16,6 +16,19 @@
 	    value: page.url,
 	    instructions: 'The URL of this page.'|t
 	}) }}
+{% else %}
+    {% set entry = craft.entries.id(page.entryId).first() %}
+
+    {% if entry %}
+        <div class="field">
+            <div class="heading">
+                <label>{{ 'Linked to'|t }}</label>
+                <div class="instructions">
+                    <p>{{ entry.title }}<br>{{ 'URI'|t }}: {{ entry.uri }}<br><a href="{{ entry.cpEditUrl }}" target="_blank">{{ 'Edit'|t }}</a></p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 {% endif %}
 
 {{ forms.lightswitchField({
@@ -29,7 +42,7 @@
 {{ forms.lightswitchField({
     id:           'blank',
     name:         'blank',
-    label:        'New screen'|t,
+    label:        'New window'|t,
     on:           page.blank,
-    instructions: 'Whether to open this page in a new screen.'|t
+    instructions: 'Whether to open this page in a new window.'|t
 }) }}

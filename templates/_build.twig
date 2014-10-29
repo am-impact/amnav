@@ -18,7 +18,8 @@
             '%%entryid%%':  page.entryId,
             '%%label%%':    page.name,
             '%%url%%':      page.url,
-            '%%status%%':   (page.enabled ? 'live' : 'expired')
+            '%%status%%':   (page.enabled ? 'live' : 'expired'),
+            '%%blank%%':    (page.blank ? '' : 'visuallyhidden')
         } %}
         <div class="row" style="margin-left: -{{ indent }}px; padding-left: {{ indent }}px;">
             {% include 'amnav/_includes/page' with { replaceWith: replaceWith, level: page.level, settings: menu.settings } only %}
@@ -58,6 +59,9 @@
                     <h1>{{ 'Display menu'|t }}</h1>
                     <p class="light">{{ '{{ craft.amNav.getNav("' ~ menu.handle ~ '") }}' }}</p>
                     <p class="light">{{ '{{ craft.amNav.getNavRaw("' ~ menu.handle ~ '") }}' }}</p>
+                    <div class="buttons">
+                        <div class="btn submit amnav__pageids">{{ 'Display page IDs'|t }}</div>
+                    </div>
                 </div>
             {% endif %}
 
@@ -67,6 +71,18 @@
                     url: { label: "My own URL"|t, url: '#amnav-url' },
                 } %}
                 {% include "_includes/tabs" with { tabs: paneTabs } %}
+
+                <div class="amnav__parent">
+                    {% if parentOptions|length %}
+                        {{ forms.selectField({
+                            label: "Parent page"|t,
+                            id: 'parent',
+                            class: 'fullwidth',
+                            name: 'parent',
+                            options: parentOptions
+                        }) }}
+                    {% endif %}
+                </div>
 
                 <div id="amnav-entries">
                     <div class="buttons">
@@ -95,9 +111,9 @@
                         {{ forms.lightswitchField({
                             id: 'blank',
                             name: 'blank',
-                            label: 'New screen'|t,
+                            label: 'New window'|t,
                             on: false,
-                            instructions: 'Whether to open this page in a new screen.'|t
+                            instructions: 'Whether to open this page in a new window.'|t
                         }) }}
 
                         <div class="buttons">

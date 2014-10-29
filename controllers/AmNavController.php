@@ -62,6 +62,7 @@ class AmNavController extends BaseController
 
         // Get saved pages
         $variables['pages'] = craft()->amNav->getPagesByMenuId($variables['menuId']);
+        $variables['parentOptions'] = craft()->amNav->getParentOptions($variables['pages']);
 
         // Load javascript
         $js = sprintf(

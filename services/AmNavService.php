@@ -83,6 +83,43 @@ class AmNavService extends BaseApplicationComponent
     }
 
     /**
+     * Get parent options for given pages.
+     *
+     * @param array $pages
+     * @param bool  $skipFirst
+     *
+     * @return array
+     */
+    public function getParentOptions($pages, $skipFirst = false)
+    {
+        $parentOptions = array();
+        if (! $skipFirst) {
+            $parentOptions[] = array(
+                'label' => '',
+                'value' => 0
+            );
+        }
+        foreach ($pages as $page) {
+            $label = '';
+            for ($i = 1; $i < $page['level']; $i++) {
+                $label .= '    ';
+            }
+            $label .= $page['name'];
+
+            $parentOptions[] = array(
+                'label' => $label,
+                'value' => $page['id']
+            );
+            if (isset($page['children'])) {
+                foreach($this->getParentOptions($page['children'], true) as $childPage) {
+                    $parentOptions[] = $childPage;
+                }
+            }
+        }
+        return $parentOptions;
+    }
+
+    /**
      * Saves a menu.
      *
      * @param AmNav_MenuModel $menu

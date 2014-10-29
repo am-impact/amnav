@@ -1,5 +1,13 @@
+.visuallyhidden {
+    display: none;
+}
+
 .amnav__builder .hidden {
     display: list-item !important;
+}
+
+.amnav .amnav__parent {
+    margin: 24px 0;
 }
 
 .amnav__builder .icon.settings {
