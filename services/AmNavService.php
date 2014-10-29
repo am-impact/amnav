@@ -348,8 +348,10 @@ class AmNavService extends BaseApplicationComponent
                 }
 
                 // Search for next possible entry
-                $segmentString .= '/' . $segments[$count];
                 $count ++;
+                if (isset($segments[$count])) {
+                    $segmentString .= '/' . $segments[$count];
+                }
             }
         }
         return $entries;
