@@ -58,4 +58,23 @@ class AmNavVariable
     {
         return craft()->amNav->getNavRaw($handle, $params);
     }
+
+    /**
+     * Get breadcrumbs as HTML.
+     *
+     * @param array  $params
+     *
+     * Params possibilities:
+     * - id             ID for the breadcrumbs wrapper.
+     * - class          Class name for the breadcrumbs wrapper.
+     * - classLast      Class name for the last breadcrumb.
+     * - wrapper        Wrapper element without the < and >.
+     * - renameHome     Change the title of the home entry.
+     *
+     * @return string
+     */
+    public function getBreadcrumbs($params = array())
+    {
+        return craft()->amNav->getBreadcrumbs($params);
+    }
 }

@@ -11,6 +11,7 @@ class AmNavService extends BaseApplicationComponent
     private $_parseHtml = false;
     private $_parseEnvironment = false;
     private $_siteUrl;
+    private $_addTrailingSlash = false;
 
     /**
      * Get all build menus.
@@ -63,8 +64,9 @@ class AmNavService extends BaseApplicationComponent
      */
     public function getPagesByMenuId($navId)
     {
-        // Set siteUrl
+        // Set necessary variables
         $this->_siteUrl = craft()->getSiteUrl();
+        $this->_addTrailingSlash = craft()->config->get('addTrailingSlashesToUrls');
 
         // Start at the root by default
         $parentId = 0;
@@ -220,6 +222,21 @@ class AmNavService extends BaseApplicationComponent
     }
 
     /**
+     * Get a navigation structure as HTML.
+     *
+     * @param array $params
+     *
+     * @return string
+     */
+    public function getBreadcrumbs($params)
+    {
+        // Get the params
+        $this->_setParams($params);
+        // Return built HTML
+        return $this->_buildBreadcrumbsHtml();
+    }
+
+    /**
      * Set parameters for the navigation HTML output.
      *
      * @param array $params
@@ -254,7 +271,88 @@ class AmNavService extends BaseApplicationComponent
      */
     private function _parseUrl($url)
     {
-        return str_replace('{siteUrl}', $this->_siteUrl, $url);
+        $url = str_replace('{siteUrl}', $this->_siteUrl, $url);
+        if ($this->_addTrailingSlash) {
+            $url .= '/';
+        }
+        return $url;
+    }
+
+    /**
+     * Check whether the URL is currently active.
+     *
+     * @param string $url
+     *
+     * @return bool
+     */
+    private function _isPageActive($url)
+    {
+        $path = craft()->request->getPath();
+        $segments = craft()->request->getSegments();
+
+        $url = str_replace('{siteUrl}', '', $url);
+        if ($url == $path) {
+            return true;
+        }
+        if (count($segments)) {
+            $found = false;
+            $count = 1; // Start at second
+            $segmentString = $segments[0]; // Add first
+            while ($count < count($segments)) {
+                if ($url == $segmentString) {
+                    $found = true;
+                    break;
+                }
+                $segmentString .= '/' . $segments[$count];
+                $count ++;
+            }
+            if ($found) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get active entries based on URI.
+     *
+     * @return array
+     */
+    private function _getActiveEntries()
+    {
+        $entries = array();
+        $segments = craft()->request->getSegments();
+
+        // Add homepage
+        $criteria = craft()->elements->getCriteria(ElementType::Entry);
+        $criteria->uri = '__home__';
+        $entry = $criteria->first();
+        if ($entry) {
+            $entries[] = $entry;
+        }
+
+        // Find other entries
+        if (count($segments)) {
+            $count = 0; // Start at second
+            $segmentString = $segments[0]; // Add first
+            while ($count < count($segments)) {
+                // Get entry
+                $criteria = craft()->elements->getCriteria(ElementType::Entry);
+                $criteria->uri = $segmentString;
+                $criteria->status = null;
+                $entry = $criteria->first();
+
+                // Add entry to active entries
+                if ($entry) {
+                    $entries[] = $entry;
+                }
+
+                // Search for next possible entry
+                $segmentString .= '/' . $segments[$count];
+                $count ++;
+            }
+        }
+        return $entries;
     }
 
     /**
@@ -387,37 +485,49 @@ class AmNavService extends BaseApplicationComponent
     }
 
     /**
-     * Check whether the URL is currently active.
+     * Create the breadcrumbs HTML.
      *
-     * @param string $url
-     *
-     * @return bool
+     * @return string
      */
-    private function _isPageActive($url)
+    private function _buildBreadcrumbsHtml()
     {
-        $path = craft()->request->getPath();
-        $segments = craft()->request->getSegments();
+        // Get active entries
+        $activeEntries = $this->_getActiveEntries();
 
-        $url = str_replace('{siteUrl}', '', $url);
-        if ($url == $path) {
-            return true;
-        }
-        if (count($segments)) {
-            $found = false;
-            $count = 1; // Start at second
-            $segmentString = $segments[0]; // Add first
-            while ($count < count($segments)) {
-                if ($url == $segmentString) {
-                    $found = true;
-                    break;
-                }
-                $segmentString .= '/' . $segments[$count];
-                $count ++;
+        // Create breadcrumbs
+        $length = count($activeEntries);
+        $breadcrumbs = "\n" . sprintf('<%1$s%2$s%3$s xmlns:v="http://rdf.data-vocabulary.org/#">',
+            $this->_getParam('wrapper', 'ol'),
+            $this->_getParam('id', false) ? ' id="' . $this->_getParam('id', '') . '"' : '',
+            $this->_getParam('class', false) ? ' class="' . $this->_getParam('class', '') . '"' : ''
+        );
+        foreach ($activeEntries as $index => $entry) {
+            // First
+            if ($index == 0) {
+                $breadcrumbs .= sprintf("\n" . '<li typeof="v:Breadcrumb"><a href="%1$s" title="%2$s" rel="v:url" property="v:title">%2$s</a></li>',
+                    $entry->url,
+                    $this->_getParam('renameHome', $entry->title)
+                );
             }
-            if ($found) {
-                return true;
+            // Last
+            elseif ($index == $length - 1)
+            {
+                $breadcrumbs .= sprintf("\n" . '<li class="%3$s" typeof="v:Breadcrumb"><a href="%1$s" title="%2$s" rel="v:url" property="v:title">%2$s</a></li>',
+                    $entry->url,
+                    $entry->title,
+                    $this->_getParam('classLast', 'last')
+                );
+            }
+            else {
+                $breadcrumbs .= sprintf("\n" . '<li typeof="v:Breadcrumb"><a href="%1$s" title="%2$s" rel="v:url" property="v:title">%2$s</a></li>',
+                    $entry->url,
+                    $entry->title
+                );
             }
         }
-        return false;
+        $breadcrumbs .= "\n" . sprintf('</%1$s>',
+            $this->_getParam('wrapper', 'ol')
+        );
+        return TemplateHelper::getRaw($breadcrumbs);
     }
 }
