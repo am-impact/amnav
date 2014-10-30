@@ -96,6 +96,15 @@ Now you can add your own HTML if necessary!
 {{ craft.amNav.getNav("yourMenuHandle") }}
 ```
 
+or with parameters..
+
+```
+{{ craft.amNav.getNav("yourMenuHandle", {
+    id: 'navigation',
+    class: 'navigation'
+}) }}
+```
+
 ### Parameters
 
 | Parameter | Explanation |
@@ -110,6 +119,34 @@ Now you can add your own HTML if necessary!
 | maxLevel | Build the navigation till a certain level. |
 | overrideStatus | Includes every page whatever the status. |
 | startFromId | Begin the navigation at a specific page ID. |
+
+## Breadcrumbs
+
+Breadcrumbs are not based on a created navigation. They are based on the current URL segments.
+
+```
+{{ craft.amNav.getBreadcrumbs() }}
+```
+
+or with parameters..
+
+```
+{{ craft.amNav.getBreadcrumbs({
+    id: 'breadcrumbs',
+    class: 'breadcrumbs'
+}) }}
+```
+
+### Parameters
+
+| Parameter | Explanation |
+| --------- | ----------- |
+| id | ID for the breadcrumbs wrapper. |
+| class | Class name for the breadcrumbs wrapper. |
+| classLast | Class name for the last breadcrumb. |
+| wrapper | Wrapper element without the < and >. |
+| renameHome | Change the title of the home entry. |
+| lastIsLink | Whether the last breadcrumb should be a link. |
 
 ## Contact
 
