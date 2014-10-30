@@ -253,7 +253,7 @@ class AmNavService extends BaseApplicationComponent
      * Get parameter value.
      *
      * @param string $name
-     * @param mixed $default
+     * @param mixed  $default
      *
      * @return mixed
      */
@@ -514,10 +514,18 @@ class AmNavService extends BaseApplicationComponent
             // Last
             elseif ($index == $length - 1)
             {
-                $breadcrumbs .= sprintf("\n" . '<li class="%3$s" typeof="v:Breadcrumb"><a href="%1$s" title="%2$s" rel="v:url" property="v:title">%2$s</a></li>',
-                    $entry->url,
-                    $entry->title,
-                    $this->_getParam('classLast', 'last')
+                $breadcrumb = sprintf('<span property="v:title">%1$s</span>',
+                    $entry->title
+                );
+                if ($this->_getParam('lastIsLink', false)) {
+                    $breadcrumb = sprintf('<a href="%1$s" title="%2$s" rel="v:url" property="v:title">%2$s</a>',
+                        $entry->url,
+                        $entry->title
+                    );
+                }
+                $breadcrumbs .= sprintf("\n" . '<li class="%1$s" typeof="v:Breadcrumb">%2$s</li>',
+                    $this->_getParam('classLast', 'last'),
+                    $breadcrumb
                 );
             }
             else {
