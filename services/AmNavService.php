@@ -217,6 +217,8 @@ class AmNavService extends BaseApplicationComponent
         $this->_parseEnvironment = true;
         // Get the params
         $this->_setParams($params);
+        // We don't want HTML returned
+        $this->_parseHtml = false;
         // Return the array structure
         return $this->getPagesByMenuId($menu->id);
     }
