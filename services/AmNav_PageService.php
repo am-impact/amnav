@@ -188,6 +188,21 @@ class AmNav_PageService extends BaseApplicationComponent
     }
 
     /**
+     * Delete pages from the navigation based on the Entry that was just deleted.
+     *
+     * @param EntryModel $entry
+     */
+    public function deletePagesForEntry(EntryModel $entry)
+    {
+        $pageRecords = AmNav_PageRecord::model()->findAllByAttributes(array(
+            'entryId' => $entry->id
+        ));
+        foreach ($pageRecords as $pageRecord) {
+            $this->deletePageById($pageRecord->id);
+        }
+    }
+
+    /**
      * Get all children IDs for a page.
      *
      * @param array $pages
