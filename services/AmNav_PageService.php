@@ -173,22 +173,37 @@ class AmNav_PageService extends BaseApplicationComponent
     }
 
     /**
-     * Update the URL for an Entry if available in a navigation.
+     * Update pages in a navigation based on the Entry that was just saved.
      *
      * @param EntryModel $entry
+     * @param bool       $beforeEntryEvent
      */
-    public function updateUrlForEntry(EntryModel $entry)
+    public function updatePagesForEntry(EntryModel $entry, $beforeEntryEvent = false)
     {
         $pageRecords = AmNav_PageRecord::model()->findAllByAttributes(array(
             'entryId' => $entry->id
         ));
-        foreach ($pageRecords as $pageRecord) {
-            $this->_updatePageById($pageRecord->id, array('url' => '{siteUrl}' . $entry->uri));
+        if (count($pageRecords)) {
+            // Get Entry model with data before it's being saved
+            $beforeSaveEntry = $beforeEntryEvent ? craft()->entries->getEntryById($entry->id) : false;
+
+            // Update page records
+            foreach ($pageRecords as $pageRecord) {
+                // Set update data
+                $updateData = array('url' => '{siteUrl}' . $entry->uri);
+
+                // Only update the page name if they were the same before the Entry was saved
+                if ($beforeSaveEntry && $beforeSaveEntry->title == $pageRecord->name) {
+                    $updateData['name'] = $entry->title;
+                }
+
+                $this->_updatePageById($pageRecord->id, $updateData);
+            }
         }
     }
 
     /**
-     * Delete pages from the navigation based on the Entry that was just deleted.
+     * Delete pages in a navigation based on the Entry that was just deleted.
      *
      * @param EntryModel $entry
      */

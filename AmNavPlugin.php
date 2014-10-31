@@ -70,10 +70,16 @@ class AmNavPlugin extends BasePlugin
      */
     public function init()
     {
-        // Update an Entry URL in a navigation if necessary
+        // Update pages in a navigation if an Entry was saved
+        craft()->on('entries.beforeSaveEntry', function(Event $event) {
+            if (! $event->params['isNewEntry']) {
+                craft()->amNav_page->updatePagesForEntry($event->params['entry'], true);
+            }
+        });
+        // Update pages again, since the URI update is only available after the Entry has been saved
         craft()->on('entries.saveEntry', function(Event $event) {
             if (! $event->params['isNewEntry']) {
-                craft()->amNav_page->updateUrlForEntry($event->params['entry']);
+                craft()->amNav_page->updatePagesForEntry($event->params['entry']);
             }
         });
         // Delete pages from a navigation if an Entry was deleted
