@@ -42,6 +42,18 @@ class AmNavVariable
     }
 
     /**
+     * Get a navigation title using its handle
+     *
+     * @param string $handle
+     *
+     * @return string
+     */
+    public function getNavName($handle)
+    {
+        return craft()->amNav->getMenuNameByHandle($handle);
+    }
+
+    /**
      * Get a navigation structure without any HTML.
      *
      * @param string $handle
