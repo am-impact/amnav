@@ -56,6 +56,23 @@ class AmNavService extends BaseApplicationComponent
     }
 
     /**
+     * Get a menu name by its handle.
+     *
+     * @param string $handle
+     *
+     * @return string|null
+     */
+    public function getMenuNameByHandle($handle)
+    {
+        $menuRecord = AmNav_MenuRecord::model()->findByAttributes(array('handle' => $handle));
+        if ($menuRecord) {
+            $menu = AmNav_MenuModel::populateModel($menuRecord);
+            return $menu->name;
+        }
+        return null;
+    }
+
+    /**
      * Get all pages by its menu ID.
      *
      * @param int $navId
