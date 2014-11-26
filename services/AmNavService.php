@@ -459,8 +459,10 @@ class AmNavService extends BaseApplicationComponent
         }
 
         // Add the pages to the navigation, but only if they are enabled
+        $count = 0;
         foreach ($pages as $page) {
             if ($page['parentId'] == $parentId && ($page['enabled'] || $this->_getParam('overrideStatus', false))) {
+                $count ++;
                 $foundPages = true;
 
                 // Get children
@@ -473,6 +475,9 @@ class AmNavService extends BaseApplicationComponent
                 }
                 if ($this->_isPageActive($page['url'])) {
                     $pageClasses[] = $this->_getParam('classActive', 'active');
+                }
+                if ($level == 1 && $count == 1) {
+                    $pageClasses[] = $this->_getParam('classFirst', 'first');
                 }
 
                 // Add curent page

@@ -28,6 +28,7 @@ class AmNavVariable
      * - classBlank         Class name for hyperlinks that have a _blank target.
      * - classLevel2        Class name for the children UL. You can add a classLevel for every level you need (e.g.: classLevel2, classLevel3).
      * - classChildren      Class name for a page that has children.
+     * - classFirst         Class name for the first page in the navigation.
      *
      * - excludeUl          Exclude the main UL wrapper.
      * - maxLevel           Build the navigation till a certain level.
