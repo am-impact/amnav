@@ -291,10 +291,11 @@ class AmNavService extends BaseApplicationComponent
      */
     private function _parseUrl($url)
     {
+        $isAnchor   = substr(str_replace('{siteUrl}', '', $url), 0, 1) == '#';
         $isSiteLink = strpos($url, '{siteUrl}') !== false;
         $isHomepage = str_replace('{siteUrl}', '', $url) == '';
         $url        = str_replace('{siteUrl}', $this->_siteUrl, $url);
-        if ($this->_addTrailingSlash && $isSiteLink && ! $isHomepage) {
+        if ($this->_addTrailingSlash && ! $isAnchor && $isSiteLink && ! $isHomepage) {
             $url .= '/';
         }
         return $url;
