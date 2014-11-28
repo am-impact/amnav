@@ -20,7 +20,8 @@ class AmNavService extends BaseApplicationComponent
      */
     public function getMenus()
     {
-        return AmNav_MenuRecord::model()->findAll();
+        $menuRecords = AmNav_MenuRecord::model()->findAll();
+        return AmNav_MenuModel::populateModels($menuRecords);
     }
 
     /**

@@ -53,7 +53,7 @@ class AmNav_PageService extends BaseApplicationComponent
      * @param bool            $isNew
      *
      * @throws Exception
-     * @return bool|AmNav_PageRecord
+     * @return bool|AmNav_PageModel
      */
     public function savePage(AmNav_PageModel $page, $isNew = false)
     {
@@ -82,7 +82,7 @@ class AmNav_PageService extends BaseApplicationComponent
         // Save page
         if (! $page->hasErrors()) {
             if ($pageRecord->save()) {
-                return $pageRecord;
+                return AmNav_PageModel::populateModel($pageRecord);
             }
         }
         return false;
