@@ -17,6 +17,13 @@
     background: url(../img/blank.png);
 }
 
+.amnav__builder .icon {
+    margin: 5px 5px 0 0;
+    opacity: 0;
+    -webkit-transition: opacity linear 100ms;
+    -moz-transition: opacity linear 100ms;
+}
+
 .amnav__builder .icon.settings {
     display: inline-block;
 }
