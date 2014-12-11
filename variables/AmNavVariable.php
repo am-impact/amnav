@@ -43,7 +43,7 @@ class AmNavVariable
     }
 
     /**
-     * Get a navigation title using its handle
+     * Get a navigation title using its handle.
      *
      * @param string $handle
      *
@@ -70,6 +70,17 @@ class AmNavVariable
     public function getNavRaw($handle, $params = array())
     {
         return craft()->amNav->getNavRaw($handle, $params);
+    }
+
+    /**
+     * Get an active page ID for a specific navigation's level.
+     *
+     * @param string $handle        Navigation handle.
+     * @param int    $segmentLevel  Segment level.
+     */
+    public function getActivePageIdForLevel($handle, $segmentLevel = 1)
+    {
+        return craft()->amNav->getActivePageIdForLevel($handle, $segmentLevel);
     }
 
     /**

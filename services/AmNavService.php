@@ -12,6 +12,7 @@ class AmNavService extends BaseApplicationComponent
     private $_parseEnvironment = false;
     private $_siteUrl;
     private $_addTrailingSlash = false;
+    private $_activePageIds = array();
 
     /**
      * Get all build menus.
@@ -231,6 +232,7 @@ class AmNavService extends BaseApplicationComponent
         if (! $menu) {
             throw new Exception(Craft::t('No menu exists with the handle “{handle}”.', array('handle' => $handle)));
         }
+        $this->_menu = $menu;
         // We want correct URLs now
         $this->_parseEnvironment = true;
         // Get the params
@@ -239,6 +241,22 @@ class AmNavService extends BaseApplicationComponent
         $this->_parseHtml = false;
         // Return the array structure
         return $this->getPagesByMenuId($menu->id);
+    }
+
+    /**
+     * Get an active page ID for a specific navigation's level.
+     *
+     * @param string $handle        Navigation handle.
+     * @param int    $segmentLevel  Segment level.
+     *
+     * @return int|bool
+     */
+    public function getActivePageIdForLevel($handle, $segmentLevel = 1)
+    {
+        if (isset($this->_activePageIds[$handle][$segmentLevel])) {
+            return $this->_activePageIds[$handle][$segmentLevel];
+        }
+        return false;
     }
 
     /**
@@ -304,17 +322,19 @@ class AmNavService extends BaseApplicationComponent
     /**
      * Check whether the URL is currently active.
      *
-     * @param string $url
+     * @param array $page
      *
      * @return bool
      */
-    private function _isPageActive($url)
+    private function _isPageActive($page)
     {
+        $url = $page['url'];
         $path = craft()->request->getPath();
         $segments = craft()->request->getSegments();
 
         $url = str_replace('{siteUrl}', '', $url);
         if ($url == $path) {
+            $this->_activePageIds[ $this->_menu->handle ][1] = $page['id'];
             return true;
         }
         if (count($segments)) {
@@ -330,6 +350,7 @@ class AmNavService extends BaseApplicationComponent
                 $count ++;
             }
             if ($found) {
+                $this->_activePageIds[ $this->_menu->handle ][$count - 1] = $page['id'];
                 return true;
             }
         }
@@ -405,7 +426,7 @@ class AmNavService extends BaseApplicationComponent
                 // Do additional stuff if we use this function from the front end
                 if ($this->_parseEnvironment) {
                     if ($page['enabled'] || $this->_getParam('overrideStatus', false)) {
-                        $page['active'] = $this->_isPageActive($page['url']);
+                        $page['active'] = $this->_isPageActive($page);
                         $page['url'] = $this->_parseUrl($page['url']);
                     }
                     else {
@@ -475,7 +496,7 @@ class AmNavService extends BaseApplicationComponent
                 if ($children) {
                     $pageClasses[] = $this->_getParam('classChildren', 'has-children');
                 }
-                if ($this->_isPageActive($page['url'])) {
+                if ($this->_isPageActive($page)) {
                     $pageClasses[] = $this->_getParam('classActive', 'active');
                 }
                 if ($level == 1 && $count == 1) {
