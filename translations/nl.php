@@ -1,5 +1,6 @@
 <?php
 return array(
+    'Add' => 'Toevoegen',
     'Can add, edit and delete' => 'Kan toevoegen, wijzigen en verwijderen',
     'Can delete from level' => 'Kan verwijderen vanaf niveau',
     'Can move from level' => 'Kan verplaatsen vanaf niveau',
