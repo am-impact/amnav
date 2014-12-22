@@ -331,10 +331,11 @@ class AmNavService extends BaseApplicationComponent
         $url = $page['url'];
         $path = craft()->request->getPath();
         $segments = craft()->request->getSegments();
+        $segmentCount = count($segments) > 0 ? count($segments) : 1;
 
         $url = str_replace('{siteUrl}', '', $url);
         if ($url == $path) {
-            $this->_activePageIds[ $this->_menu->handle ][1] = $page['id'];
+            $this->_activePageIds[ $this->_menu->handle ][ $segmentCount ] = $page['id'];
             return true;
         }
         if (count($segments)) {
@@ -350,7 +351,7 @@ class AmNavService extends BaseApplicationComponent
                 $count ++;
             }
             if ($found) {
-                $this->_activePageIds[ $this->_menu->handle ][$count - 1] = $page['id'];
+                $this->_activePageIds[ $this->_menu->handle ][$count] = $page['id'];
                 return true;
             }
         }
