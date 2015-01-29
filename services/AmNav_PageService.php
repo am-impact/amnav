@@ -190,7 +190,10 @@ class AmNav_PageService extends BaseApplicationComponent
             // Update page records
             foreach ($pageRecords as $pageRecord) {
                 // Set update data
-                $updateData = array('url' => '{siteUrl}' . str_ireplace('__home__', '', $entry->uri));
+                $updateData = array(
+                    'url' => '{siteUrl}' . str_ireplace('__home__', '', $entry->uri),
+                    'enabled' => $entry->enabled,
+                );
 
                 // Only update the page name if they were the same before the Entry was saved
                 if ($beforeSaveEntry && $beforeSaveEntry->title == $pageRecord->name) {
