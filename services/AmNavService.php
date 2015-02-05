@@ -77,11 +77,12 @@ class AmNavService extends BaseApplicationComponent
     /**
      * Get all pages by its menu ID.
      *
-     * @param int $navId
+     * @param int    $navId
+     * @param string $locale
      *
      * @return array
      */
-    public function getPagesByMenuId($navId)
+    public function getPagesByMenuId($navId, $locale)
     {
         // Set necessary variables
         $this->_siteUrl = craft()->getSiteUrl();
@@ -96,7 +97,7 @@ class AmNavService extends BaseApplicationComponent
             $parentId = $startFromId;
         }
 
-        $pages = craft()->amNav_page->getAllPagesByMenuId($navId);
+        $pages = craft()->amNav_page->getAllPagesByMenuId($navId, $locale);
         if ($this->_parseHtml) {
             return $this->_buildNavHtml($pages, $parentId);
         }
@@ -214,7 +215,7 @@ class AmNavService extends BaseApplicationComponent
         // We want HTML returned
         $this->_parseHtml = true;
         // Return build HTML
-        return $this->getPagesByMenuId($menu->id);
+        return $this->getPagesByMenuId($menu->id, craft()->language);
     }
 
     /**
@@ -240,7 +241,7 @@ class AmNavService extends BaseApplicationComponent
         // We don't want HTML returned
         $this->_parseHtml = false;
         // Return the array structure
-        return $this->getPagesByMenuId($menu->id);
+        return $this->getPagesByMenuId($menu->id, craft()->language);
     }
 
     /**

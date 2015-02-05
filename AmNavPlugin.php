@@ -20,7 +20,7 @@ class AmNavPlugin extends BasePlugin
 
     public function getVersion()
     {
-        return '1.1.9';
+        return '1.2';
     }
 
     public function getDeveloper()
@@ -58,10 +58,21 @@ class AmNavPlugin extends BasePlugin
     public function registerCpRoutes()
     {
         return array(
-            'amnav'                       => array('action' => 'amNav/navIndex'),
-            'amnav/new'                   => array('action' => 'amNav/editMenu'),
-            'amnav/edit/(?P<menuId>\d+)'  => array('action' => 'amNav/editMenu'),
-            'amnav/build/(?P<menuId>\d+)' => array('action' => 'amNav/buildMenu')
+            'amnav' => array(
+                'action' => 'amNav/navIndex'
+            ),
+            'amnav/new' => array(
+                'action' => 'amNav/editMenu'
+            ),
+            'amnav/edit/(?P<menuId>\d+)' => array(
+                'action' => 'amNav/editMenu'
+            ),
+            'amnav/build/(?P<menuId>\d+)' => array(
+                'action' => 'amNav/buildMenu'
+            ),
+            'amnav/build/(?P<menuId>\d+)/(?P<locale>{handle})' => array(
+                'action' => 'amNav/buildMenu'
+            )
         );
     }
 
@@ -70,22 +81,25 @@ class AmNavPlugin extends BasePlugin
      */
     public function init()
     {
-        // Update pages in a navigation if an Entry was saved
-        craft()->on('entries.beforeSaveEntry', function(Event $event) {
-            if (! $event->params['isNewEntry']) {
-                craft()->amNav_page->updatePagesForEntry($event->params['entry'], true);
-            }
-        });
-        // Update pages again, since the URI update is only available after the Entry has been saved
-        craft()->on('entries.saveEntry', function(Event $event) {
-            if (! $event->params['isNewEntry']) {
-                craft()->amNav_page->updatePagesForEntry($event->params['entry']);
-            }
-        });
-        // Delete pages from a navigation if an Entry was deleted
-        craft()->on('entries.deleteEntry', function(Event $event) {
-            craft()->amNav_page->deletePagesForEntry($event->params['entry']);
-        });
+        if (! craft()->isConsole())
+        {
+            // Update pages in a navigation if an Entry was saved
+            craft()->on('entries.beforeSaveEntry', function(Event $event) {
+                if (! $event->params['isNewEntry']) {
+                    craft()->amNav_page->updatePagesForEntry($event->params['entry'], true);
+                }
+            });
+            // Update pages again, since the URI update is only available after the Entry has been saved
+            craft()->on('entries.saveEntry', function(Event $event) {
+                if (! $event->params['isNewEntry']) {
+                    craft()->amNav_page->updatePagesForEntry($event->params['entry']);
+                }
+            });
+            // Delete pages from a navigation if an Entry was deleted
+            craft()->on('entries.deleteEntry', function(Event $event) {
+                craft()->amNav_page->deletePagesForEntry($event->params['entry']);
+            });
+        }
     }
 
     /**

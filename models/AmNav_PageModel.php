@@ -14,7 +14,8 @@ class AmNav_PageModel extends BaseModel
             'url'      => AttributeType::String,
             'blank'    => AttributeType::Bool,
             'enabled'  => AttributeType::Bool,
-            'entryId'  => AttributeType::Number
+            'entryId'  => AttributeType::Number,
+            'locale'   => AttributeType::Locale
         );
     }
 }

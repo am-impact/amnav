@@ -6,6 +6,7 @@ Craft.AmNav = Garnish.Base.extend(
     modal: null,
     structure: null,
 
+    locale: null,
     siteUrl: Craft.getSiteUrl(),
     savingPage: false,
 
@@ -21,8 +22,9 @@ Craft.AmNav = Garnish.Base.extend(
     /**
      * Initiate AmNav.
      */
-    init: function(id, settings) {
+    init: function(id, locale, settings) {
         this.id        = id;
+        this.locale    = locale;
         this.structure = new Craft.AmNavStructure(id, '#amnav__builder', '.amnav__builder', settings);
 
         this.addListener(this.$addEntryButton, 'activate', 'showModal');
@@ -50,8 +52,11 @@ Craft.AmNav = Garnish.Base.extend(
      */
     createModal: function() {
         return Craft.createElementSelectorModal("Entry", {
+            criteria: {
+                locale: this.locale
+            },
             multiSelect: true,
-            onSelect:    $.proxy(this, 'onModalSelect')
+            onSelect: $.proxy(this, 'onModalSelect')
         });
     },
 
@@ -77,6 +82,7 @@ Craft.AmNav = Garnish.Base.extend(
                 url:      entry.url,
                 enabled:  entry.status == 'live',
                 entryId:  entry.id,
+                locale:   this.locale,
                 parentId: parentId === undefined ? 0 : parentId
             };
 
@@ -97,6 +103,7 @@ Craft.AmNav = Garnish.Base.extend(
                 name:     this.$manualForm.find('#name').val(),
                 url:      this.$manualForm.find('#url').val(),
                 blank:    this.$manualForm.find('input[name="blank"]').val() == '1',
+                locale:   this.locale,
                 parentId: parentId === undefined ? 0 : parentId
             };
 

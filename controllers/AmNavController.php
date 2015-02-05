@@ -60,19 +60,29 @@ class AmNavController extends BaseController
             throw new HttpException(404);
         }
 
+        // Get locale
+        if (isset($variables['locale'])) {
+            $locale = $variables['locale'];
+        }
+        else {
+            $locale = craft()->i18n->getPrimarySiteLocaleId();
+            $variables['locale'] = $locale;
+        }
+
         // Get saved pages
-        $variables['pages'] = craft()->amNav->getPagesByMenuId($variables['menuId']);
+        $variables['pages'] = craft()->amNav->getPagesByMenuId($variables['menuId'], $locale);
         $variables['parentOptions'] = craft()->amNav->getParentOptions($variables['pages']);
 
         // Load javascript
         $js = sprintf(
-            'new Craft.AmNav(%d, {
+            'new Craft.AmNav(%d, "%s", {
                 isAdmin: %s,
                 maxLevels: %s,
                 canDeleteFromLevel: %d,
                 canMoveFromLevel: %d
             });',
             $variables['menuId'],
+            $locale,
             craft()->userSession->isAdmin() ? 'true' : 'false',
             $variables['menu']->settings['maxLevels'] ?: 'null',
             $variables['menu']->settings['canDeleteFromLevel'] ?: 0,

@@ -10,6 +10,19 @@
     { label: menu.name, url: url('amnav/build/' ~ menu.id) },
 ] %}
 
+{% if craft.isLocalized() %}
+    {% set buildUrl = url('amnav/build/' ~ menu.id) ~ '/{locale}' %}
+    {% set extraPageHeaderHtml %}
+        <div class="select">
+            <select onchange="document.location.href='{{ buildUrl }}'.replace('{locale}', this.value);">
+                {% for editableLocale in craft.i18n.getEditableLocales() %}
+                    <option value="{{ editableLocale.id }}"{% if editableLocale.id == locale %} selected{% endif %}>{{ editableLocale.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    {% endset %}
+{% endif %}
+
 {% macro addPageToStructure(menu, page) %}
     <li data-level="{{ page.level }}">
         {% set indent = 8 + (page.level - 1) * 35 %}

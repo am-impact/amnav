@@ -18,7 +18,15 @@ class AmNav_PageRecord extends BaseRecord
             'url'      => array(AttributeType::String, 'required' => true),
             'blank'    => array(AttributeType::Bool, 'default' => false),
             'enabled'  => array(AttributeType::Bool, 'default' => true),
-            'entryId'  => array(AttributeType::Number, 'default' => null)
+            'entryId'  => array(AttributeType::Number, 'default' => null),
+            'locale'   => array(AttributeType::Locale, 'default' => null)
+        );
+    }
+
+    public function defineIndexes()
+    {
+        return array(
+            array('columns' => array('entryId', 'locale'), 'unique' => false)
         );
     }
 }

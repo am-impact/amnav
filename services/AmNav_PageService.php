@@ -27,12 +27,13 @@ class AmNav_PageService extends BaseApplicationComponent
     /**
      * Get all pages by a menu ID.
      *
-     * @param int  $menuId
-     * @param bool $reset
+     * @param int    $menuId
+     * @param string $locale
+     * @param bool   $reset
      *
      * @return array
      */
-    public function getAllPagesByMenuId($menuId, $reset = false)
+    public function getAllPagesByMenuId($menuId, $locale, $reset = false)
     {
         if (! $reset && isset($this->_pages[$menuId])) {
             return $this->_pages[$menuId];
@@ -40,7 +41,7 @@ class AmNav_PageService extends BaseApplicationComponent
         $this->_pages[$menuId] = craft()->db->createCommand()
             ->select('*')
             ->from('amnav_pages')
-            ->where(array('navId' => $menuId))
+            ->where(array('navId' => $menuId, 'locale' => $locale))
             ->order(array('parentId asc', 'order asc'))
             ->queryAll();
         return $this->_pages[$menuId];
@@ -50,13 +51,14 @@ class AmNav_PageService extends BaseApplicationComponent
      * Saves a page.
      *
      * @param AmNav_PageModel $page
-     * @param bool            $isNew
      *
      * @throws Exception
      * @return bool|AmNav_PageModel
      */
-    public function savePage(AmNav_PageModel $page, $isNew = false)
+    public function savePage(AmNav_PageModel $page)
     {
+        $isNewPage = !$page->id;
+
         // Page data
         if ($page->id) {
             $pageRecord = AmNav_PageRecord::model()->findById($page->id);
@@ -71,8 +73,8 @@ class AmNav_PageService extends BaseApplicationComponent
 
         // Set attributes
         $pageRecord->setAttributes($page->getAttributes());
-        if ($isNew) {
-            $pageRecord->order = $this->_getNewOrderNumber($page->navId, $page->parentId);
+        if ($isNewPage) {
+            $pageRecord->order = $this->_getNewOrderNumber($page->navId, $page->parentId, $page->locale);
         }
 
         // Validate
@@ -108,7 +110,7 @@ class AmNav_PageService extends BaseApplicationComponent
         $pageRecord->parentId = $parentId;
 
         // Get new order
-        $pages = $this->getAllPagesByMenuId($page->navId);
+        $pages = $this->getAllPagesByMenuId($page->navId, $page->locale);
         $order = 0;
         // Should the moved page be the first?
         if ($prevId === false) {
@@ -137,7 +139,7 @@ class AmNav_PageService extends BaseApplicationComponent
         $result = $pageRecord->save();
 
         // Update the whole order of the structure
-        $this->_updateOrderForMenuId($pageRecord->navId);
+        $this->_updateOrderForMenuId($pageRecord->navId, $pageRecord->locale);
 
         return $result;
     }
@@ -153,7 +155,7 @@ class AmNav_PageService extends BaseApplicationComponent
     {
         $page = $this->getPageById($pageId);
         if ($page) {
-            $pages = $this->getAllPagesByMenuId($page->navId);
+            $pages = $this->getAllPagesByMenuId($page->navId, $page->locale);
 
             // Get children IDs
             $pageIds = $this->_getChildrenIds($pages, $page->id);
@@ -165,7 +167,7 @@ class AmNav_PageService extends BaseApplicationComponent
             $result = craft()->db->createCommand()->delete('amnav_pages', array('in', 'id', $pageIds));
             if ($result) {
                 // Update pages order
-                $this->_updateOrderForMenuId($page->navId);
+                $this->_updateOrderForMenuId($page->navId, $page->locale);
             }
             return $result;
         }
@@ -181,11 +183,12 @@ class AmNav_PageService extends BaseApplicationComponent
     public function updatePagesForEntry(EntryModel $entry, $beforeEntryEvent = false)
     {
         $pageRecords = AmNav_PageRecord::model()->findAllByAttributes(array(
-            'entryId' => $entry->id
+            'entryId' => $entry->id,
+            'locale'  => $entry->locale
         ));
         if (count($pageRecords)) {
             // Get Entry model with data before it's being saved
-            $beforeSaveEntry = $beforeEntryEvent ? craft()->entries->getEntryById($entry->id) : false;
+            $beforeSaveEntry = $beforeEntryEvent ? craft()->entries->getEntryById($entry->id, $entry->locale) : false;
 
             // Update page records
             foreach ($pageRecords as $pageRecord) {
@@ -213,7 +216,8 @@ class AmNav_PageService extends BaseApplicationComponent
     public function deletePagesForEntry(EntryModel $entry)
     {
         $pageRecords = AmNav_PageRecord::model()->findAllByAttributes(array(
-            'entryId' => $entry->id
+            'entryId' => $entry->id,
+            'locale'  => $entry->locale
         ));
         foreach ($pageRecords as $pageRecord) {
             $this->deletePageById($pageRecord->id);
@@ -246,16 +250,18 @@ class AmNav_PageService extends BaseApplicationComponent
     /**
      * Get an order number for a new page.
      *
-     * @param int $navId
-     * @param int $parentId
+     * @param int    $navId
+     * @param int    $parentId
+     * @param string $locale
      *
      * @return int
      */
-    private function _getNewOrderNumber($navId, $parentId)
+    private function _getNewOrderNumber($navId, $parentId, $locale)
     {
         $attributes = array(
             'navId'    => $navId,
-            'parentId' => $parentId
+            'parentId' => $parentId,
+            'locale'   => $locale
         );
         $latestOrderNumber = craft()->db->createCommand()
             ->select('order')
@@ -273,15 +279,16 @@ class AmNav_PageService extends BaseApplicationComponent
     /**
      * Update the order of every page.
      *
-     * @param int  $menuId
-     * @param bool $pages
-     * @param int  $parentId
+     * @param int    $menuId
+     * @param string $locale
+     * @param bool   $pages
+     * @param int    $parentId
      */
-    private function _updateOrderForMenuId($menuId, $pages = false, $parentId = 0)
+    private function _updateOrderForMenuId($menuId, $locale, $pages = false, $parentId = 0)
     {
         // Get pages for first run
         if ($pages === false) {
-            $pages = $this->getAllPagesByMenuId($menuId, true);
+            $pages = $this->getAllPagesByMenuId($menuId, $locale, true);
         }
 
         // Update order
@@ -293,7 +300,7 @@ class AmNav_PageService extends BaseApplicationComponent
                 $order ++;
 
                 // Update order for sub pages
-                $this->_updateOrderForMenuId($menuId, $pages, $page['id']);
+                $this->_updateOrderForMenuId($menuId, $locale, $pages, $page['id']);
             }
         }
     }

@@ -40,17 +40,18 @@ class AmNav_PagesController extends BaseController
                 'name'     => $attributes['name'],
                 'url'      => $attributes['url'],
                 'blank'    => isset($attributes['blank']) ? $attributes['blank'] == 'true' : false,
-                'enabled'  => true
+                'enabled'  => true,
+                'locale'   => $attributes['locale']
             ));
 
             // Save the page!
-            if (($page = craft()->amNav_page->savePage($page, true)) !== false) {
+            if (($page = craft()->amNav_page->savePage($page)) !== false) {
                 $returnData['success']  = true;
                 $returnData['message']  = Craft::t('Page added.');
                 $returnData['pageData'] = $page;
 
                 // Get parent options
-                $pages = craft()->amNav->getPagesByMenuId($page->navId);
+                $pages = craft()->amNav->getPagesByMenuId($page->navId, $attributes['locale']);
                 $variables['selected'] = $page->parentId;
                 $variables['parentOptions'] = craft()->amNav->getParentOptions($pages);
                 $returnData['parentOptions'] = $this->renderTemplate('amNav/_build/parent', $variables, true);
@@ -128,7 +129,7 @@ class AmNav_PagesController extends BaseController
         $result = craft()->amNav_page->movePage($page, $parentId, $prevId);
 
         // Get parent options
-        $pages = craft()->amNav->getPagesByMenuId($page->navId);
+        $pages = craft()->amNav->getPagesByMenuId($page->navId, $page->locale);
         $variables['selected'] = $page->id;
         $variables['parentOptions'] = craft()->amNav->getParentOptions($pages);
         $parentOptions = $this->renderTemplate('amNav/_build/parent', $variables, true);
@@ -159,7 +160,7 @@ class AmNav_PagesController extends BaseController
         $result = craft()->amNav_page->deletePageById($pageId);
 
         // Get parent options
-        $pages = craft()->amNav->getPagesByMenuId($page->navId);
+        $pages = craft()->amNav->getPagesByMenuId($page->navId, $page->locale);
         $variables['selected'] = 0;
         $variables['parentOptions'] = craft()->amNav->getParentOptions($pages);
         $parentOptions = $this->renderTemplate('amNav/_build/parent', $variables, true);
