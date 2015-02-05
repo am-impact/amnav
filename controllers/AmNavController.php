@@ -69,13 +69,18 @@ class AmNavController extends BaseController
             $variables['locale'] = $locale;
         }
 
+        // Get proper siteUrl
+        $siteUrl = craft()->config->getLocalized('siteUrl', $locale);
+
         // Get saved pages
         $variables['pages'] = craft()->amNav->getPagesByMenuId($variables['menuId'], $locale);
         $variables['parentOptions'] = craft()->amNav->getParentOptions($variables['pages']);
 
         // Load javascript
         $js = sprintf(
-            'new Craft.AmNav(%d, "%s", {
+            'new Craft.AmNav(%d, {
+                locale: "%s",
+                siteUrl: "%s",
                 isAdmin: %s,
                 maxLevels: %s,
                 canDeleteFromLevel: %d,
@@ -83,6 +88,7 @@ class AmNavController extends BaseController
             });',
             $variables['menuId'],
             $locale,
+            $siteUrl,
             craft()->userSession->isAdmin() ? 'true' : 'false',
             $variables['menu']->settings['maxLevels'] ?: 'null',
             $variables['menu']->settings['canDeleteFromLevel'] ?: 0,

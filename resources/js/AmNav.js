@@ -7,7 +7,7 @@ Craft.AmNav = Garnish.Base.extend(
     structure: null,
 
     locale: null,
-    siteUrl: Craft.getSiteUrl(),
+    siteUrl: '',
     savingPage: false,
 
     $template: $('#amnav__row').html(),
@@ -22,9 +22,10 @@ Craft.AmNav = Garnish.Base.extend(
     /**
      * Initiate AmNav.
      */
-    init: function(id, locale, settings) {
+    init: function(id, settings) {
         this.id        = id;
-        this.locale    = locale;
+        this.locale    = settings.locale;
+        this.siteUrl   = settings.siteUrl;
         this.structure = new Craft.AmNavStructure(id, '#amnav__builder', '.amnav__builder', settings);
 
         this.addListener(this.$addEntryButton, 'activate', 'showModal');
