@@ -17,7 +17,7 @@
 	    instructions: 'The URL of this page.'|t
 	}) }}
 {% else %}
-    {% set entry = craft.entries.id(page.entryId).first() %}
+    {% set entry = craft.entries.id(page.entryId).locale(page.locale).first() %}
 
     {% if entry %}
         <div class="field">
