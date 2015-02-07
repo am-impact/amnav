@@ -179,8 +179,9 @@ class AmNav_PageService extends BaseApplicationComponent
      *
      * @param EntryModel $entry
      * @param bool       $beforeEntryEvent
+     * @param bool       $skipUpdatingDescendants
      */
-    public function updatePagesForEntry(EntryModel $entry, $beforeEntryEvent = false)
+    public function updatePagesForEntry(EntryModel $entry, $beforeEntryEvent = false, $skipUpdatingDescendants = false)
     {
         $pageRecords = AmNav_PageRecord::model()->findAllByAttributes(array(
             'entryId' => $entry->id,
@@ -190,11 +191,16 @@ class AmNav_PageService extends BaseApplicationComponent
             // Get Entry model with data before it's being saved
             $beforeSaveEntry = $beforeEntryEvent ? craft()->entries->getEntryById($entry->id, $entry->locale) : false;
 
+            if (! $skipUpdatingDescendants) {
+                $updatedDescendants = false;
+            }
+
             // Update page records
             foreach ($pageRecords as $pageRecord) {
                 // Set update data
+                $newUrl = '{siteUrl}' . str_ireplace('__home__', '', $entry->uri);
                 $updateData = array(
-                    'url' => '{siteUrl}' . str_ireplace('__home__', '', $entry->uri),
+                    'url' => $newUrl,
                     'enabled' => $entry->enabled,
                 );
 
@@ -203,7 +209,14 @@ class AmNav_PageService extends BaseApplicationComponent
                     $updateData['name'] = $entry->title;
                 }
 
+                // Save this page!
                 $this->_updatePageById($pageRecord->id, $updateData);
+
+                // Update URLs from possible entry descendant pages
+                if (! $skipUpdatingDescendants && ! $updatedDescendants && $newUrl != $pageRecord->url) {
+                    $updatedDescendants = true;
+                    $this->_updateDescendantsForEntry($entry);
+                }
             }
         }
     }
@@ -221,6 +234,25 @@ class AmNav_PageService extends BaseApplicationComponent
         ));
         foreach ($pageRecords as $pageRecord) {
             $this->deletePageById($pageRecord->id);
+        }
+    }
+
+    /**
+     * Update entry descendants' pages.
+     *
+     * @param EntryModel $entry
+     */
+    private function _updateDescendantsForEntry(EntryModel $entry)
+    {
+        $criteria = craft()->elements->getCriteria(ElementType::Entry);
+        $criteria->descendantOf = $entry;
+        $criteria->locale = $entry->locale;
+        $descendants = $criteria->find();
+
+        if (count($descendants)) {
+            foreach ($descendants as $descendant) {
+                $this->updatePagesForEntry($descendant, false, true);
+            }
         }
     }
 
@@ -299,7 +331,7 @@ class AmNav_PageService extends BaseApplicationComponent
                 $this->_updatePageById($page['id'], array('order' => $order));
                 $order ++;
 
-                // Update order for sub pages
+                // Update order for child pages
                 $this->_updateOrderForMenuId($menuId, $locale, $pages, $page['id']);
             }
         }
