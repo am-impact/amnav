@@ -156,7 +156,7 @@ class AmNavService extends BaseApplicationComponent
             $menuRecord = AmNav_MenuRecord::model()->findById($menu->id);
 
             if (! $menuRecord) {
-                throw new Exception(Craft::t('No menu exists with the ID “{id}”.', array('id' => $menu->id)));
+                throw new Exception(Craft::t('No navigation exists with the ID “{id}”.', array('id' => $menu->id)));
             }
         }
         else {
@@ -205,7 +205,7 @@ class AmNavService extends BaseApplicationComponent
     {
         $menu = $this->getMenuByHandle($handle);
         if (! $menu) {
-            throw new Exception(Craft::t('No menu exists with the handle “{handle}”.', array('handle' => $handle)));
+            throw new Exception(Craft::t('No navigation exists with the handle “{handle}”.', array('handle' => $handle)));
         }
         $this->_menu = $menu;
         // We want correct URLs now
@@ -231,7 +231,7 @@ class AmNavService extends BaseApplicationComponent
     {
         $menu = $this->getMenuByHandle($handle);
         if (! $menu) {
-            throw new Exception(Craft::t('No menu exists with the handle “{handle}”.', array('handle' => $handle)));
+            throw new Exception(Craft::t('No navigation exists with the handle “{handle}”.', array('handle' => $handle)));
         }
         $this->_menu = $menu;
         // We want correct URLs now

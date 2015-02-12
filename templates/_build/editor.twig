@@ -5,7 +5,7 @@
     name: 'name',
     label: "Name"|t,
     value: page.name,
-    instructions: 'Name of this page in the menu.'|t
+    instructions: 'Name of this page in the navigation.'|t
 }) }}
 
 {% if not page.entryId|length %}
@@ -36,7 +36,7 @@
     name:         'enabled',
     label:        'Enabled'|t,
     on:           page.enabled,
-    instructions: 'Display in menu.'|t
+    instructions: 'Display in navigation.'|t
 }) }}
 
 {{ forms.lightswitchField({

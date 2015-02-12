@@ -7,7 +7,8 @@
 
 {% set crumbs = [
     { label: pluginName, url: url('amnav') },
-    { label: menu.name, url: url('amnav/build/' ~ menu.id) },
+    { label: 'Build navigation'|t, url: url('amnav/build/' ~ menu.id) },
+    { label: menu.name, url: '#' }
 ] %}
 
 {% if craft.isLocalized() %}
@@ -69,7 +70,7 @@
         <div class="item" data-position="right" data-colspan="1">
             {% if currentUser.admin %}
                 <div class="pane">
-                    <h1>{{ 'Display menu'|t }}</h1>
+                    <h1>{{ 'Display navigation'|t }}</h1>
                     <p class="light">{{ '{{ craft.amNav.getNav("' ~ menu.handle ~ '") }}' }}</p>
                     <p class="light">{{ '{{ craft.amNav.getNavRaw("' ~ menu.handle ~ '") }}' }}</p>
                     <div class="buttons">
@@ -110,7 +111,7 @@
                             name: 'name',
                             first: true,
                             required: true,
-                            instructions: 'Name of this page in the menu.'|t
+                            instructions: 'Name of this page in the navigation.'|t
                         }) }}
                         {{ forms.textField({
                             label: "URL"|t,

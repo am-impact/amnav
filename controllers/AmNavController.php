@@ -130,7 +130,7 @@ class AmNavController extends BaseController
             $menu = craft()->amNav->getMenuById($menuId);
 
             if (! $menu) {
-                throw new Exception(Craft::t('No menu exists with the ID “{id}”.', array('id' => $menuId)));
+                throw new Exception(Craft::t('No navigation exists with the ID “{id}”.', array('id' => $menuId)));
             }
         }
         else {
@@ -156,11 +156,11 @@ class AmNavController extends BaseController
 
         // Save menu
         if (craft()->amNav->saveMenu($menu)) {
-            craft()->userSession->setNotice(Craft::t('Menu saved.'));
+            craft()->userSession->setNotice(Craft::t('Navigation saved.'));
             $this->redirectToPostedUrl($menu);
         }
         else {
-            craft()->userSession->setError(Craft::t('Couldn’t save menu.'));
+            craft()->userSession->setError(Craft::t('Couldn’t save navigation.'));
 
             // Send the menu back to the template
             craft()->urlManager->setRouteVariables(array(

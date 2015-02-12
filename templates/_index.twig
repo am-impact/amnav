@@ -6,16 +6,16 @@
 {% if currentUser.admin or settings.canDoActions %}
     {% set sidebar %}
         <div class="buttons">
-            <a href="{{ url('amnav/new') }}"><div class="btn submit add icon">{{ 'New menu'|t }}</div></a>
+            <a href="{{ url('amnav/new') }}"><div class="btn submit add icon">{{ 'New navigation'|t }}</div></a>
         </div>
     {% endset %}
 {% endif %}
 
 {% set content %}
-    <h1>{{ 'Created menus'|t }}</h1>
+    <h1>{{ 'Created navigations'|t }}</h1>
 
     <div id="nomenus"{% if menus %} class="hidden"{% endif %}>
-        <p>{{ 'There are no menus yet.'|t }}</p>
+        <p>{{ 'There are no navigations yet.'|t }}</p>
     </div>
 
     {% if menus %}

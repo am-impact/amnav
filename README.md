@@ -4,27 +4,27 @@ _Navigations in Craft, made easy_
 
 ## Functionality
 
-In the plugin's settings you can adjust the plugin's name for your customers and disable adding, editing and deleting menus for non-admins.
+In the plugin's settings you can adjust the plugin's name for your customers and disable adding, editing and deleting navigations for non-admins.
 
 ![Settings](https://raw.githubusercontent.com/am-impact/am-impact.github.io/master/img/readme/amnav/settings.jpg "Settings")
 
-The menus overview.
-If you disabled the **Can add, edit and delete** setting in the plugin's settings, non-admins will only see the created menus and the link to start building their navigation.
+The navigations overview.
+If you disabled the **Can add, edit and delete** setting in the plugin's settings, non-admins will only see the created navigations and the link to start building their navigation.
 
-![Menus](https://raw.githubusercontent.com/am-impact/am-impact.github.io/master/img/readme/amnav/menus.jpg "Menus")
+![Navigations](https://raw.githubusercontent.com/am-impact/am-impact.github.io/master/img/readme/amnav/menus.jpg "Navigations")
 
-When you create or edit a menu, you can set the following settings:
+When you create or edit a navigation, you can set the following settings:
 
 | Setting | Explanation |
 | --------- | ----------- |
-| Max Levels | The maximum number of levels this menu can have. Leave blank if you don’t care. |
+| Max Levels | The maximum number of levels this navigation can have. Leave blank if you don’t care. |
 | Can move from level | Whether non-admins can move pages from a specific level. Leave blank if you don’t care. |
 | Can delete from level | Whether non-admins can delete pages from a specific level. Leave blank if you don’t care. |
 
 ![Edit](https://raw.githubusercontent.com/am-impact/am-impact.github.io/master/img/readme/amnav/edit.jpg "Edit")
 
 Let's start building a navigation!
-Non-admins don't see the **Display menu** section. This is for admins only so they know what to put in the templates.
+Non-admins don't see the **Display navigation** section. This is for admins only so they know what to put in the templates.
 You have the option to add existing entries or..
 
 ![Build](https://raw.githubusercontent.com/am-impact/am-impact.github.io/master/img/readme/amnav/build.jpg "Build")
@@ -33,20 +33,20 @@ You have the option to add existing entries or..
 
 ![Your own URL](https://raw.githubusercontent.com/am-impact/am-impact.github.io/master/img/readme/amnav/own-url.jpg "Your own URL")
 
-When you have saved your pages in the menu, you can edit them later by double clicking on the page, or use the setting button behind the page when you hover over a page.
+When you have saved your pages in the navigation, you can edit them later by double clicking on the page, or use the setting button behind the page when you hover over a page.
 
 ![Edit page](https://raw.githubusercontent.com/am-impact/am-impact.github.io/master/img/readme/amnav/edit-page.jpg "Edit page")
 
 ## Variables
 
-You have two ways to fetch your menu. You can get an array with your added pages, or let a&m nav create the HTML for you.
+You have two ways to fetch your navigation. You can get an array with your added pages, or let a&m nav create the HTML for you.
 
 ```
-{% set nav = craft.amNav.getNavRaw("yourMenuHandle") %}
+{% set nav = craft.amNav.getNavRaw("yourNavigationHandle") %}
 
 or
 
-{{ craft.amNav.getNav("yourMenuHandle") }}
+{{ craft.amNav.getNav("yourNavigationHandle") }}
 ```
 
 ## Build the way you like it
@@ -54,7 +54,7 @@ or
 Now you can add your own HTML if necessary!
 
 ```
-{% set nav = craft.amNav.getNavRaw("yourMenuHandle") %}
+{% set nav = craft.amNav.getNavRaw("yourNavigationHandle") %}
 
 {% macro addPageToNavigation(page) %}
     <li{% if page.active %} class="active"{% endif %}>
@@ -93,13 +93,13 @@ Now you can add your own HTML if necessary!
 ## Let amnav do the trick
 
 ```
-{{ craft.amNav.getNav("yourMenuHandle") }}
+{{ craft.amNav.getNav("yourNavigationHandle") }}
 ```
 
 or with parameters..
 
 ```
-{{ craft.amNav.getNav("yourMenuHandle", {
+{{ craft.amNav.getNav("yourNavigationHandle", {
     id: 'navigation',
     class: 'navigation'
 }) }}

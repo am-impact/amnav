@@ -3,13 +3,24 @@
 {% import "_includes/forms" as forms %}
 
 {% set pluginName = craft.amNav.name %}
-{% set title = 'Edit menu'|t %}
 {% set docsUrl = 'https://github.com/am-impact/amnav' %}
 
-{% set crumbs = [
-    { label: pluginName, url: url('amnav') },
-    { label: menu.name, url: url('amnav/edit/' ~ menu.id) },
-] %}
+{% if menuId is defined %}
+    {% set title = 'Edit navigation'|t %}
+
+    {% set crumbs = [
+        { label: pluginName, url: url('amnav') },
+        { label: title, url: url('amnav/edit/' ~ menu.id) },
+        { label: menu.name, url: '#' }
+    ] %}
+{% else %}
+    {% set title = 'New navigation'|t %}
+
+    {% set crumbs = [
+        { label: pluginName, url: url('amnav') },
+        { label: title, url: '#' }
+    ] %}
+{% endif %}
 
 {% set content %}
     <form id="nav-form" method="post" accept-charset="UTF-8" data-saveshortcut="1" data-saveshortcut-redirect="amnav">
@@ -28,7 +39,7 @@
             first: true,
             autofocus: true,
             required: true,
-            instructions: 'Name of this menu in the CP.'|t
+            instructions: 'Name of this navigation in the CP.'|t
         }) }}
         {{ forms.textField({
             label: "Handle"|t,
@@ -37,7 +48,7 @@
             value: menu.handle,
             errors: menu.getErrors('handle'),
             required: true,
-            instructions: 'Name of this menu in the templates.'|t
+            instructions: 'Name of this navigation in the templates.'|t
         }) }}
         <hr>
         {{ forms.textField({
@@ -46,7 +57,7 @@
             name: 'settings[maxLevels]',
             size: 5,
             value: menu.settings.maxLevels,
-            instructions: 'The maximum number of levels this menu can have. Leave blank if you don’t care.'|t
+            instructions: 'The maximum number of levels this navigation can have. Leave blank if you don’t care.'|t
         }) }}
         <hr>
         {{ forms.textField({
