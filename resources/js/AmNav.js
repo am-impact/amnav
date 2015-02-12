@@ -8,7 +8,7 @@ Craft.AmNav = Garnish.Base.extend(
 
     locale: null,
     siteUrl: '',
-    savingPage: false,
+    savingNode: false,
 
     $template: $('#amnav__row').html(),
     $buildContainer: $('.amnav__builder'),
@@ -17,7 +17,7 @@ Craft.AmNav = Garnish.Base.extend(
     $addEntryLoader: $('.amnav__button').parent().find('.spinner'),
     $manualForm: $('#manual-form'),
     $manualLoader: $('#manual-form').find('.spinner'),
-    $displayIdsButton: $('.amnav__pageids'),
+    $displayIdsButton: $('.amnav__nodeids'),
 
     /**
      * Initiate AmNav.
@@ -30,15 +30,15 @@ Craft.AmNav = Garnish.Base.extend(
 
         this.addListener(this.$addEntryButton, 'activate', 'showModal');
         this.addListener(this.$manualForm, 'submit', 'onManualSubmit');
-        this.addListener(this.$displayIdsButton, 'click', 'showPageIds');
+        this.addListener(this.$displayIdsButton, 'click', 'showNodeIds');
     },
 
     /**
      * Display EntrySelectorModal.
      */
     showModal: function() {
-        // Make sure we can't select entries while a page is being saved
-        if (! this.savingPage) {
+        // Make sure we can't select entries while a node is being saved
+        if (! this.savingNode) {
             if (! this.modal) {
                 this.modal = this.createModal();
             }
@@ -87,17 +87,17 @@ Craft.AmNav = Garnish.Base.extend(
                 parentId: parentId === undefined ? 0 : parentId
             };
 
-            this.saveNewPage(data, false);
+            this.saveNewNode(data, false);
         }
     },
 
     /**
-     * Handle manual page form submission.
+     * Handle manual node form submission.
      *
      * @param object ev
      */
     onManualSubmit: function(ev) {
-        if (! this.savingPage) {
+        if (! this.savingNode) {
             var parentId = this.$parentContainer.find('#parent').val(),
                 data = {
                 navId:    this.id,
@@ -108,31 +108,31 @@ Craft.AmNav = Garnish.Base.extend(
                 parentId: parentId === undefined ? 0 : parentId
             };
 
-            this.saveNewPage(data, true);
+            this.saveNewNode(data, true);
         }
         ev.preventDefault();
     },
 
     /**
-     * Save a new page to the database.
+     * Save a new node to the database.
      *
      * @param array data
-     * @param bool  isManualPage
+     * @param bool  isManualNode
      */
-    saveNewPage: function(data, isManualPage) {
-        // Make sure we can only save one page at a time
-        this.savingPage = true;
-        if (isManualPage) {
+    saveNewNode: function(data, isManualNode) {
+        // Make sure we can only save one node at a time
+        this.savingNode = true;
+        if (isManualNode) {
             this.$manualLoader.removeClass('hidden');
         }
         else {
             this.$addEntryLoader.removeClass('hidden');
         }
 
-        Craft.postActionRequest('amNav/pages/saveNewPage', data, $.proxy(function(response, textStatus) {
+        Craft.postActionRequest('amNav/nodes/saveNewNode', data, $.proxy(function(response, textStatus) {
             if (textStatus == 'success') {
-                this.savingPage = false;
-                if (isManualPage) {
+                this.savingNode = false;
+                if (isManualNode) {
                     this.$manualLoader.addClass('hidden');
                 }
                 else {
@@ -140,14 +140,14 @@ Craft.AmNav = Garnish.Base.extend(
                 }
 
                 if (response.success) {
-                    if (isManualPage) {
+                    if (isManualNode) {
                         // Reset fields
                         this.$manualForm.find('#name').val('');
                         this.$manualForm.find('#url').val('');
                     }
 
-                    // Add page to structure!
-                    this.addPage(response.pageData);
+                    // Add node to structure!
+                    this.addNode(response.nodeData);
 
                     // Display parent options
                     this.$parentContainer.html(response.parentOptions);
@@ -162,27 +162,27 @@ Craft.AmNav = Garnish.Base.extend(
     },
 
     /**
-     * Add a page to the structure.
+     * Add a node to the structure.
      *
-     * @param array pageData
+     * @param array nodeData
      */
-    addPage: function(pageData) {
-        var pageHtml = this.$template
-           .replace(/%%id%%/ig, pageData.id)
-           .replace(/%%status%%/ig, (pageData.enabled ? "live" : "expired"))
-           .replace(/%%label%%/ig, pageData.name)
-           .replace(/%%url%%/ig, pageData.url)
-           .replace(/%%blank%%/ig, (pageData.blank ? "" : "visuallyhidden")),
-           $page = $(pageHtml);
+    addNode: function(nodeData) {
+        var nodeHtml = this.$template
+           .replace(/%%id%%/ig, nodeData.id)
+           .replace(/%%status%%/ig, (nodeData.enabled ? "live" : "expired"))
+           .replace(/%%label%%/ig, nodeData.name)
+           .replace(/%%url%%/ig, nodeData.url)
+           .replace(/%%blank%%/ig, (nodeData.blank ? "" : "visuallyhidden")),
+           $node = $(nodeHtml);
 
         // Add it to the structure
-        this.structure.addElement($page, pageData.parentId);
+        this.structure.addElement($node, nodeData.parentId);
     },
 
     /**
-     * Display page IDs in the structure.
+     * Display node IDs in the structure.
      */
-    showPageIds: function() {
+    showNodeIds: function() {
         $('.amnav__id').toggleClass('visuallyhidden');
     }
 });
@@ -209,15 +209,15 @@ Craft.AmNavStructure = Craft.Structure.extend(
         this.structureDrag = new Craft.AmNavStructureDrag(this, this.settings.maxLevels);
 
         this.$container.find('.settings').on('click', $.proxy(function(ev) {
-            this.showPageEditor($(ev.currentTarget).parent().children('.amnav__page'));
+            this.showNodeEditor($(ev.currentTarget).parent().children('.amnav__node'));
         }, this));
 
         this.$container.find('.delete').on('click', $.proxy(function(ev) {
             this.removeElement($(ev.currentTarget));
         }, this));
 
-        this.addListener($('.amnav__page'), 'dblclick', function(ev) {
-            this.showPageEditor($(ev.currentTarget));
+        this.addListener($('.amnav__node'), 'dblclick', function(ev) {
+            this.showNodeEditor($(ev.currentTarget));
         });
 
         // User rights: move
@@ -239,7 +239,7 @@ Craft.AmNavStructure = Craft.Structure.extend(
         var $appendTo = this.$container;
         // Find the parent ID
         if (parentId > 0) {
-            var $elementContainer = this.$container.find('.amnav__page[data-id="'+parentId+'"]').closest('li'),
+            var $elementContainer = this.$container.find('.amnav__node[data-id="'+parentId+'"]').closest('li'),
                 $parentContainer  = $elementContainer.find('> ul');
             // If the UL container doesn't exist, create it
             if (! $parentContainer.length) {
@@ -249,7 +249,7 @@ Craft.AmNavStructure = Craft.Structure.extend(
             $appendTo = $parentContainer;
         }
 
-        // Add page to the structure
+        // Add node to the structure
         var $li = $('<li data-level="1"/>').appendTo($appendTo),
             $row = $('<div class="row" style="margin-'+Craft.left+': -'+Craft.Structure.baseIndent+'px; padding-'+Craft.left+': '+Craft.Structure.baseIndent+'px;">').appendTo($li);
 
@@ -262,7 +262,7 @@ Craft.AmNavStructure = Craft.Structure.extend(
         this.structureDrag.addItems($li);
 
         $row.find('.settings').on('click', $.proxy(function(ev) {
-            this.showPageEditor($(ev.currentTarget).parent().children('.amnav__page'));
+            this.showNodeEditor($(ev.currentTarget).parent().children('.amnav__node'));
         }, this));
 
         $row.find('.delete').on('click', $.proxy(function(ev) {
@@ -270,13 +270,13 @@ Craft.AmNavStructure = Craft.Structure.extend(
         }, this));
 
         $element.on('dblclick', $.proxy(function(ev) {
-            this.showPageEditor($(ev.currentTarget));
+            this.showNodeEditor($(ev.currentTarget));
         }, this));
 
         $row.css('margin-bottom', -30);
         $row.velocity({ 'margin-bottom': 0 }, 'fast');
 
-        if (this.$container.find('.amnav__page').length) {
+        if (this.$container.find('.amnav__node').length) {
             this.$emptyContainer.addClass('hidden');
         }
     },
@@ -288,9 +288,9 @@ Craft.AmNavStructure = Craft.Structure.extend(
      */
     removeElement: function($element) {
         var $li = $element.closest('li');
-            confirmation = confirm(Craft.t('Are you sure you want to delete “{name}” and its descendants?', { name: $li.find('.amnav__page').data('label') }));
+            confirmation = confirm(Craft.t('Are you sure you want to delete “{name}” and its descendants?', { name: $li.find('.amnav__node').data('label') }));
         if (confirmation) {
-            this.removePage($element.parent().find('.amnav__page'));
+            this.removeNode($element.parent().find('.amnav__node'));
 
             this.structureDrag.removeItems($li);
 
@@ -303,7 +303,7 @@ Craft.AmNavStructure = Craft.Structure.extend(
             {
                 $li.remove();
 
-                if (! this.$container.find('.amnav__page').length) {
+                if (! this.$container.find('.amnav__node').length) {
                     this.$emptyContainer.removeClass('hidden');
                 }
 
@@ -316,15 +316,15 @@ Craft.AmNavStructure = Craft.Structure.extend(
     },
 
     /**
-     * Remove a page from the database.
+     * Remove a node from the database.
      *
      * @param object $element
      */
-    removePage: function($element) {
-        var pageId = $element.data('id'),
-            data = { pageId: pageId };
+    removeNode: function($element) {
+        var nodeId = $element.data('id'),
+            data = { nodeId: nodeId };
 
-        Craft.postActionRequest('amNav/pages/deletePage', data, $.proxy(function(response, textStatus) {
+        Craft.postActionRequest('amNav/nodes/deleteNode', data, $.proxy(function(response, textStatus) {
             if (textStatus == 'success' && response.success) {
                 $('.amnav__parent').html(response.parentOptions);
 
@@ -334,11 +334,11 @@ Craft.AmNavStructure = Craft.Structure.extend(
     },
 
     /**
-     * Edit the data of a page.
+     * Edit the data of a node.
      *
      * @param object $element
      */
-    showPageEditor: function($element) {
+    showNodeEditor: function($element) {
         new Craft.AmNavEditor($element);
     }
 });
@@ -442,12 +442,12 @@ Craft.AmNavStructureDrag = Craft.StructureDrag.extend(
 
                 var data = {
                     navId:    this.structure.navId,
-                    pageId:   $element.data('id'),
+                    nodeId:   $element.data('id'),
                     prevId:   $element.closest('li').prev().children('.row').children('.element').data('id'),
                     parentId: this.$draggee.parent('ul').parent('li').children('.row').children('.element').data('id')
                 };
 
-                Craft.postActionRequest('amNav/pages/movePage', data, function(response, textStatus)
+                Craft.postActionRequest('amNav/nodes/moveNode', data, function(response, textStatus)
                 {
                     if (textStatus == 'success')
                     {
@@ -474,8 +474,8 @@ Craft.AmNavStructureDrag = Craft.StructureDrag.extend(
 
 Craft.AmNavEditor = Garnish.Base.extend(
 {
-    $page: null,
-    pageId: null,
+    $node: null,
+    nodeId: null,
 
     $form: null,
     $fieldsContainer: null,
@@ -485,27 +485,27 @@ Craft.AmNavEditor = Garnish.Base.extend(
 
     hud: null,
 
-    init: function($page) {
-        this.$page = $page;
-        this.pageId = $page.data('id');
+    init: function($node) {
+        this.$node = $node;
+        this.nodeId = $node.data('id');
 
-        this.$page.addClass('loading');
+        this.$node.addClass('loading');
 
         var data = {
-            pageId: this.pageId
+            nodeId: this.nodeId
         };
 
-        Craft.postActionRequest('amNav/pages/getEditorHtml', data, $.proxy(this, 'showHud'));
+        Craft.postActionRequest('amNav/nodes/getEditorHtml', data, $.proxy(this, 'showHud'));
     },
 
     showHud: function(response, textStatus) {
-        this.$page.removeClass('loading');
+        this.$node.removeClass('loading');
 
         if (textStatus == 'success') {
             var $hudContents = $();
 
             this.$form = $('<form/>');
-            $('<input type="hidden" name="pageId" value="'+this.pageId+'">').appendTo(this.$form);
+            $('<input type="hidden" name="nodeId" value="'+this.nodeId+'">').appendTo(this.$form);
             this.$fieldsContainer = $('<div class="fields"/>').appendTo(this.$form);
 
             this.$fieldsContainer.html(response.html)
@@ -521,7 +521,7 @@ Craft.AmNavEditor = Garnish.Base.extend(
 
             $hudContents = $hudContents.add(this.$form);
 
-            this.hud = new Garnish.HUD(this.$page, $hudContents, {
+            this.hud = new Garnish.HUD(this.$node, $hudContents, {
                 bodyClass: 'body elementeditor',
                 closeOtherHUDs: false
             });
@@ -530,23 +530,23 @@ Craft.AmNavEditor = Garnish.Base.extend(
                 delete this.hud;
             }, this));
 
-            this.addListener(this.$form, 'submit', 'savePage');
+            this.addListener(this.$form, 'submit', 'saveNode');
             this.addListener(this.$cancelBtn, 'click', function() {
                 this.hud.hide()
             });
         }
     },
 
-    savePage: function(ev) {
+    saveNode: function(ev) {
         ev.preventDefault();
 
         this.$spinner.removeClass('hidden');
 
         var data    = this.$form.serialize(),
-            $status = this.$page.find('.status'),
-            $blank  = this.$page.find('.amnav__blank');
+            $status = this.$node.find('.status'),
+            $blank  = this.$node.find('.amnav__blank');
 
-        Craft.postActionRequest('amNav/pages/savePage', data, $.proxy(function(response, textStatus) {
+        Craft.postActionRequest('amNav/nodes/saveNode', data, $.proxy(function(response, textStatus) {
             this.$spinner.addClass('hidden');
 
             if (textStatus == 'success') {
@@ -554,10 +554,10 @@ Craft.AmNavEditor = Garnish.Base.extend(
                     Craft.cp.displayNotice(response.message);
 
                     // Update name
-                    this.$page.data('label', response.pageData.name);
-                    this.$page.find('.title').text(response.pageData.name);
+                    this.$node.data('label', response.nodeData.name);
+                    this.$node.find('.title').text(response.nodeData.name);
                     // Update status
-                    if (response.pageData.enabled) {
+                    if (response.nodeData.enabled) {
                         $status.addClass('live');
                         $status.removeClass('expired');
                     } else {
@@ -565,7 +565,7 @@ Craft.AmNavEditor = Garnish.Base.extend(
                         $status.removeClass('live');
                     }
                     // Update new window icon
-                    if (response.pageData.blank) {
+                    if (response.nodeData.blank) {
                         $blank.removeClass('visuallyhidden');
                     } else {
                         $blank.addClass('visuallyhidden');

@@ -18,8 +18,8 @@ When you create or edit a navigation, you can set the following settings:
 | Setting | Explanation |
 | --------- | ----------- |
 | Max Levels | The maximum number of levels this navigation can have. Leave blank if you don’t care. |
-| Can move from level | Whether non-admins can move pages from a specific level. Leave blank if you don’t care. |
-| Can delete from level | Whether non-admins can delete pages from a specific level. Leave blank if you don’t care. |
+| Can move from level | Whether non-admins can move nodes from a specific level. Leave blank if you don’t care. |
+| Can delete from level | Whether non-admins can delete nodes from a specific level. Leave blank if you don’t care. |
 
 ![Edit](https://raw.githubusercontent.com/am-impact/am-impact.github.io/master/img/readme/amnav/edit.jpg "Edit")
 
@@ -33,13 +33,13 @@ You have the option to add existing entries or..
 
 ![Your own URL](https://raw.githubusercontent.com/am-impact/am-impact.github.io/master/img/readme/amnav/own-url.jpg "Your own URL")
 
-When you have saved your pages in the navigation, you can edit them later by double clicking on the page, or use the setting button behind the page when you hover over a page.
+When you have saved your nodes in the navigation, you can edit them later by double clicking on the node, or use the setting button behind the node when you hover over a node.
 
-![Edit page](https://raw.githubusercontent.com/am-impact/am-impact.github.io/master/img/readme/amnav/edit-page.jpg "Edit page")
+![Edit node](https://raw.githubusercontent.com/am-impact/am-impact.github.io/master/img/readme/amnav/edit-page.jpg "Edit node")
 
 ## Variables
 
-You have two ways to fetch your navigation. You can get an array with your added pages, or let a&m nav create the HTML for you.
+You have two ways to fetch your navigation. You can get an array with your added nodes, or let a&m nav create the HTML for you.
 
 ```
 {% set nav = craft.amNav.getNavRaw("yourNavigationHandle") %}
@@ -56,16 +56,16 @@ Now you can add your own HTML if necessary!
 ```
 {% set nav = craft.amNav.getNavRaw("yourNavigationHandle") %}
 
-{% macro addPageToNavigation(page) %}
-    <li{% if page.active %} class="active"{% endif %}>
-        <a href="{{ page.url }}" title="{{ page.name }}">{{ page.name }}</a>
-        {% if page.children is defined %}
+{% macro addNodeToNavigation(node) %}
+    <li{% if node.active %} class="active"{% endif %}>
+        <a href="{{ node.url }}" title="{{ node.name }}">{{ node.name }}</a>
+        {% if node.children is defined %}
             <span class="navmain__more"></span>
-            <div class="level{{ page.level }}">
+            <div class="level{{ node.level }}">
                 <span class="navmain__back">&lsaquo; Back</span>
                 <ul>
-                    {% for subpage in page.children %}
-                        {{ _self.addPageToNavigation(subpage) }}
+                    {% for subnode in node.children %}
+                        {{ _self.addNodeToNavigation(subnode) }}
                     {% endfor %}
                 </ul>
             </div>
@@ -75,8 +75,8 @@ Now you can add your own HTML if necessary!
 
 <nav class="navmain">
     <ul class="level0">
-        {% for page in nav %}
-            {{ _self.addPageToNavigation(page) }}
+        {% for node in nav %}
+            {{ _self.addNodeToNavigation(node) }}
         {% endfor %}
     </ul>
 </nav>
@@ -87,8 +87,8 @@ Now you can add your own HTML if necessary!
 | Parameter | Explanation |
 | --------- | ----------- |
 | maxLevel | Build the navigation till a certain level. |
-| overrideStatus | Includes every page whatever the status. |
-| startFromId | Begin the navigation at a specific page ID. |
+| overrideStatus | Includes every node whatever the status. |
+| startFromId | Begin the navigation at a specific node ID. |
 
 ## Let amnav do the trick
 
@@ -111,15 +111,15 @@ or with parameters..
 | --------- | ----------- |
 | id | ID for the navigation UL. |
 | class | Class name for the navigation UL. |
-| classActive | Class name for the active pages. |
+| classActive | Class name for the active nodes. |
 | classBlank | Class name for hyperlinks that have a _blank target. |
 | classLevel2 | Class name for the children UL. You can add a classLevel for every level you need (e.g.: classLevel2, classLevel3). |
-| classChildren | Class name for a page that has children. |
-| classFirst | Class name for the first page in the navigation. |
+| classChildren | Class name for a node that has children. |
+| classFirst | Class name for the first node in the navigation. |
 | excludeUl | Exclude the main UL wrapper. |
 | maxLevel | Build the navigation till a certain level. |
-| overrideStatus | Includes every page whatever the status. |
-| startFromId | Begin the navigation at a specific page ID. |
+| overrideStatus | Includes every node whatever the status. |
+| startFromId | Begin the navigation at a specific node ID. |
 
 ## Breadcrumbs
 

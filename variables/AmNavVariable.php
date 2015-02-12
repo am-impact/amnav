@@ -24,16 +24,16 @@ class AmNavVariable
      * Params possibilities:
      * - id                 ID for the navigation UL.
      * - class              Class name for the navigation UL.
-     * - classActive        Class name for the active pages.
+     * - classActive        Class name for the active nodes.
      * - classBlank         Class name for hyperlinks that have a _blank target.
      * - classLevel2        Class name for the children UL. You can add a classLevel for every level you need (e.g.: classLevel2, classLevel3).
-     * - classChildren      Class name for a page that has children.
-     * - classFirst         Class name for the first page in the navigation.
+     * - classChildren      Class name for a node that has children.
+     * - classFirst         Class name for the first node in the navigation.
      *
      * - excludeUl          Exclude the main UL wrapper.
      * - maxLevel           Build the navigation till a certain level.
-     * - overrideStatus     Includes every page whatever the status.
-     * - startFromId        Begin the navigation at a specific page ID.
+     * - overrideStatus     Includes every node whatever the status.
+     * - startFromId        Begin the navigation at a specific node ID.
      *
      * @return string
      */
@@ -62,8 +62,8 @@ class AmNavVariable
      *
      * Params possibilities:
      * - maxLevel           Build the navigation till a certain level.
-     * - overrideStatus     Includes every page whatever the status.
-     * - startFromId        Begin the navigation at a specific page ID.
+     * - overrideStatus     Includes every node whatever the status.
+     * - startFromId        Begin the navigation at a specific node ID.
      *
      * @return array
      */
@@ -73,14 +73,27 @@ class AmNavVariable
     }
 
     /**
-     * Get an active page ID for a specific navigation's level.
+     * Get an active node ID for a specific navigation's level.
+     *
+     * @param string $handle        Navigation handle.
+     * @param int    $segmentLevel  Segment level.
+     *
+     * @deprecated Use getActiveNodeIdForLevel instead.
+     */
+    public function getActivePageIdForLevel($handle, $segmentLevel = 1)
+    {
+        return $this->getActiveNodeIdForLevel($handle, $segmentLevel);
+    }
+
+    /**
+     * Get an active node ID for a specific navigation's level.
      *
      * @param string $handle        Navigation handle.
      * @param int    $segmentLevel  Segment level.
      */
-    public function getActivePageIdForLevel($handle, $segmentLevel = 1)
+    public function getActiveNodeIdForLevel($handle, $segmentLevel = 1)
     {
-        return craft()->amNav->getActivePageIdForLevel($handle, $segmentLevel);
+        return craft()->amNav->getActiveNodeIdForLevel($handle, $segmentLevel);
     }
 
     /**

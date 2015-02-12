@@ -1,11 +1,11 @@
 <?php
 namespace Craft;
 
-class AmNav_PageRecord extends BaseRecord
+class AmNav_NodeRecord extends BaseRecord
 {
     public function getTableName()
     {
-        return 'amnav_pages';
+        return 'amnav_nodes';
     }
 
     protected function defineAttributes()

@@ -72,9 +72,9 @@ class AmNavController extends BaseController
         // Get proper siteUrl
         $siteUrl = craft()->config->getLocalized('siteUrl', $locale);
 
-        // Get saved pages
-        $variables['pages'] = craft()->amNav->getPagesByNavigationId($variables['navId'], $locale);
-        $variables['parentOptions'] = craft()->amNav->getParentOptions($variables['pages']);
+        // Get saved nodes
+        $variables['nodes'] = craft()->amNav->getNodesByNavigationId($variables['navId'], $locale);
+        $variables['parentOptions'] = craft()->amNav->getParentOptions($variables['nodes']);
 
         // Load javascript
         $js = sprintf(

@@ -2,20 +2,20 @@
 namespace Craft;
 
 /**
- * Pages controller
+ * Nodes controller
  */
-class AmNav_PagesController extends BaseController
+class AmNav_NodesController extends BaseController
 {
     /**
-     * Saves a new page.
+     * Saves a new node.
      */
-    public function actionSaveNewPage()
+    public function actionSaveNewNode()
     {
         $this->requirePostRequest();
         $this->requireAjaxRequest();
 
-        // New PageModel
-        $page = new AmNav_PageModel();
+        // New NodeModel
+        $node = new AmNav_NodeModel();
         $returnData  = array(
             'success' => false,
             'message' => Craft::t('Not all required fields are filled out.')
@@ -31,10 +31,10 @@ class AmNav_PagesController extends BaseController
 
             // Is there an entry ID available?
             if (isset($attributes['entryId'])) {
-                $page->setAttribute('entryId', $attributes['entryId']);
+                $node->setAttribute('entryId', $attributes['entryId']);
             }
 
-            $page->setAttributes(array(
+            $node->setAttributes(array(
                 'navId'    => $attributes['navId'],
                 'parentId' => (int)$attributes['parentId'],
                 'name'     => $attributes['name'],
@@ -44,16 +44,16 @@ class AmNav_PagesController extends BaseController
                 'locale'   => $attributes['locale']
             ));
 
-            // Save the page!
-            if (($page = craft()->amNav_page->savePage($page)) !== false) {
+            // Save the node!
+            if (($node = craft()->amNav_node->saveNode($node)) !== false) {
                 $returnData['success']  = true;
-                $returnData['message']  = Craft::t('Page added.');
-                $returnData['pageData'] = $page;
+                $returnData['message']  = Craft::t('Node added.');
+                $returnData['nodeData'] = $node;
 
                 // Get parent options
-                $pages = craft()->amNav->getPagesByNavigationId($page->navId, $attributes['locale']);
-                $variables['selected'] = $page->parentId;
-                $variables['parentOptions'] = craft()->amNav->getParentOptions($pages);
+                $nodes = craft()->amNav->getNodesByNavigationId($node->navId, $attributes['locale']);
+                $variables['selected'] = $node->parentId;
+                $variables['parentOptions'] = craft()->amNav->getParentOptions($nodes);
                 $returnData['parentOptions'] = $this->renderTemplate('amNav/_build/parent', $variables, true);
             }
         }
@@ -63,24 +63,24 @@ class AmNav_PagesController extends BaseController
     }
 
     /**
-     * Saves a page.
+     * Saves a node.
      */
-    public function actionSavePage()
+    public function actionSaveNode()
     {
         $this->requirePostRequest();
         $this->requireAjaxRequest();
 
-        $pageId = craft()->request->getRequiredPost('pageId');
+        $nodeId = craft()->request->getRequiredPost('nodeId');
 
-        // Get page
-        $page = craft()->amNav_page->getPageById($pageId);
-        if (! $page) {
+        // Get node
+        $node = craft()->amNav_node->getNodeById($nodeId);
+        if (! $node) {
             throw new HttpException(404);
         }
 
         // Set attributes
         $attributes = craft()->request->getPost();
-        $page->setAttributes(array(
+        $node->setAttributes(array(
             'name'     => $attributes['name'],
             'blank'    => $attributes['blank'],
             'enabled'  => $attributes['enabled']
@@ -92,32 +92,32 @@ class AmNav_PagesController extends BaseController
                 $attributes['url'] = 'http://' . $attributes['url'];
             }
             $attributes['url'] = str_ireplace('__home__', '', $attributes['url']);
-            $page->setAttribute('url', $attributes['url']);
+            $node->setAttribute('url', $attributes['url']);
         }
 
-        // Save the page!
+        // Save the node!
         $returnData = array('success' => false);
-        if (($page = craft()->amNav_page->savePage($page)) !== false) {
+        if (($node = craft()->amNav_node->saveNode($node)) !== false) {
             $returnData['success']  = true;
-            $returnData['message']  = Craft::t('Page saved.');
-            $returnData['pageData'] = $page;
+            $returnData['message']  = Craft::t('Node saved.');
+            $returnData['nodeData'] = $node;
         }
         $this->returnJson($returnData);
     }
 
     /**
-     * Moves a page.
+     * Moves a node.
      */
-    public function actionMovePage()
+    public function actionMoveNode()
     {
         $this->requirePostRequest();
         $this->requireAjaxRequest();
 
-        $pageId = craft()->request->getRequiredPost('pageId');
+        $nodeId = craft()->request->getRequiredPost('nodeId');
 
-        // Get page
-        $page = craft()->amNav_page->getPageById($pageId);
-        if (! $page) {
+        // Get node
+        $node = craft()->amNav_node->getNodeById($nodeId);
+        if (! $node) {
             throw new HttpException(404);
         }
 
@@ -125,13 +125,13 @@ class AmNav_PagesController extends BaseController
         $prevId   = craft()->request->getPost('prevId', false);
         $parentId = craft()->request->getPost('parentId', 0);
 
-        // Move page!
-        $result = craft()->amNav_page->movePage($page, $parentId, $prevId);
+        // Move node!
+        $result = craft()->amNav_node->moveNode($node, $parentId, $prevId);
 
         // Get parent options
-        $pages = craft()->amNav->getPagesByNavigationId($page->navId, $page->locale);
-        $variables['selected'] = $page->id;
-        $variables['parentOptions'] = craft()->amNav->getParentOptions($pages);
+        $nodes = craft()->amNav->getNodesByNavigationId($node->navId, $node->locale);
+        $variables['selected'] = $node->id;
+        $variables['parentOptions'] = craft()->amNav->getParentOptions($nodes);
         $parentOptions = $this->renderTemplate('amNav/_build/parent', $variables, true);
 
         $returnData = array(
@@ -142,50 +142,50 @@ class AmNav_PagesController extends BaseController
     }
 
     /**
-     * Deletes a page.
+     * Deletes a node.
      */
-    public function actionDeletePage()
+    public function actionDeleteNode()
     {
         $this->requirePostRequest();
         $this->requireAjaxRequest();
 
-        $pageId = craft()->request->getRequiredPost('pageId');
+        $nodeId = craft()->request->getRequiredPost('nodeId');
 
-        // Get page
-        $page = craft()->amNav_page->getPageById($pageId);
-        if (! $page) {
+        // Get node
+        $node = craft()->amNav_node->getNodeById($nodeId);
+        if (! $node) {
             throw new HttpException(404);
         }
 
-        $result = craft()->amNav_page->deletePageById($pageId);
+        $result = craft()->amNav_node->deleteNodeById($nodeId);
 
         // Get parent options
-        $pages = craft()->amNav->getPagesByNavigationId($page->navId, $page->locale);
+        $nodes = craft()->amNav->getNodesByNavigationId($node->navId, $node->locale);
         $variables['selected'] = 0;
-        $variables['parentOptions'] = craft()->amNav->getParentOptions($pages);
+        $variables['parentOptions'] = craft()->amNav->getParentOptions($nodes);
         $parentOptions = $this->renderTemplate('amNav/_build/parent', $variables, true);
 
         $returnData = array(
             'success'       => $result,
-            'message'       => Craft::t('Page deleted.'),
+            'message'       => Craft::t('Node deleted.'),
             'parentOptions' => $parentOptions
         );
         $this->returnJson($returnData);
     }
 
     /**
-     * Get HTML to edit a page.
+     * Get HTML to edit a node.
      */
     public function actionGetEditorHtml()
     {
         $this->requirePostRequest();
         $this->requireAjaxRequest();
 
-        $pageId = craft()->request->getRequiredPost('pageId');
+        $nodeId = craft()->request->getRequiredPost('nodeId');
 
-        // Get page
-        $variables['page'] = craft()->amNav_page->getPageById($pageId);
-        if (! $variables['page']) {
+        // Get node
+        $variables['node'] = craft()->amNav_node->getNodeById($nodeId);
+        if (! $variables['node']) {
             throw new HttpException(404);
         }
 

@@ -12,7 +12,7 @@ class AmNavService extends BaseApplicationComponent
     private $_parseEnvironment = false;
     private $_siteUrl;
     private $_addTrailingSlash = false;
-    private $_activePageIds = array();
+    private $_activeNodeIds = array();
 
     /**
      * Get all build navigations.
@@ -75,14 +75,14 @@ class AmNavService extends BaseApplicationComponent
     }
 
     /**
-     * Get all pages by its navigation ID.
+     * Get all nodes by its navigation ID.
      *
      * @param int    $navId
      * @param string $locale
      *
      * @return array
      */
-    public function getPagesByNavigationId($navId, $locale)
+    public function getNodesByNavigationId($navId, $locale)
     {
         // Set necessary variables
         $this->_siteUrl = craft()->getSiteUrl();
@@ -91,28 +91,28 @@ class AmNavService extends BaseApplicationComponent
         // Start at the root by default
         $parentId = 0;
 
-        // Do we have to start from a specific page ID?
+        // Do we have to start from a specific node ID?
         $startFromId = $this->_getParam('startFromId' , false);
         if ($startFromId !== false) {
             $parentId = $startFromId;
         }
 
-        $pages = craft()->amNav_page->getAllPagesByNavigationId($navId, $locale);
+        $nodes = craft()->amNav_node->getAllNodesByNavigationId($navId, $locale);
         if ($this->_parseHtml) {
-            return $this->_buildNavHtml($pages, $parentId);
+            return $this->_buildNavHtml($nodes, $parentId);
         }
-        return $this->_buildNav($pages, $parentId);
+        return $this->_buildNav($nodes, $parentId);
     }
 
     /**
-     * Get parent options for given pages.
+     * Get parent options for given nodes.
      *
-     * @param array $pages
+     * @param array $nodes
      * @param bool  $skipFirst
      *
      * @return array
      */
-    public function getParentOptions($pages, $skipFirst = false)
+    public function getParentOptions($nodes, $skipFirst = false)
     {
         $parentOptions = array();
         if (! $skipFirst) {
@@ -121,20 +121,20 @@ class AmNavService extends BaseApplicationComponent
                 'value' => 0
             );
         }
-        foreach ($pages as $page) {
+        foreach ($nodes as $node) {
             $label = '';
-            for ($i = 1; $i < $page['level']; $i++) {
+            for ($i = 1; $i < $node['level']; $i++) {
                 $label .= '    ';
             }
-            $label .= $page['name'];
+            $label .= $node['name'];
 
             $parentOptions[] = array(
                 'label' => $label,
-                'value' => $page['id']
+                'value' => $node['id']
             );
-            if (isset($page['children'])) {
-                foreach($this->getParentOptions($page['children'], true) as $childPage) {
-                    $parentOptions[] = $childPage;
+            if (isset($node['children'])) {
+                foreach($this->getParentOptions($node['children'], true) as $childNode) {
+                    $parentOptions[] = $childNode;
                 }
             }
         }
@@ -188,7 +188,7 @@ class AmNavService extends BaseApplicationComponent
      */
     public function deleteNavigationById($navId)
     {
-        craft()->db->createCommand()->delete('amnav_pages', array('navId' => $navId));
+        craft()->db->createCommand()->delete('amnav_nodes', array('navId' => $navId));
         return craft()->db->createCommand()->delete('amnav_navs', array('id' => $navId));
     }
 
@@ -215,7 +215,7 @@ class AmNavService extends BaseApplicationComponent
         // We want HTML returned
         $this->_parseHtml = true;
         // Return build HTML
-        return $this->getPagesByNavigationId($navigation->id, craft()->language);
+        return $this->getNodesByNavigationId($navigation->id, craft()->language);
     }
 
     /**
@@ -241,21 +241,21 @@ class AmNavService extends BaseApplicationComponent
         // We don't want HTML returned
         $this->_parseHtml = false;
         // Return the array structure
-        return $this->getPagesByNavigationId($navigation->id, craft()->language);
+        return $this->getNodesByNavigationId($navigation->id, craft()->language);
     }
 
     /**
-     * Get an active page ID for a specific navigation's level.
+     * Get an active node ID for a specific navigation's level.
      *
      * @param string $handle        Navigation handle.
      * @param int    $segmentLevel  Segment level.
      *
      * @return int|bool
      */
-    public function getActivePageIdForLevel($handle, $segmentLevel = 1)
+    public function getActiveNodeIdForLevel($handle, $segmentLevel = 1)
     {
-        if (isset($this->_activePageIds[$handle][$segmentLevel])) {
-            return $this->_activePageIds[$handle][$segmentLevel];
+        if (isset($this->_activeNodeIds[$handle][$segmentLevel])) {
+            return $this->_activeNodeIds[$handle][$segmentLevel];
         }
         return false;
     }
@@ -323,20 +323,20 @@ class AmNavService extends BaseApplicationComponent
     /**
      * Check whether the URL is currently active.
      *
-     * @param array $page
+     * @param array $node
      *
      * @return bool
      */
-    private function _isPageActive($page)
+    private function _isNodeActive($node)
     {
-        $url = $page['url'];
+        $url = $node['url'];
         $path = craft()->request->getPath();
         $segments = craft()->request->getSegments();
         $segmentCount = count($segments) > 0 ? count($segments) : 1;
 
         $url = str_replace('{siteUrl}', '', $url);
         if ($url == $path) {
-            $this->_activePageIds[ $this->_navigation->handle ][ $segmentCount ] = $page['id'];
+            $this->_activeNodeIds[ $this->_navigation->handle ][ $segmentCount ] = $node['id'];
             return true;
         }
         if (count($segments)) {
@@ -352,7 +352,7 @@ class AmNavService extends BaseApplicationComponent
                 $count ++;
             }
             if ($found) {
-                $this->_activePageIds[ $this->_navigation->handle ][$count] = $page['id'];
+                $this->_activeNodeIds[ $this->_navigation->handle ][$count] = $node['id'];
                 return true;
             }
         }
@@ -406,13 +406,13 @@ class AmNavService extends BaseApplicationComponent
     /**
      * Create the navigation based on parent IDs and order.
      *
-     * @param array $pages
+     * @param array $nodes
      * @param int   $parentId
      * @param int   $level
      *
      * @return array
      */
-    private function _buildNav($pages, $parentId = 0, $level = 1)
+    private function _buildNav($nodes, $parentId = 0, $level = 1)
     {
         // Do we have a maximum level?
         if ($this->_parseEnvironment) {
@@ -423,26 +423,26 @@ class AmNavService extends BaseApplicationComponent
         }
 
         $nav = array();
-        foreach ($pages as $page) {
-            if ($page['parentId'] == $parentId) {
+        foreach ($nodes as $node) {
+            if ($node['parentId'] == $parentId) {
                 // Do additional stuff if we use this function from the front end
                 if ($this->_parseEnvironment) {
-                    if ($page['enabled'] || $this->_getParam('overrideStatus', false)) {
-                        $page['active'] = $this->_isPageActive($page);
-                        $page['url'] = $this->_parseUrl($page['url']);
+                    if ($node['enabled'] || $this->_getParam('overrideStatus', false)) {
+                        $node['active'] = $this->_isNodeActive($node);
+                        $node['url'] = $this->_parseUrl($node['url']);
                     }
                     else {
-                        // Skip this page
+                        // Skip this node
                         continue;
                     }
                 }
 
-                $page['level'] = $level;
-                $children = $this->_buildNav($pages, $page['id'], $level + 1);
+                $node['level'] = $level;
+                $children = $this->_buildNav($nodes, $node['id'], $level + 1);
                 if ($children) {
-                    $page['children'] = $children;
+                    $node['children'] = $children;
                 }
-                $nav[] = $page;
+                $nav[] = $node;
             }
         }
         return $nav;
@@ -451,13 +451,13 @@ class AmNavService extends BaseApplicationComponent
     /**
      * Create the navigation HTML based on parent IDs and order.
      *
-     * @param array $pages
+     * @param array $nodes
      * @param int   $parentId
      * @param int   $level
      *
      * @return string
      */
-    private function _buildNavHtml($pages, $parentId = 0, $level = 1)
+    private function _buildNavHtml($nodes, $parentId = 0, $level = 1)
     {
         // Do we have a maximum level?
         $maxLevel = $this->_getParam('maxLevel' , false);
@@ -465,8 +465,8 @@ class AmNavService extends BaseApplicationComponent
             return false;
         }
 
-        // If we don't find any pages at the end, don't return an empty UL
-        $foundPages = false;
+        // If we don't find any nodes at the end, don't return an empty UL
+        $foundNodes = false;
 
         // Create UL
         $nav = '';
@@ -483,34 +483,34 @@ class AmNavService extends BaseApplicationComponent
             );
         }
 
-        // Add the pages to the navigation, but only if they are enabled
+        // Add the nodes to the navigation, but only if they are enabled
         $count = 0;
-        foreach ($pages as $page) {
-            if ($page['parentId'] == $parentId && ($page['enabled'] || $this->_getParam('overrideStatus', false))) {
+        foreach ($nodes as $node) {
+            if ($node['parentId'] == $parentId && ($node['enabled'] || $this->_getParam('overrideStatus', false))) {
                 $count ++;
-                $foundPages = true;
+                $foundNodes = true;
 
                 // Get children
-                $children = $this->_buildNavHtml($pages, $page['id'], $level + 1);
+                $children = $this->_buildNavHtml($nodes, $node['id'], $level + 1);
 
-                // Set page classes
-                $pageClasses = array();
+                // Set node classes
+                $nodeClasses = array();
                 if ($children) {
-                    $pageClasses[] = $this->_getParam('classChildren', 'has-children');
+                    $nodeClasses[] = $this->_getParam('classChildren', 'has-children');
                 }
-                if ($this->_isPageActive($page)) {
-                    $pageClasses[] = $this->_getParam('classActive', 'active');
+                if ($this->_isNodeActive($node)) {
+                    $nodeClasses[] = $this->_getParam('classActive', 'active');
                 }
                 if ($level == 1 && $count == 1) {
-                    $pageClasses[] = $this->_getParam('classFirst', 'first');
+                    $nodeClasses[] = $this->_getParam('classFirst', 'first');
                 }
 
-                // Add curent page
+                // Add curent node
                 $nav .= sprintf("\n" . '<li%1$s><a%5$s href="%2$s"%3$s>%4$s</a>',
-                    count($pageClasses) ? ' class="' . implode(' ', $pageClasses) . '"' : '',
-                    $this->_parseUrl($page['url']),
-                    $page['blank'] ? ' target="_blank"' : '',
-                    $page['name'],
+                    count($nodeClasses) ? ' class="' . implode(' ', $nodeClasses) . '"' : '',
+                    $this->_parseUrl($node['url']),
+                    $node['blank'] ? ' target="_blank"' : '',
+                    $node['name'],
                     $this->_getParam('classBlank', false) !== false ? ' class="' . $this->_getParam('classBlank', false) . '"' : ''
                 );
 
@@ -529,7 +529,7 @@ class AmNavService extends BaseApplicationComponent
         else {
             $nav .= "\n</ul>";
         }
-        if ($foundPages) {
+        if ($foundNodes) {
             return TemplateHelper::getRaw($nav);
         }
         else {

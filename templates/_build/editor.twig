@@ -4,20 +4,20 @@
     id: 'name',
     name: 'name',
     label: "Name"|t,
-    value: page.name,
-    instructions: 'Name of this page in the navigation.'|t
+    value: node.name,
+    instructions: 'Name of this node in the navigation.'|t
 }) }}
 
-{% if not page.entryId|length %}
+{% if not node.entryId|length %}
 	{{ forms.textField({
 	    id: 'url',
 	    name: 'url',
 	    label: "URL"|t,
-	    value: page.url,
-	    instructions: 'The URL of this page.'|t
+	    value: node.url,
+	    instructions: 'The URL of this node.'|t
 	}) }}
 {% else %}
-    {% set entry = craft.entries.id(page.entryId).locale(page.locale).first() %}
+    {% set entry = craft.entries.id(node.entryId).locale(node.locale).first() %}
 
     {% if entry %}
         <div class="field">
@@ -35,7 +35,7 @@
     id:           'enabled',
     name:         'enabled',
     label:        'Enabled'|t,
-    on:           page.enabled,
+    on:           node.enabled,
     instructions: 'Display in navigation.'|t
 }) }}
 
@@ -43,6 +43,6 @@
     id:           'blank',
     name:         'blank',
     label:        'New window'|t,
-    on:           page.blank,
-    instructions: 'Whether to open this page in a new window.'|t
+    on:           node.blank,
+    instructions: 'Whether to open this node in a new window.'|t
 }) }}

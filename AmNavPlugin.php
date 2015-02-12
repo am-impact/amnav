@@ -20,7 +20,7 @@ class AmNavPlugin extends BasePlugin
 
     public function getVersion()
     {
-        return '1.2.1';
+        return '1.2.2';
     }
 
     public function getDeveloper()
@@ -83,21 +83,21 @@ class AmNavPlugin extends BasePlugin
     {
         if (! craft()->isConsole())
         {
-            // Update pages in a navigation if an Entry was saved
+            // Update nodes in a navigation if an Entry was saved
             craft()->on('entries.beforeSaveEntry', function(Event $event) {
                 if (! $event->params['isNewEntry']) {
-                    craft()->amNav_page->updatePagesForEntry($event->params['entry'], true);
+                    craft()->amNav_node->updateNodesForEntry($event->params['entry'], true);
                 }
             });
-            // Update pages again, since the URI update is only available after the Entry has been saved
+            // Update nodes again, since the URI update is only available after the Entry has been saved
             craft()->on('entries.saveEntry', function(Event $event) {
                 if (! $event->params['isNewEntry']) {
-                    craft()->amNav_page->updatePagesForEntry($event->params['entry']);
+                    craft()->amNav_node->updateNodesForEntry($event->params['entry']);
                 }
             });
-            // Delete pages from a navigation if an Entry was deleted
+            // Delete nodes from a navigation if an Entry was deleted
             craft()->on('entries.deleteEntry', function(Event $event) {
-                craft()->amNav_page->deletePagesForEntry($event->params['entry']);
+                craft()->amNav_node->deleteNodesForEntry($event->params['entry']);
             });
         }
     }

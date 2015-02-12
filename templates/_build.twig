@@ -24,24 +24,24 @@
     {% endset %}
 {% endif %}
 
-{% macro addPageToStructure(navigation, page) %}
-    <li data-level="{{ page.level }}">
-        {% set indent = 8 + (page.level - 1) * 35 %}
+{% macro addNodeToStructure(navigation, node) %}
+    <li data-level="{{ node.level }}">
+        {% set indent = 8 + (node.level - 1) * 35 %}
         {% set replaceWith = {
-            '%%id%%':       page.id,
-            '%%entryid%%':  page.entryId,
-            '%%label%%':    page.name,
-            '%%url%%':      page.url,
-            '%%status%%':   (page.enabled ? 'live' : 'expired'),
-            '%%blank%%':    (page.blank ? '' : 'visuallyhidden')
+            '%%id%%':       node.id,
+            '%%entryid%%':  node.entryId,
+            '%%label%%':    node.name,
+            '%%url%%':      node.url,
+            '%%status%%':   (node.enabled ? 'live' : 'expired'),
+            '%%blank%%':    (node.blank ? '' : 'visuallyhidden')
         } %}
         <div class="row" style="margin-left: -{{ indent }}px; padding-left: {{ indent }}px;">
-            {% include 'amnav/_includes/page' with { replaceWith: replaceWith, level: page.level, settings: navigation.settings } only %}
+            {% include 'amnav/_includes/node' with { replaceWith: replaceWith, level: node.level, settings: navigation.settings } only %}
         </div>
-        {% if page.children is defined %}
+        {% if node.children is defined %}
             <ul>
-            {% for subpage in page.children %}
-                {{ _self.addPageToStructure(navigation, subpage) }}
+            {% for subnode in node.children %}
+                {{ _self.addNodeToStructure(navigation, subnode) }}
             {% endfor %}
             </ul>
         {% endif %}
@@ -52,18 +52,18 @@
     <div class="amnav grid first">
         <div class="item" data-position="left" data-min-colspan="2" data-max-colspan="3">
             <div class="pane">
-                <div class="amnav__empty{% if pages|length %} hidden{% endif %}">
-                    <p>{{ 'There are no pages yet.'|t }}</p>
+                <div class="amnav__empty{% if nodes|length %} hidden{% endif %}">
+                    <p>{{ 'There are no nodes yet.'|t }}</p>
                 </div>
 
                 <ul id="amnav__builder" class="amnav__builder structure">
-                    {% for page in pages %}
-                        {{ _self.addPageToStructure(navigation, page) }}
+                    {% for node in nodes %}
+                        {{ _self.addNodeToStructure(navigation, node) }}
                     {% endfor %}
                 </ul>
 
                 <script id="amnav__row" type="text/template">
-                    {% include 'amnav/_includes/page' with { replaceWith: {} } only %}
+                    {% include 'amnav/_includes/node' with { replaceWith: {} } only %}
                 </script>
             </div>
         </div>
@@ -74,7 +74,7 @@
                     <p class="light">{{ '{{ craft.amNav.getNav("' ~ navigation.handle ~ '") }}' }}</p>
                     <p class="light">{{ '{{ craft.amNav.getNavRaw("' ~ navigation.handle ~ '") }}' }}</p>
                     <div class="buttons">
-                        <div class="btn submit amnav__pageids">{{ 'Display page IDs'|t }}</div>
+                        <div class="btn submit amnav__nodeids">{{ 'Display node IDs'|t }}</div>
                     </div>
                 </div>
             {% endif %}
@@ -88,7 +88,7 @@
 
                 <div class="amnav__parent">
                     {{ forms.selectField({
-                        label: "Parent page"|t,
+                        label: "Parent node"|t,
                         id: 'parent',
                         class: 'fullwidth',
                         name: 'parent',
@@ -111,21 +111,21 @@
                             name: 'name',
                             first: true,
                             required: true,
-                            instructions: 'Name of this page in the navigation.'|t
+                            instructions: 'Name of this node in the navigation.'|t
                         }) }}
                         {{ forms.textField({
                             label: "URL"|t,
                             id: 'url',
                             name: 'url',
                             required: true,
-                            instructions: 'The URL of this page.'|t
+                            instructions: 'The URL of this node.'|t
                         }) }}
                         {{ forms.lightswitchField({
                             id: 'blank',
                             name: 'blank',
                             label: 'New window'|t,
                             on: false,
-                            instructions: 'Whether to open this page in a new window.'|t
+                            instructions: 'Whether to open this node in a new window.'|t
                         }) }}
 
                         <div class="buttons">
