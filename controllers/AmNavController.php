@@ -13,29 +13,29 @@ class AmNavController extends BaseController
     {
         $plugin = craft()->plugins->getPlugin('amnav');
 
-        $variables['menus'] = craft()->amNav->getMenus();
+        $variables['navigations'] = craft()->amNav->getNavigations();
         $variables['settings'] = $plugin->getSettings();
 
         $this->renderTemplate('amNav/_index', $variables);
     }
 
     /**
-     * Create or edit a menu.
+     * Create or edit a navigation.
      *
      * @param array $variables
      */
-    public function actionEditMenu(array $variables = array())
+    public function actionEditNavigation(array $variables = array())
     {
-        // Get menu if available
-        if (! empty($variables['menuId'])) {
-            $variables['menu'] = craft()->amNav->getMenuById($variables['menuId']);
+        // Get navigation if available
+        if (! empty($variables['navId'])) {
+            $variables['navigation'] = craft()->amNav->getNavigationById($variables['navId']);
 
-            if (! $variables['menu']) {
+            if (! $variables['navigation']) {
                 throw new HttpException(404);
             }
         }
         else {
-            $variables['menu'] = new AmNav_MenuModel();
+            $variables['navigation'] = new AmNav_NavigationModel();
         }
 
         // Render the template
@@ -43,20 +43,20 @@ class AmNavController extends BaseController
     }
 
     /**
-     * Create or edit a menu.
+     * Create or edit a navigation.
      *
      * @param array $variables
      */
-    public function actionBuildMenu(array $variables = array())
+    public function actionBuildNavigation(array $variables = array())
     {
-        if (empty($variables['menuId'])) {
+        if (empty($variables['navId'])) {
             throw new HttpException(404);
         }
 
-        // Get menu
-        $variables['menu'] = craft()->amNav->getMenuById($variables['menuId']);
+        // Get navigation
+        $variables['navigation'] = craft()->amNav->getNavigationById($variables['navId']);
 
-        if (! $variables['menu']) {
+        if (! $variables['navigation']) {
             throw new HttpException(404);
         }
 
@@ -73,7 +73,7 @@ class AmNavController extends BaseController
         $siteUrl = craft()->config->getLocalized('siteUrl', $locale);
 
         // Get saved pages
-        $variables['pages'] = craft()->amNav->getPagesByMenuId($variables['menuId'], $locale);
+        $variables['pages'] = craft()->amNav->getPagesByNavigationId($variables['navId'], $locale);
         $variables['parentOptions'] = craft()->amNav->getParentOptions($variables['pages']);
 
         // Load javascript
@@ -86,13 +86,13 @@ class AmNavController extends BaseController
                 canDeleteFromLevel: %d,
                 canMoveFromLevel: %d
             });',
-            $variables['menuId'],
+            $variables['navId'],
             $locale,
             $siteUrl,
             craft()->userSession->isAdmin() ? 'true' : 'false',
-            $variables['menu']->settings['maxLevels'] ?: 'null',
-            $variables['menu']->settings['canDeleteFromLevel'] ?: 0,
-            $variables['menu']->settings['canMoveFromLevel'] ?: 0
+            $variables['navigation']->settings['maxLevels'] ?: 'null',
+            $variables['navigation']->settings['canDeleteFromLevel'] ?: 0,
+            $variables['navigation']->settings['canMoveFromLevel'] ?: 0
         );
         craft()->templates->includeJs($js);
         craft()->templates->includeJsResource('amnav/js/AmNav.min.js');
@@ -104,37 +104,37 @@ class AmNavController extends BaseController
     }
 
     /**
-     * Deletes a menu.
+     * Deletes a navigation.
      */
-    public function actionDeleteMenu()
+    public function actionDeleteNavigation()
     {
         $this->requirePostRequest();
         $this->requireAjaxRequest();
 
-        $menuId = craft()->request->getRequiredPost('id');
+        $navId = craft()->request->getRequiredPost('id');
 
-        $result = craft()->amNav->deleteMenuById($menuId);
+        $result = craft()->amNav->deleteNavigationById($navId);
         $this->returnJson(array('success' => $result));
     }
 
     /**
-     * Saves a menu.
+     * Saves a navigation.
      */
-    public function actionSaveMenu()
+    public function actionSaveNavigation()
     {
         $this->requirePostRequest();
 
-        // Get menu if available
-        $menuId = craft()->request->getPost('menuId');
-        if ($menuId) {
-            $menu = craft()->amNav->getMenuById($menuId);
+        // Get navigation if available
+        $navId = craft()->request->getPost('navId');
+        if ($navId) {
+            $navigation = craft()->amNav->getNavigationById($navId);
 
-            if (! $menu) {
-                throw new Exception(Craft::t('No navigation exists with the ID “{id}”.', array('id' => $menuId)));
+            if (! $navigation) {
+                throw new Exception(Craft::t('No navigation exists with the ID “{id}”.', array('id' => $navId)));
             }
         }
         else {
-            $menu = new AmNav_MenuModel();
+            $navigation = new AmNav_NavigationModel();
         }
 
         // Set attributes
@@ -148,23 +148,23 @@ class AmNavController extends BaseController
         if (! is_numeric($attributes['settings']['canMoveFromLevel'])) {
             $attributes['settings']['canMoveFromLevel'] = '';
         }
-        $menu->setAttributes(array(
+        $navigation->setAttributes(array(
             'name' => $attributes['name'],
             'handle' => $attributes['handle'],
             'settings' => $attributes['settings']
         ));
 
-        // Save menu
-        if (craft()->amNav->saveMenu($menu)) {
+        // Save navigation
+        if (craft()->amNav->saveNavigation($navigation)) {
             craft()->userSession->setNotice(Craft::t('Navigation saved.'));
-            $this->redirectToPostedUrl($menu);
+            $this->redirectToPostedUrl($navigation);
         }
         else {
             craft()->userSession->setError(Craft::t('Couldn’t save navigation.'));
 
-            // Send the menu back to the template
+            // Send the navigation back to the template
             craft()->urlManager->setRouteVariables(array(
-                'menu' => $menu
+                'navigation' => $navigation
             ));
         }
     }

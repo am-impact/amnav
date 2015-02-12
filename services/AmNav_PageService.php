@@ -9,7 +9,7 @@ class AmNav_PageService extends BaseApplicationComponent
     private $_pages;
 
     /**
-     * Get a menu by its ID.
+     * Get a navigation by its ID.
      *
      * @param int $pageId
      *
@@ -25,26 +25,26 @@ class AmNav_PageService extends BaseApplicationComponent
     }
 
     /**
-     * Get all pages by a menu ID.
+     * Get all pages by a navigation ID.
      *
-     * @param int    $menuId
+     * @param int    $navId
      * @param string $locale
      * @param bool   $reset
      *
      * @return array
      */
-    public function getAllPagesByMenuId($menuId, $locale, $reset = false)
+    public function getAllPagesByNavigationId($navId, $locale, $reset = false)
     {
-        if (! $reset && isset($this->_pages[$menuId])) {
-            return $this->_pages[$menuId];
+        if (! $reset && isset($this->_pages[$navId])) {
+            return $this->_pages[$navId];
         }
-        $this->_pages[$menuId] = craft()->db->createCommand()
+        $this->_pages[$navId] = craft()->db->createCommand()
             ->select('*')
             ->from('amnav_pages')
-            ->where(array('navId' => $menuId, 'locale' => $locale))
+            ->where(array('navId' => $navId, 'locale' => $locale))
             ->order(array('parentId asc', 'order asc'))
             ->queryAll();
-        return $this->_pages[$menuId];
+        return $this->_pages[$navId];
     }
 
     /**
@@ -110,7 +110,7 @@ class AmNav_PageService extends BaseApplicationComponent
         $pageRecord->parentId = $parentId;
 
         // Get new order
-        $pages = $this->getAllPagesByMenuId($page->navId, $page->locale);
+        $pages = $this->getAllPagesByNavigationId($page->navId, $page->locale);
         $order = 0;
         // Should the moved page be the first?
         if ($prevId === false) {
@@ -139,7 +139,7 @@ class AmNav_PageService extends BaseApplicationComponent
         $result = $pageRecord->save();
 
         // Update the whole order of the structure
-        $this->_updateOrderForMenuId($pageRecord->navId, $pageRecord->locale);
+        $this->_updateOrderForNavigationId($pageRecord->navId, $pageRecord->locale);
 
         return $result;
     }
@@ -155,7 +155,7 @@ class AmNav_PageService extends BaseApplicationComponent
     {
         $page = $this->getPageById($pageId);
         if ($page) {
-            $pages = $this->getAllPagesByMenuId($page->navId, $page->locale);
+            $pages = $this->getAllPagesByNavigationId($page->navId, $page->locale);
 
             // Get children IDs
             $pageIds = $this->_getChildrenIds($pages, $page->id);
@@ -167,7 +167,7 @@ class AmNav_PageService extends BaseApplicationComponent
             $result = craft()->db->createCommand()->delete('amnav_pages', array('in', 'id', $pageIds));
             if ($result) {
                 // Update pages order
-                $this->_updateOrderForMenuId($page->navId, $page->locale);
+                $this->_updateOrderForNavigationId($page->navId, $page->locale);
             }
             return $result;
         }
@@ -311,16 +311,16 @@ class AmNav_PageService extends BaseApplicationComponent
     /**
      * Update the order of every page.
      *
-     * @param int    $menuId
+     * @param int    $navId
      * @param string $locale
      * @param bool   $pages
      * @param int    $parentId
      */
-    private function _updateOrderForMenuId($menuId, $locale, $pages = false, $parentId = 0)
+    private function _updateOrderForNavigationId($navId, $locale, $pages = false, $parentId = 0)
     {
         // Get pages for first run
         if ($pages === false) {
-            $pages = $this->getAllPagesByMenuId($menuId, $locale, true);
+            $pages = $this->getAllPagesByNavigationId($navId, $locale, true);
         }
 
         // Update order
@@ -332,7 +332,7 @@ class AmNav_PageService extends BaseApplicationComponent
                 $order ++;
 
                 // Update order for child pages
-                $this->_updateOrderForMenuId($menuId, $locale, $pages, $page['id']);
+                $this->_updateOrderForNavigationId($navId, $locale, $pages, $page['id']);
             }
         }
     }

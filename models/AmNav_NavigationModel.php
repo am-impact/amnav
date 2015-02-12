@@ -1,7 +1,7 @@
 <?php
 namespace Craft;
 
-class AmNav_MenuModel extends BaseModel
+class AmNav_NavigationModel extends BaseModel
 {
     protected function defineAttributes()
     {

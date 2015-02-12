@@ -14,12 +14,12 @@
 {% set content %}
     <h1>{{ 'Created navigations'|t }}</h1>
 
-    <div id="nomenus"{% if menus %} class="hidden"{% endif %}>
+    <div id="nonavigations"{% if navigations %} class="hidden"{% endif %}>
         <p>{{ 'There are no navigations yet.'|t }}</p>
     </div>
 
-    {% if menus %}
-        <table id="menus" class="data fullwidth">
+    {% if navigations %}
+        <table id="navigations" class="data fullwidth">
             <thead>
                 <tr>
                     <th scope="col" data-attribute="title">{{ 'Title'|t }}</th>
@@ -30,15 +30,15 @@
                 </tr>
             </thead>
             <tbody>
-                {% for menu in menus %}
-                    <tr data-id="{{ menu.id }}" data-name="{{ menu.name|t }}">
-                        <td><a href="{{ url('amnav/build/' ~ menu.id) }}">{{ menu.name }}</a></td>
-                        <td>{{ menu.handle }}</td>
-                        <td>{{ menu.dateCreated|date('d-m-Y') }}</td>
-                        <td>{{ menu.dateUpdated|date('d-m-Y') }}</td>
+                {% for navigation in navigations %}
+                    <tr data-id="{{ navigation.id }}" data-name="{{ navigation.name|t }}">
+                        <td><a href="{{ url('amnav/build/' ~ navigation.id) }}">{{ navigation.name }}</a></td>
+                        <td>{{ navigation.handle }}</td>
+                        <td>{{ navigation.dateCreated|date('d-m-Y') }}</td>
+                        <td>{{ navigation.dateUpdated|date('d-m-Y') }}</td>
                         {% if currentUser.admin or settings.canDoActions %}
                         <td class="thin">
-                            <a href="{{ url('amnav/edit/' ~ menu.id) }}" class="settings icon" title="{{ 'Settings'|t }}"></a>
+                            <a href="{{ url('amnav/edit/' ~ navigation.id) }}" class="settings icon" title="{{ 'Settings'|t }}"></a>
                             <a class="delete icon" title="{{ 'Delete'|t }}" role="button"></a>
                         </td>
                         {% endif %}
@@ -51,9 +51,9 @@
 
 {% set js %}
     var adminTable = new Craft.AdminTable({
-        tableSelector: '#menus',
-        noObjectsSelector: '#nomenus',
-        deleteAction: 'amNav/deleteMenu',
+        tableSelector: '#navigations',
+        noObjectsSelector: '#nonavigations',
+        deleteAction: 'amNav/deleteNavigation',
         confirmDeleteMessage: '{{ "Are you sure you want to delete “{name}”?"|t }}'
     });
 {% endset %}

@@ -1,7 +1,7 @@
 <?php
 namespace Craft;
 
-class AmNav_MenuRecord extends BaseRecord
+class AmNav_NavigationRecord extends BaseRecord
 {
     public function getTableName()
     {

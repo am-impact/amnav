@@ -62,16 +62,16 @@ class AmNavPlugin extends BasePlugin
                 'action' => 'amNav/navIndex'
             ),
             'amnav/new' => array(
-                'action' => 'amNav/editMenu'
+                'action' => 'amNav/editNavigation'
             ),
-            'amnav/edit/(?P<menuId>\d+)' => array(
-                'action' => 'amNav/editMenu'
+            'amnav/edit/(?P<navId>\d+)' => array(
+                'action' => 'amNav/editNavigation'
             ),
-            'amnav/build/(?P<menuId>\d+)' => array(
-                'action' => 'amNav/buildMenu'
+            'amnav/build/(?P<navId>\d+)' => array(
+                'action' => 'amNav/buildNavigation'
             ),
-            'amnav/build/(?P<menuId>\d+)/(?P<locale>{handle})' => array(
-                'action' => 'amNav/buildMenu'
+            'amnav/build/(?P<navId>\d+)/(?P<locale>{handle})' => array(
+                'action' => 'amNav/buildNavigation'
             )
         );
     }

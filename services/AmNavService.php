@@ -6,7 +6,7 @@ namespace Craft;
  */
 class AmNavService extends BaseApplicationComponent
 {
-    private $_menu;
+    private $_navigation;
     private $_params;
     private $_parseHtml = false;
     private $_parseEnvironment = false;
@@ -15,74 +15,74 @@ class AmNavService extends BaseApplicationComponent
     private $_activePageIds = array();
 
     /**
-     * Get all build menus.
+     * Get all build navigations.
      *
      * @return array
      */
-    public function getMenus()
+    public function getNavigations()
     {
-        $menuRecords = AmNav_MenuRecord::model()->findAll();
-        return AmNav_MenuModel::populateModels($menuRecords);
+        $navigationRecords = AmNav_NavigationRecord::model()->findAll();
+        return AmNav_NavigationModel::populateModels($navigationRecords);
     }
 
     /**
-     * Get a menu by its ID.
+     * Get a navigation by its ID.
      *
-     * @param int $menuId
+     * @param int $navId
      *
-     * @return AmNav_MenuModel|null
+     * @return AmNav_NavigationModel|null
      */
-    public function getMenuById($menuId)
+    public function getNavigationById($navId)
     {
-        $menuRecord = AmNav_MenuRecord::model()->findById($menuId);
-        if ($menuRecord) {
-            return AmNav_MenuModel::populateModel($menuRecord);
+        $navigationRecord = AmNav_NavigationRecord::model()->findById($navId);
+        if ($navigationRecord) {
+            return AmNav_NavigationModel::populateModel($navigationRecord);
         }
         return null;
     }
 
     /**
-     * Get a menu by its handle.
+     * Get a navigation by its handle.
      *
      * @param string $handle
      *
-     * @return AmNav_MenuModel|null
+     * @return AmNav_NavigationModel|null
      */
-    public function getMenuByHandle($handle)
+    public function getNavigationByHandle($handle)
     {
-        $menuRecord = AmNav_MenuRecord::model()->findByAttributes(array('handle' => $handle));
-        if ($menuRecord) {
-            return AmNav_MenuModel::populateModel($menuRecord);
+        $navigationRecord = AmNav_NavigationRecord::model()->findByAttributes(array('handle' => $handle));
+        if ($navigationRecord) {
+            return AmNav_NavigationModel::populateModel($navigationRecord);
         }
         return null;
     }
 
     /**
-     * Get a menu name by its handle.
+     * Get a navigation name by its handle.
      *
      * @param string $handle
      *
      * @return string|null
      */
-    public function getMenuNameByHandle($handle)
+    public function getNavigationNameByHandle($handle)
     {
-        $menuRecord = AmNav_MenuRecord::model()->findByAttributes(array('handle' => $handle));
-        if ($menuRecord) {
-            $menu = AmNav_MenuModel::populateModel($menuRecord);
-            return $menu->name;
+        $navigationRecord = AmNav_NavigationRecord::model()->findByAttributes(array('handle' => $handle));
+        if ($navigationRecord) {
+            $navigation = AmNav_NavigationModel::populateModel($navigationRecord);
+            return $navigation->name;
         }
         return null;
     }
 
     /**
-     * Get all pages by its menu ID.
+     * Get all pages by its navigation ID.
      *
      * @param int    $navId
      * @param string $locale
      *
      * @return array
      */
-    public function getPagesByMenuId($navId, $locale)
+    public function getPagesByNavigationId($navId, $locale)
     {
         // Set necessary variables
         $this->_siteUrl = craft()->getSiteUrl();
@@ -97,7 +97,7 @@ class AmNavService extends BaseApplicationComponent
             $parentId = $startFromId;
         }
 
-        $pages = craft()->amNav_page->getAllPagesByMenuId($navId, $locale);
+        $pages = craft()->amNav_page->getAllPagesByNavigationId($navId, $locale);
         if ($this->_parseHtml) {
             return $this->_buildNavHtml($pages, $parentId);
         }
@@ -142,54 +142,54 @@ class AmNavService extends BaseApplicationComponent
     }
 
     /**
-     * Saves a menu.
+     * Saves a navigation.
      *
-     * @param AmNav_MenuModel $menu
+     * @param AmNav_NavigationModel $navigation
      *
      * @throws Exception
      * @return bool
      */
-    public function saveMenu(AmNav_MenuModel $menu)
+    public function saveNavigation(AmNav_NavigationModel $navigation)
     {
-        // Menu data
-        if ($menu->id) {
-            $menuRecord = AmNav_MenuRecord::model()->findById($menu->id);
+        // Navigation data
+        if ($navigation->id) {
+            $navigationRecord = AmNav_NavigationRecord::model()->findById($navigation->id);
 
-            if (! $menuRecord) {
-                throw new Exception(Craft::t('No navigation exists with the ID “{id}”.', array('id' => $menu->id)));
+            if (! $navigationRecord) {
+                throw new Exception(Craft::t('No navigation exists with the ID “{id}”.', array('id' => $navigation->id)));
             }
         }
         else {
-            $menuRecord = new AmNav_MenuRecord();
+            $navigationRecord = new AmNav_NavigationRecord();
         }
 
         // Set attributes
-        $menuRecord->setAttributes($menu->getAttributes());
-        $menuRecord->setAttribute('settings', json_encode($menu->settings));
+        $navigationRecord->setAttributes($navigation->getAttributes());
+        $navigationRecord->setAttribute('settings', json_encode($navigation->settings));
 
         // Validate
-        $menuRecord->validate();
-        $menu->addErrors($menuRecord->getErrors());
+        $navigationRecord->validate();
+        $navigation->addErrors($navigationRecord->getErrors());
 
-        // Save menu
-        if (! $menu->hasErrors()) {
+        // Save navigation
+        if (! $navigation->hasErrors()) {
             // Save in database
-            return $menuRecord->save();
+            return $navigationRecord->save();
         }
         return false;
     }
 
     /**
-     * Delete a menu by its ID.
+     * Delete a navigation by its ID.
      *
-     * @param int $menuId
+     * @param int $navId
      *
      * @return bool
      */
-    public function deleteMenuById($menuId)
+    public function deleteNavigationById($navId)
     {
-        craft()->db->createCommand()->delete('amnav_pages', array('navId' => $menuId));
-        return craft()->db->createCommand()->delete('amnav_navs', array('id' => $menuId));
+        craft()->db->createCommand()->delete('amnav_pages', array('navId' => $navId));
+        return craft()->db->createCommand()->delete('amnav_navs', array('id' => $navId));
     }
 
     /**
@@ -203,11 +203,11 @@ class AmNavService extends BaseApplicationComponent
      */
     public function getNav($handle, $params)
     {
-        $menu = $this->getMenuByHandle($handle);
-        if (! $menu) {
+        $navigation = $this->getNavigationByHandle($handle);
+        if (! $navigation) {
             throw new Exception(Craft::t('No navigation exists with the handle “{handle}”.', array('handle' => $handle)));
         }
-        $this->_menu = $menu;
+        $this->_navigation = $navigation;
         // We want correct URLs now
         $this->_parseEnvironment = true;
         // Get the params
@@ -215,7 +215,7 @@ class AmNavService extends BaseApplicationComponent
         // We want HTML returned
         $this->_parseHtml = true;
         // Return build HTML
-        return $this->getPagesByMenuId($menu->id, craft()->language);
+        return $this->getPagesByNavigationId($navigation->id, craft()->language);
     }
 
     /**
@@ -229,11 +229,11 @@ class AmNavService extends BaseApplicationComponent
      */
     public function getNavRaw($handle, $params)
     {
-        $menu = $this->getMenuByHandle($handle);
-        if (! $menu) {
+        $navigation = $this->getNavigationByHandle($handle);
+        if (! $navigation) {
             throw new Exception(Craft::t('No navigation exists with the handle “{handle}”.', array('handle' => $handle)));
         }
-        $this->_menu = $menu;
+        $this->_navigation = $navigation;
         // We want correct URLs now
         $this->_parseEnvironment = true;
         // Get the params
@@ -241,7 +241,7 @@ class AmNavService extends BaseApplicationComponent
         // We don't want HTML returned
         $this->_parseHtml = false;
         // Return the array structure
-        return $this->getPagesByMenuId($menu->id, craft()->language);
+        return $this->getPagesByNavigationId($navigation->id, craft()->language);
     }
 
     /**
@@ -336,7 +336,7 @@ class AmNavService extends BaseApplicationComponent
 
         $url = str_replace('{siteUrl}', '', $url);
         if ($url == $path) {
-            $this->_activePageIds[ $this->_menu->handle ][ $segmentCount ] = $page['id'];
+            $this->_activePageIds[ $this->_navigation->handle ][ $segmentCount ] = $page['id'];
             return true;
         }
         if (count($segments)) {
@@ -352,7 +352,7 @@ class AmNavService extends BaseApplicationComponent
                 $count ++;
             }
             if ($found) {
-                $this->_activePageIds[ $this->_menu->handle ][$count] = $page['id'];
+                $this->_activePageIds[ $this->_navigation->handle ][$count] = $page['id'];
                 return true;
             }
         }
@@ -473,7 +473,7 @@ class AmNavService extends BaseApplicationComponent
         if ($level == 1) {
             if (! $this->_getParam('excludeUl', false)) {
                 $nav = sprintf("\n" . '<ul id="%1$s" class="%2$s">',
-                    $this->_getParam('id', $this->_menu->handle),
+                    $this->_getParam('id', $this->_navigation->handle),
                     $this->_getParam('class', 'nav')
                 );
             }

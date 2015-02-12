@@ -51,7 +51,7 @@ class AmNavVariable
      */
     public function getNavName($handle)
     {
-        return craft()->amNav->getMenuNameByHandle($handle);
+        return craft()->amNav->getNavigationNameByHandle($handle);
     }
 
     /**

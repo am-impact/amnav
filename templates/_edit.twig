@@ -5,13 +5,13 @@
 {% set pluginName = craft.amNav.name %}
 {% set docsUrl = 'https://github.com/am-impact/amnav' %}
 
-{% if menuId is defined %}
+{% if navId is defined %}
     {% set title = 'Edit navigation'|t %}
 
     {% set crumbs = [
         { label: pluginName, url: url('amnav') },
-        { label: title, url: url('amnav/edit/' ~ menu.id) },
-        { label: menu.name, url: '#' }
+        { label: title, url: url('amnav/edit/' ~ navigation.id) },
+        { label: navigation.name, url: '#' }
     ] %}
 {% else %}
     {% set title = 'New navigation'|t %}
@@ -26,16 +26,16 @@
     <form id="nav-form" method="post" accept-charset="UTF-8" data-saveshortcut="1" data-saveshortcut-redirect="amnav">
         {{ getCsrfInput() }}
 
-        <input type="hidden" name="action" value="amNav/saveMenu">
+        <input type="hidden" name="action" value="amNav/saveNavigation">
         <input type="hidden" name="redirect" value="amnav">
-        {% if menuId is defined %}<input type="hidden" name="menuId" value="{{ menuId }}">{% endif %}
+        {% if navId is defined %}<input type="hidden" name="navId" value="{{ navId }}">{% endif %}
 
         {{ forms.textField({
             label: "Name"|t,
             id: 'name',
             name: 'name',
-            value: menu.name,
-            errors: menu.getErrors('name'),
+            value: navigation.name,
+            errors: navigation.getErrors('name'),
             first: true,
             autofocus: true,
             required: true,
@@ -45,8 +45,8 @@
             label: "Handle"|t,
             id: 'handle',
             name: 'handle',
-            value: menu.handle,
-            errors: menu.getErrors('handle'),
+            value: navigation.handle,
+            errors: navigation.getErrors('handle'),
             required: true,
             instructions: 'Name of this navigation in the templates.'|t
         }) }}
@@ -56,7 +56,7 @@
             id: 'settingsMaxLevels',
             name: 'settings[maxLevels]',
             size: 5,
-            value: menu.settings.maxLevels,
+            value: navigation.settings.maxLevels,
             instructions: 'The maximum number of levels this navigation can have. Leave blank if you don’t care.'|t
         }) }}
         <hr>
@@ -65,7 +65,7 @@
             id: 'handle',
             name: 'settings[canMoveFromLevel]',
             size: 5,
-            value: menu.settings.canMoveFromLevel,
+            value: navigation.settings.canMoveFromLevel,
             instructions: 'Whether non-admins can move pages from a specific level. Leave blank if you don’t care.'|t
         }) }}
         {{ forms.textField({
@@ -73,7 +73,7 @@
             id: 'handle',
             name: 'settings[canDeleteFromLevel]',
             size: 5,
-            value: menu.settings.canDeleteFromLevel,
+            value: navigation.settings.canDeleteFromLevel,
             instructions: 'Whether non-admins can delete pages from a specific level. Leave blank if you don’t care.'|t
         }) }}
 
@@ -84,6 +84,6 @@
 {% endset %}
 
 {% set js %}
-    {% if not menu.handle %}new Craft.HandleGenerator('#name', '#handle');{% endif %}
+    {% if not navigation.handle %}new Craft.HandleGenerator('#name', '#handle');{% endif %}
 {% endset %}
 {% includeJs js %}

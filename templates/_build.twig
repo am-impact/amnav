@@ -3,16 +3,16 @@
 {% import "_includes/forms" as forms %}
 
 {% set pluginName = craft.amNav.name %}
-{% set title = menu.name %}
+{% set title = navigation.name %}
 
 {% set crumbs = [
     { label: pluginName, url: url('amnav') },
-    { label: 'Build navigation'|t, url: url('amnav/build/' ~ menu.id) },
-    { label: menu.name, url: '#' }
+    { label: 'Build navigation'|t, url: url('amnav/build/' ~ navigation.id) },
+    { label: navigation.name, url: '#' }
 ] %}
 
 {% if craft.isLocalized() %}
-    {% set buildUrl = url('amnav/build/' ~ menu.id) ~ '/{locale}' %}
+    {% set buildUrl = url('amnav/build/' ~ navigation.id) ~ '/{locale}' %}
     {% set extraPageHeaderHtml %}
         <div class="select">
             <select onchange="document.location.href='{{ buildUrl }}'.replace('{locale}', this.value);">
@@ -24,7 +24,7 @@
     {% endset %}
 {% endif %}
 
-{% macro addPageToStructure(menu, page) %}
+{% macro addPageToStructure(navigation, page) %}
     <li data-level="{{ page.level }}">
         {% set indent = 8 + (page.level - 1) * 35 %}
         {% set replaceWith = {
@@ -36,12 +36,12 @@
             '%%blank%%':    (page.blank ? '' : 'visuallyhidden')
         } %}
         <div class="row" style="margin-left: -{{ indent }}px; padding-left: {{ indent }}px;">
-            {% include 'amnav/_includes/page' with { replaceWith: replaceWith, level: page.level, settings: menu.settings } only %}
+            {% include 'amnav/_includes/page' with { replaceWith: replaceWith, level: page.level, settings: navigation.settings } only %}
         </div>
         {% if page.children is defined %}
             <ul>
             {% for subpage in page.children %}
-                {{ _self.addPageToStructure(menu, subpage) }}
+                {{ _self.addPageToStructure(navigation, subpage) }}
             {% endfor %}
             </ul>
         {% endif %}
@@ -58,7 +58,7 @@
 
                 <ul id="amnav__builder" class="amnav__builder structure">
                     {% for page in pages %}
-                        {{ _self.addPageToStructure(menu, page) }}
+                        {{ _self.addPageToStructure(navigation, page) }}
                     {% endfor %}
                 </ul>
 
@@ -71,8 +71,8 @@
             {% if currentUser.admin %}
                 <div class="pane">
                     <h1>{{ 'Display navigation'|t }}</h1>
-                    <p class="light">{{ '{{ craft.amNav.getNav("' ~ menu.handle ~ '") }}' }}</p>
-                    <p class="light">{{ '{{ craft.amNav.getNavRaw("' ~ menu.handle ~ '") }}' }}</p>
+                    <p class="light">{{ '{{ craft.amNav.getNav("' ~ navigation.handle ~ '") }}' }}</p>
+                    <p class="light">{{ '{{ craft.amNav.getNavRaw("' ~ navigation.handle ~ '") }}' }}</p>
                     <div class="buttons">
                         <div class="btn submit amnav__pageids">{{ 'Display page IDs'|t }}</div>
                     </div>

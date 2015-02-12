@@ -51,7 +51,7 @@ class AmNav_PagesController extends BaseController
                 $returnData['pageData'] = $page;
 
                 // Get parent options
-                $pages = craft()->amNav->getPagesByMenuId($page->navId, $attributes['locale']);
+                $pages = craft()->amNav->getPagesByNavigationId($page->navId, $attributes['locale']);
                 $variables['selected'] = $page->parentId;
                 $variables['parentOptions'] = craft()->amNav->getParentOptions($pages);
                 $returnData['parentOptions'] = $this->renderTemplate('amNav/_build/parent', $variables, true);
@@ -129,7 +129,7 @@ class AmNav_PagesController extends BaseController
         $result = craft()->amNav_page->movePage($page, $parentId, $prevId);
 
         // Get parent options
-        $pages = craft()->amNav->getPagesByMenuId($page->navId, $page->locale);
+        $pages = craft()->amNav->getPagesByNavigationId($page->navId, $page->locale);
         $variables['selected'] = $page->id;
         $variables['parentOptions'] = craft()->amNav->getParentOptions($pages);
         $parentOptions = $this->renderTemplate('amNav/_build/parent', $variables, true);
@@ -160,7 +160,7 @@ class AmNav_PagesController extends BaseController
         $result = craft()->amNav_page->deletePageById($pageId);
 
         // Get parent options
-        $pages = craft()->amNav->getPagesByMenuId($page->navId, $page->locale);
+        $pages = craft()->amNav->getPagesByNavigationId($page->navId, $page->locale);
         $variables['selected'] = 0;
         $variables['parentOptions'] = craft()->amNav->getParentOptions($pages);
         $parentOptions = $this->renderTemplate('amNav/_build/parent', $variables, true);
