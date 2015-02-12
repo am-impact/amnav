@@ -21,7 +21,7 @@ class AmNavService extends BaseApplicationComponent
      */
     public function getNavigations()
     {
-        $navigationRecords = AmNav_NavigationRecord::model()->findAll();
+        $navigationRecords = AmNav_NavigationRecord::model()->ordered()->findAll();
         return AmNav_NavigationModel::populateModels($navigationRecords);
     }
 

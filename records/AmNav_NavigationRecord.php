@@ -23,4 +23,11 @@ class AmNav_NavigationRecord extends BaseRecord
             array('columns' => array('handle'), 'unique' => true)
         );
     }
+
+    public function scopes()
+    {
+        return array(
+            'ordered' => array('order' => 'handle')
+        );
+    }
 }
