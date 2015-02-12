@@ -3,24 +3,13 @@
 {% import "_includes/forms" as forms %}
 
 {% set pluginName = craft.amNav.name %}
+{% set title = (navId is defined ? 'Edit navigation'|t : 'New navigation'|t) %}
 {% set docsUrl = 'https://github.com/am-impact/amnav' %}
 
-{% if navId is defined %}
-    {% set title = 'Edit navigation'|t %}
-
-    {% set crumbs = [
-        { label: pluginName, url: url('amnav') },
-        { label: title, url: url('amnav/edit/' ~ navigation.id) },
-        { label: navigation.name, url: '#' }
-    ] %}
-{% else %}
-    {% set title = 'New navigation'|t %}
-
-    {% set crumbs = [
-        { label: pluginName, url: url('amnav') },
-        { label: title, url: '#' }
-    ] %}
-{% endif %}
+{% set crumbs = [
+    { label: pluginName, url: url('amnav') },
+    { label: title, url: '#' }
+] %}
 
 {% set content %}
     <form id="nav-form" method="post" accept-charset="UTF-8" data-saveshortcut="1" data-saveshortcut-redirect="amnav">

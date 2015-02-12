@@ -7,8 +7,7 @@
 
 {% set crumbs = [
     { label: pluginName, url: url('amnav') },
-    { label: 'Build navigation'|t, url: url('amnav/build/' ~ navigation.id) },
-    { label: navigation.name, url: '#' }
+    { label: 'Build navigation'|t, url: '#' }
 ] %}
 
 {% if craft.isLocalized() %}
