@@ -17,12 +17,23 @@ class AmNavService extends BaseApplicationComponent
     /**
      * Get all build navigations.
      *
+     * @param string $indexBy      [Optional] Return the navigations indexed by an attribute.
+     * @param bool   $indexAllData [Optional] Whether to return all the data or just the navigation name.
+     *
      * @return array
      */
-    public function getNavigations()
+    public function getNavigations($indexBy = null, $indexAllData = false)
     {
         $navigationRecords = AmNav_NavigationRecord::model()->ordered()->findAll();
-        return AmNav_NavigationModel::populateModels($navigationRecords);
+        $navigations = AmNav_NavigationModel::populateModels($navigationRecords);
+        if ($indexBy !== null) {
+            $indexedNavigations = array();
+            foreach ($navigations as $navigation) {
+                $indexedNavigations[$navigation->$indexBy] = $indexAllData ? $navigation : $navigation->name;
+            }
+            return $indexedNavigations;
+        }
+        return $navigations;
     }
 
     /**
