@@ -1,0 +1,14 @@
+{% import "_includes/forms" as forms %}
+
+{% if navigations|length %}
+    {{ forms.selectField({
+        name: 'navId',
+        label: 'Navigation'|t,
+        value: settings.navId,
+        options: navigations
+    }) }}
+{% else %}
+    {{ forms.errorList({
+        errors: 'There are no navigations yet.'|t
+    }) }}
+{% endif %}
