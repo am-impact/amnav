@@ -1,6 +1,9 @@
 <?php
 namespace Craft;
 
+// TODO: Rekening houden met instellingen (maxLevels etc)
+// TODO: Alleen fieldType bij entries laten werken
+
 class AmNav_NavigationPositionFieldType extends BaseFieldType
 {
     public function getName()
@@ -34,7 +37,6 @@ class AmNav_NavigationPositionFieldType extends BaseFieldType
                 }
             }
         }
-
 
         // Reformat the input name into something that looks more like an ID
         $id = craft()->templates->formatInputId($name);
