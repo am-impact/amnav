@@ -50,8 +50,8 @@
 
 {% block main %}
     <div class="amnav">
-        <div class="grid first">
-            <div class="item" data-position="left" data-min-colspan="2" data-max-colspan="3">
+        <div class="grid first" data-cols="3" data-mode="pct">
+            <div class="item" data-colspan="2">
                 <div class="pane">
                     {% set paneTabs = {
                         entries: { label: "Existing entries"|t, url: '#amnav-entries' },
@@ -109,32 +109,35 @@
                     </div>
                 </div>
             </div>
-            <div class="item" data-position="right" data-colspan="1">
-                <div class="pane">
-                    <h1>{{ 'Display navigation'|t }}</h1>
-                    <p class="light">{{ '{{ craft.amNav.getNav("' ~ navigation.handle ~ '") }}' }}</p>
-                    <p class="light">{{ '{{ craft.amNav.getNavRaw("' ~ navigation.handle ~ '") }}' }}</p>
-                    <div class="buttons">
-                        <div class="btn submit amnav__nodeids">{{ 'Display node IDs'|t }}</div>
+            <div class="item" data-colspan="1">
+                {% if currentUser.admin %}
+                    <div class="pane">
+                        <h1>{{ 'Display navigation'|t }}</h1>
+                        <p class="light">{{ '{{ craft.amNav.getNav("' ~ navigation.handle ~ '") }}' }}</p>
+                        <p class="light">{{ '{{ craft.amNav.getNavRaw("' ~ navigation.handle ~ '") }}' }}</p>
+                        <div class="buttons">
+                            <div class="btn submit amnav__nodeids">{{ 'Display node IDs'|t }}</div>
+                        </div>
                     </div>
+                {% endif %}
+            </div>
+            <div class="item" data-colspan="3">
+                <div class="pane">
+                    <div class="amnav__empty{% if nodes|length %} hidden{% endif %}">
+                        <p>{{ 'There are no nodes yet.'|t }}</p>
+                    </div>
+
+                    <ul id="amnav__builder" class="amnav__builder structure">
+                        {% for node in nodes %}
+                            {{ _self.addNodeToStructure(navigation, node) }}
+                        {% endfor %}
+                    </ul>
+
+                    <script id="amnav__row" type="text/template">
+                        {% include 'amnav/_includes/node' with { replaceWith: {} } only %}
+                    </script>
                 </div>
             </div>
-        </div>
-
-        <div class="pane">
-            <div class="amnav__empty{% if nodes|length %} hidden{% endif %}">
-                <p>{{ 'There are no nodes yet.'|t }}</p>
-            </div>
-
-            <ul id="amnav__builder" class="amnav__builder structure">
-                {% for node in nodes %}
-                    {{ _self.addNodeToStructure(navigation, node) }}
-                {% endfor %}
-            </ul>
-
-            <script id="amnav__row" type="text/template">
-                {% include 'amnav/_includes/node' with { replaceWith: {} } only %}
-            </script>
         </div>
     </div>
 {% endblock %}
