@@ -17,6 +17,31 @@
     background: url(../img/blank.png);
 }
 
+.amnav select {
+    width: 100%;
+}
+
+.amnav__builder ul li {
+    background: none !important;
+}
+
+.amnav__builder ul li:not(:last-child):not(.last) {
+    border-left: none !important;
+    padding-left: 38px !important;
+}
+
+.amnav__builder > li:first-child > .row {
+    border-top: 1px dotted rgba(115, 127, 140, 0.15);
+}
+
+.amnav__builder .row {
+    border-bottom: 1px dotted rgba(115, 127, 140, 0.15);
+}
+
+.amnav__builder .status {
+    margin-right: 5px !important;
+}
+
 .amnav__builder .icon {
     margin: 5px 5px 0 0;
     opacity: 0;
@@ -34,4 +59,31 @@
 
 .amnav__builder .icon.settings:hover:before {
 	color: #0d78f2;
+}
+
+.amnav__builder .amnav__url {
+    float: right;
+    padding: 6px 7px;
+    width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.amnav__builder .amnav__url a {
+    color: #8f98a3;
+}
+
+.amnav__builder .amnav__url a:hover {
+    color: #0d78f2;
+}
+
+.structure .draghelper .status {
+    margin-right: 5px;
+}
+
+.structure .draghelper .amnav__url,
+.structure .draghelper .icon.settings,
+.structure .draghelper .icon.delete {
+    display: none;
 }

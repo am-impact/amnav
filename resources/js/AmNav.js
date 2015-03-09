@@ -171,7 +171,8 @@ Craft.AmNav = Garnish.Base.extend(
            .replace(/%%id%%/ig, nodeData.id)
            .replace(/%%status%%/ig, (nodeData.enabled ? "live" : "expired"))
            .replace(/%%label%%/ig, nodeData.name)
-           .replace(/%%url%%/ig, nodeData.url)
+           .replace(/%%url%%/ig, nodeData.url.replace('{siteUrl}', this.siteUrl))
+           .replace(/%%urlless%%/ig, nodeData.url.replace('{siteUrl}', ''))
            .replace(/%%blank%%/ig, (nodeData.blank ? "" : "visuallyhidden")),
            $node = $(nodeHtml);
 
@@ -236,22 +237,29 @@ Craft.AmNavStructure = Craft.Structure.extend(
      * @param object $element
      */
     addElement: function($element, parentId) {
-        var $appendTo = this.$container;
+        var $appendTo = this.$container,
+            level = 1;
         // Find the parent ID
         if (parentId > 0) {
             var $elementContainer = this.$container.find('.amnav__node[data-id="'+parentId+'"]').closest('li'),
-                $parentContainer  = $elementContainer.find('> ul');
+                $parentContainer  = $elementContainer.find('> ul'),
+                parentLevel = $elementContainer.data('level');
             // If the UL container doesn't exist, create it
             if (! $parentContainer.length) {
                 $parentContainer = $('<ul/>');
                 $parentContainer.appendTo($elementContainer);
             }
             $appendTo = $parentContainer;
+            // Update level
+            if (parentLevel > 1) {
+                level = parentLevel + 1;
+            }
         }
 
         // Add node to the structure
-        var $li = $('<li data-level="1"/>').appendTo($appendTo),
-            $row = $('<div class="row" style="margin-'+Craft.left+': -'+Craft.Structure.baseIndent+'px; padding-'+Craft.left+': '+Craft.Structure.baseIndent+'px;">').appendTo($li);
+        var $li = $('<li data-level="'+level+'"/>').appendTo($appendTo),
+            indent = this.getIndent(level),
+            $row = $('<div class="row" style="margin-'+Craft.left+': -'+indent+'px; padding-'+Craft.left+': '+indent+'px;">').appendTo($li);
 
         $row.append($element);
 

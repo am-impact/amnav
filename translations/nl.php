@@ -4,6 +4,7 @@ return array(
     'Add' => 'Toevoegen',
     'Add to navigation' => 'Toevoegen aan navigatie',
     'After' => 'Na',
+    'Are you sure you want to delete “{name}” and its descendants?' => 'Weet u zeker dat u “{name}” en de onderliggende wilt verwijderen?',
     'Before' => 'Voor',
     'Build navigation' => 'Navigatie bouwen',
     'Can add, edit and delete' => 'Kan toevoegen, wijzigen en verwijderen',

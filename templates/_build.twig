@@ -30,7 +30,8 @@
             '%%id%%':       node.id,
             '%%entryid%%':  node.entryId,
             '%%label%%':    node.name,
-            '%%url%%':      node.url,
+            '%%url%%':      node.url|replace('{siteUrl}', siteUrl),
+            '%%urlless%%':  node.url|replace('{siteUrl}', ''),
             '%%status%%':   (node.enabled ? 'live' : 'expired'),
             '%%blank%%':    (node.blank ? '' : 'visuallyhidden')
         } %}
@@ -48,26 +49,67 @@
 {% endmacro %}
 
 {% block main %}
-    <div class="amnav grid first">
-        <div class="item" data-position="left" data-min-colspan="2" data-max-colspan="3">
-            <div class="pane">
-                <div class="amnav__empty{% if nodes|length %} hidden{% endif %}">
-                    <p>{{ 'There are no nodes yet.'|t }}</p>
+    <div class="amnav">
+        <div class="grid first">
+            <div class="item" data-position="left" data-min-colspan="2" data-max-colspan="3">
+                <div class="pane">
+                    {% set paneTabs = {
+                        entries: { label: "Existing entries"|t, url: '#amnav-entries' },
+                        url: { label: "My own URL"|t, url: '#amnav-url' },
+                    } %}
+                    {% include "_includes/tabs" with { tabs: paneTabs } %}
+
+                    <div class="amnav__parent">
+                        {{ forms.selectField({
+                            label: "Parent node"|t,
+                            id: 'parent',
+                            class: 'fullwidth',
+                            name: 'parent',
+                            options: parentOptions
+                        }) }}
+                    </div>
+
+                    <div id="amnav-entries">
+                        <div class="buttons">
+                            <div class="btn submit add icon amnav__button">{{ 'Add an entry'|t }}</div>
+                            <div class="spinner hidden"></div>
+                        </div>
+                    </div>
+
+                    <div id="amnav-url" class="hidden">
+                        <form id="manual-form" method="post" accept-charset="UTF-8">
+                            {{ forms.textField({
+                                label: "Name"|t,
+                                id: 'name',
+                                name: 'name',
+                                first: true,
+                                required: true,
+                                instructions: 'Name of this node in the navigation.'|t
+                            }) }}
+                            {{ forms.textField({
+                                label: "URL"|t,
+                                id: 'url',
+                                name: 'url',
+                                required: true,
+                                instructions: 'The URL of this node.'|t
+                            }) }}
+                            {{ forms.lightswitchField({
+                                id: 'blank',
+                                name: 'blank',
+                                label: 'New window'|t,
+                                on: false,
+                                instructions: 'Whether to open this node in a new window.'|t
+                            }) }}
+
+                            <div class="buttons">
+                                <input type="submit" class="btn submit" value="{{ 'Add'|t }}">
+                                <div class="spinner hidden"></div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-
-                <ul id="amnav__builder" class="amnav__builder structure">
-                    {% for node in nodes %}
-                        {{ _self.addNodeToStructure(navigation, node) }}
-                    {% endfor %}
-                </ul>
-
-                <script id="amnav__row" type="text/template">
-                    {% include 'amnav/_includes/node' with { replaceWith: {} } only %}
-                </script>
             </div>
-        </div>
-        <div class="item" data-position="right" data-colspan="1">
-            {% if currentUser.admin %}
+            <div class="item" data-position="right" data-colspan="1">
                 <div class="pane">
                     <h1>{{ 'Display navigation'|t }}</h1>
                     <p class="light">{{ '{{ craft.amNav.getNav("' ~ navigation.handle ~ '") }}' }}</p>
@@ -76,64 +118,23 @@
                         <div class="btn submit amnav__nodeids">{{ 'Display node IDs'|t }}</div>
                     </div>
                 </div>
-            {% endif %}
-
-            <div class="pane">
-                {% set paneTabs = {
-                    entries: { label: "Existing entries"|t, url: '#amnav-entries' },
-                    url: { label: "My own URL"|t, url: '#amnav-url' },
-                } %}
-                {% include "_includes/tabs" with { tabs: paneTabs } %}
-
-                <div class="amnav__parent">
-                    {{ forms.selectField({
-                        label: "Parent node"|t,
-                        id: 'parent',
-                        class: 'fullwidth',
-                        name: 'parent',
-                        options: parentOptions
-                    }) }}
-                </div>
-
-                <div id="amnav-entries">
-                    <div class="buttons">
-                        <div class="btn submit add icon amnav__button">{{ 'Add an entry'|t }}</div>
-                        <div class="spinner hidden"></div>
-                    </div>
-                </div>
-
-                <div id="amnav-url" class="hidden">
-                    <form id="manual-form" method="post" accept-charset="UTF-8">
-                        {{ forms.textField({
-                            label: "Name"|t,
-                            id: 'name',
-                            name: 'name',
-                            first: true,
-                            required: true,
-                            instructions: 'Name of this node in the navigation.'|t
-                        }) }}
-                        {{ forms.textField({
-                            label: "URL"|t,
-                            id: 'url',
-                            name: 'url',
-                            required: true,
-                            instructions: 'The URL of this node.'|t
-                        }) }}
-                        {{ forms.lightswitchField({
-                            id: 'blank',
-                            name: 'blank',
-                            label: 'New window'|t,
-                            on: false,
-                            instructions: 'Whether to open this node in a new window.'|t
-                        }) }}
-
-                        <div class="buttons">
-                            <input type="submit" class="btn submit" value="{{ 'Add'|t }}">
-                            <div class="spinner hidden"></div>
-                        </div>
-                    </form>
-                </div>
             </div>
+        </div>
+
+        <div class="pane">
+            <div class="amnav__empty{% if nodes|length %} hidden{% endif %}">
+                <p>{{ 'There are no nodes yet.'|t }}</p>
+            </div>
+
+            <ul id="amnav__builder" class="amnav__builder structure">
+                {% for node in nodes %}
+                    {{ _self.addNodeToStructure(navigation, node) }}
+                {% endfor %}
+            </ul>
+
+            <script id="amnav__row" type="text/template">
+                {% include 'amnav/_includes/node' with { replaceWith: {} } only %}
+            </script>
         </div>
     </div>
 {% endblock %}
