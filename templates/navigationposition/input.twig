@@ -1,69 +1,49 @@
 {% import "_includes/forms" as forms %}
 
-{% if value.nodeId is defined %}
-    <input type="hidden" name="{{ name }}[nodeId]" value="{{ value.nodeId }}">
-{% endif %}
+{% macro addNodeToNavigation(value, node) %}
+    <li data-level="{{ node.level }}">
+        {% set indent = 8 + (node.level - 1) * 35 %}
+        <div class="row{% if value.nodeId is defined and value.nodeId == node.id %} row--current{% endif %}" style="margin-left: -{{ indent }}px; padding-left: {{ indent }}px;">
+            <div class="amnav__node element" data-id="{{ node.id }}" data-label="{{ node.name }}">
+                <div class="label">
+                    <span class="amnav__id visuallyhidden"><strong>{{ node.id }}</strong></span>
+                    <span class="status {{ (node.enabled ? 'live' : 'expired') }}"></span>
+                    <span class="title">{{ node.name }}</span>
+                    <span class="amnav__blank {{ (node.blank ? '' : 'visuallyhidden') }}" title="{{ 'Opens in a new window'|t }}"></span>
+                </div>
+            </div>
+        </div>
+        {% if node.children is defined %}
+            <ul>
+            {% for subnode in node.children %}
+                {{ _self.addNodeToNavigation(value, subnode) }}
+            {% endfor %}
+            </ul>
+        {% endif %}
+    </li>
+{% endmacro %}
 
-<div id="{{ id }}" class="matrixblock">
-    <div class="grid" data-cols="5" data-mode="pct">
-        <div class="item" data-colspan="1">
-            {{ forms.lightswitchField({
-                label: 'Determine position'|t,
-                id: 'determinePosition',
-                name: name ~ '[determinePosition]',
-                on: value.nodeId is defined
-            }) }}
-        </div>
-        <div class="item" data-colspan="2">
-            <div class="navigation-position__field{% if value.nodeId is not defined %} hidden{% endif %}">
-                {{ forms.selectField({
-                    label: 'Position in navigation'|t,
-                    id: 'position',
-                    name: name ~ '[position]',
-                    class: 'fullwidth',
-                    options: positionOptions,
-                    value: (value.nodeId is defined ? value.nodeId : '')
-                }) }}
-            </div>
-            {% if value.nodeId is defined %}
-                <span class="navigation-position__message error hidden">{{ 'Delete from navigation when saving content.'|t }}</span>
-            {% endif %}
-        </div>
-        <div class="item" data-colspan="2">
-            <div class="navigation-position__field{% if value.nodeId is not defined %} hidden{% endif %}">
-                {% if not noNodes %}
-                    {{ forms.selectField({
-                        label: 'Positioning this'|t,
-                        id: 'action',
-                        name: name ~ '[action]',
-                        class: 'fullwidth',
-                        options: actionOptions
-                    }) }}
-                {% endif %}
-            </div>
-        </div>
+<div id="{{ id }}" class="amnav matrixblock">
+    {% if value.nodeId is defined -%}
+        <input type="hidden" name="{{ name }}[nodeId]" value="{{ value.nodeId }}">
+    {% endif %}
+    <input class="amnav__position--chosen" type="hidden" name="{{ name }}[positionChosen]" value="0">
+    <input class="amnav__position--parentId" type="hidden" name="{{ name }}[parentId]" value="">
+    <input class="amnav__position--prevId" type="hidden" name="{{ name }}[prevId]" value="">
+    {{ forms.lightswitchField({
+        label: 'Determine position'|t,
+        id: 'determinePosition',
+        name: name ~ '[determinePosition]',
+        on: value.nodeId is defined
+    }) }}
+    <div class="navigation-position__field{% if value.nodeId is not defined %} hidden{% endif %}">
+        <ul id="amnav__builder" class="amnav__builder structure">
+            {% for node in nodes %}
+                {{ _self.addNodeToNavigation(value, node) }}
+            {% endfor %}
+        </ul>
     </div>
+    {% if value.nodeId is defined %}
+        <span class="navigation-position__message error hidden">{{ 'Delete from navigation when saving content.'|t }}</span>
+    {% endif %}
 </div>
-
-{% set js %}
-    /**
-     * Display / remove hidden fields.
-     */
-    (function() {
-        var $field = $('[id$={{ id }}]'),
-            $hiddenFields = $field.find('.navigation-position__field'),
-            $deleteMessage = $field.find('.navigation-position__message');
-
-        $field.on('click', '.lightswitch', function() {
-            if($(this).find('input').val()) {
-                $hiddenFields.removeClass('hidden');
-                $deleteMessage.addClass('hidden');
-            }
-            else {
-                $hiddenFields.addClass('hidden');
-                $deleteMessage.removeClass('hidden');
-            }
-        });
-    })();
-{% endset %}
-{% includeJs js %}

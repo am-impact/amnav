@@ -53,24 +53,22 @@ class AmNav_NavigationPositionFieldType extends BaseFieldType
         // Get the nodes added in this navigation
         $nodes = craft()->amNav->getNodesByNavigationId($settings['navId'], $this->element->locale);
 
-        // Action options
-        $actionOptions = array(
-            'after'  => Craft::t('{action} the selected', array('action' => Craft::t('After'))),
-            'before' => Craft::t('{action} the selected', array('action' => Craft::t('Before'))),
-            'child'  => Craft::t('{action} the selected', array('action' => Craft::t('Under')))
+        // Load resources
+        $js = sprintf(
+            'new Craft.NavigationPosition("%s");',
+            $id
         );
-        if ($currentNodeId !== false) {
-            $actionOptions = array_merge(array('keep' => Craft::t('Keep position')), $actionOptions);
-        }
+        craft()->templates->includeJs($js);
+        craft()->templates->includeJsResource('amnav/js/NavigationPosition.js');
+        craft()->templates->includeCssResource('amnav/css/NavigationPosition.css');
+        craft()->templates->includeTranslations('Position here', 'Add to navigation');
 
         return craft()->templates->render('amNav/navigationposition/input', array(
             'id' => $id,
             'name' => $name,
             'value' => $value,
             'navigation' => $navigation,
-            'noNodes' => ! count($nodes),
-            'positionOptions' => $this->_getPositionOptions($nodes, $currentNodeId, $value),
-            'actionOptions' => $actionOptions
+            'nodes' => $nodes
         ));
     }
 
@@ -90,13 +88,15 @@ class AmNav_NavigationPositionFieldType extends BaseFieldType
 
         // Create or update existing node
         if (isset($fieldData['determinePosition']) && ! empty($fieldData['determinePosition'])) {
-            // Update existing node
-            if (isset($fieldData['nodeId']) && ! empty($fieldData['nodeId'])) {
-                $this->_updateNode($fieldData['nodeId'], $content, $fieldData, $settings);
-            }
-            // Create a new node
-            elseif (isset($fieldData['position']) && isset($fieldData['action'])) {
-                $this->_createNode($content, $fieldData, $settings);
+            // Only if the user chose a position!
+            if (isset($fieldData['positionChosen']) && $fieldData['positionChosen'] && isset($fieldData['parentId']) && isset($fieldData['prevId'])) {
+                // Update existing node
+                if (isset($fieldData['nodeId']) && ! empty($fieldData['nodeId'])) {
+                    $this->_updateNode($content, $fieldData);
+                }
+                else {
+                    $this->_createNode($content, $settings['navId'], $fieldData);
+                }
             }
         }
         // Delete existing node
@@ -131,139 +131,27 @@ class AmNav_NavigationPositionFieldType extends BaseFieldType
     }
 
     /**
-     * Get position options for given nodes.
-     *
-     * @param array $nodes
-     * @param mixed $currentNodeId
-     * @param bool  $skipFirst
-     *
-     * @return array
-     */
-    private function _getPositionOptions($nodes, $currentNodeId, $skipFirst = false)
-    {
-        $positionOptions = array();
-        if (! $skipFirst && ! count($nodes)) {
-            $positionOptions[] = array(
-                'label' => Craft::t('Add to navigation'),
-                'value' => 'add'
-            );
-        }
-        foreach ($nodes as $node) {
-            $label = '';
-            for ($i = 1; $i < $node['level']; $i++) {
-                $label .= '    ';
-            }
-            $label .= $node['name'];
-
-            $positionOptions[] = array(
-                'label'    => $label,
-                'value'    => $node['id'],
-                'disabled' => $currentNodeId !== false && $currentNodeId == $node['id'] ? true : false
-            );
-            if (isset($node['children'])) {
-                foreach($this->_getPositionOptions($node['children'], $currentNodeId, true) as $childNode) {
-                    $positionOptions[] = $childNode;
-                }
-            }
-        }
-        return $positionOptions;
-    }
-
-    /**
-     * Get the previous ID based on a given ID.
-     *
-     * @param array $nodes
-     * @param int   $parentId
-     * @param int   $id
-     *
-     * @return bool|int
-     */
-    private function _getPrevNodeId($nodes, $parentId, $id)
-    {
-        foreach ($nodes as $key => $node) {
-            if ($parentId == $node['parentId']) {
-                if ($node['id'] == $id) {
-                    if (isset($nodes[$key - 1])) {
-                        return $nodes[$key - 1]['id'];
-                    }
-                    else {
-                        return false;
-                    }
-                }
-            }
-            if (isset($node['children'])) {
-                if (($foundId = $this->_getPrevNodeId($node['children'], $parentId, $id)) !== false) {
-                    return $foundId;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
      * Create a new navigation node.
      *
      * @param ContentModel $content
+     * @param int          $navId
      * @param array        $fieldData
-     * @param array        $settings
      */
-    private function _createNode($content, $fieldData, $settings)
+    private function _createNode($content, $navId, $fieldData)
     {
-        $movePage = false;
+        $parentId = (int)$fieldData['parentId'];
+        $prevId = (int)$fieldData['prevId'];
 
         // Prepare node model
         $node = new AmNav_NodeModel();
-        $node->navId = $settings['navId'];
+        $node->navId = $navId;
         $node->entryId = $this->element->id;
         $node->name = $content->title;
         $node->url = '{siteUrl}' . $this->element->uri;
         $node->blank = false;
         $node->enabled = true;
         $node->locale = $this->element->locale;
-
-        // Add to root?
-        if ($fieldData['position'] == 'add') {
-            $node->parentId = 0;
-        }
-        // Add to navigation node?
-        elseif (is_numeric($fieldData['position'])) {
-            switch ($fieldData['action']) {
-                case 'after':
-                    // Add it to the root first
-                    $node->parentId = 0;
-
-                    // We will move this page when it's saved
-                    $movePage = true;
-
-                    // Find parentId and prevId
-                    $selectedNode = craft()->amNav_node->getNodeById($fieldData['position']);
-                    $parentId     = $selectedNode ? $selectedNode['parentId'] : 0;
-                    $prevId       = $fieldData['position']; // The current selected node
-                    break;
-
-                case 'before':
-                    // Add it to the root first
-                    $node->parentId = 0;
-
-                    // We will move this page when it's saved
-                    $movePage = true;
-
-                    // Find parentId and prevId
-                    $nodes        = craft()->amNav->getNodesByNavigationId($settings['navId'], $this->element->locale);
-                    $selectedNode = craft()->amNav_node->getNodeById($fieldData['position']);
-                    $parentId     = $selectedNode ? $selectedNode['parentId'] : 0;
-                    $prevId       = $this->_getPrevNodeId($nodes, $parentId, $fieldData['position']);
-                    break;
-
-                default:
-                    $node->parentId = $fieldData['position'];
-                    break;
-            }
-        }
-        // Ignore other positions
-        else {
-            return false;
-        }
+        $node->parentId = $parentId;
 
         // Save the node!
         if (($savedNode = craft()->amNav_node->saveNode($node)) !== false) {
@@ -276,7 +164,11 @@ class AmNav_NavigationPositionFieldType extends BaseFieldType
             craft()->content->saveContent($this->element);
 
             // Do we have to move the page?
-            if ($movePage !== false) {
+            if ($prevId >= 0) {
+                // Unset prevId if it's a 'before' position type
+                if ($prevId === 0) {
+                    $prevId = false;
+                }
                 craft()->amNav_node->moveNode($savedNode, $parentId, $prevId);
             }
         }
@@ -285,49 +177,27 @@ class AmNav_NavigationPositionFieldType extends BaseFieldType
     /**
      * Update an existing navigation node.
      *
-     * @param int          $nodeId
      * @param ContentModel $content
      * @param array        $fieldData
-     * @param array        $settings
      */
-    private function _updateNode($nodeId, $content, $fieldData, $settings)
+    private function _updateNode($content, $fieldData)
     {
-        // Do we keep the node in place?
-        if ($fieldData['action'] == 'keep') {
-            return false;
-        }
-
         // Get node
-        $node = craft()->amNav_node->getNodeById($nodeId);
+        $node = craft()->amNav_node->getNodeById($fieldData['nodeId']);
         if (! $node) {
             return false;
         }
 
-        // Move node?
-        if (is_numeric($fieldData['position'])) {
-            switch ($fieldData['action']) {
-                case 'after':
-                    // Find parentId and prevId
-                    $selectedNode = craft()->amNav_node->getNodeById($fieldData['position']);
-                    $parentId     = $selectedNode ? $selectedNode['parentId'] : 0;
-                    $prevId       = $fieldData['position']; // The current selected node
-                    break;
-
-                case 'before':
-                    // Find parentId and prevId
-                    $nodes        = craft()->amNav->getNodesByNavigationId($settings['navId'], $this->element->locale);
-                    $selectedNode = craft()->amNav_node->getNodeById($fieldData['position']);
-                    $parentId     = $selectedNode ? $selectedNode['parentId'] : 0;
-                    $prevId       = $this->_getPrevNodeId($nodes, $parentId, $fieldData['position']);
-                    break;
-
-                default:
-                    $parentId = $fieldData['position'];
-                    $prevId   = false;
-                    break;
-            }
-            craft()->amNav_node->moveNode($node, $parentId, $prevId);
+        // Set information
+        $parentId = (int)$fieldData['parentId'];
+        $prevId = (int)$fieldData['prevId'];
+        // UnsetprevId if it's a 'before' or 'under' position type
+        if ($prevId === -1 || $prevId === 0) {
+            $prevId = false;
         }
+
+        // Move the node!
+        craft()->amNav_node->moveNode($node, $parentId, $prevId);
     }
 
     /**
