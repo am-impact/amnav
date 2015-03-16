@@ -39,6 +39,17 @@
             required: true,
             instructions: 'Name of this navigation in the templates.'|t
         }) }}
+        {% if entrySources|length %}
+            <hr>
+            {{ forms.checkboxSelectField({
+                label: 'Sources'|t ~ ' (' ~ 'Entries'|t ~ ')',
+                id: 'entrySources',
+                name: 'settings[entrySources]',
+                options: entrySources,
+                values: (navigation.settings.entrySources is defined ? navigation.settings.entrySources : []),
+                instructions: "Which sources do you want to select {type} from?"|t({ type: entryType|lower })
+            }) }}
+        {% endif %}
         <hr>
         {{ forms.textField({
             label: "Max Levels"|t,

@@ -12,7 +12,8 @@ class AmNav_NavigationModel extends BaseModel
             'settings'    => array(AttributeType::Mixed, 'default' => array(
                 'canDeleteFromLevel' => '',
                 'canMoveFromLevel' => '',
-                'maxLevels' => ''
+                'maxLevels' => '',
+                'entrySources' => ''
             )),
             'dateCreated' => AttributeType::DateTime,
             'dateUpdated' => AttributeType::DateTime

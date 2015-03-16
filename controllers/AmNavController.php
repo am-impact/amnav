@@ -38,6 +38,11 @@ class AmNavController extends BaseController
             $variables['navigation'] = new AmNav_NavigationModel();
         }
 
+        // Get element type
+        $entryElementType = $this->_getElementTypeInfo(ElementType::Entry);
+        $variables['entryType'] = $entryElementType['type'];
+        $variables['entrySources'] = $entryElementType['sources'];
+
         // Render the template
         $this->renderTemplate('amNav/_edit', $variables);
     }
@@ -69,6 +74,12 @@ class AmNavController extends BaseController
             $variables['locale'] = $locale;
         }
 
+        // Set element sources
+        $entrySources = '*';
+        if (isset($variables['navigation']->settings['entrySources'])) {
+            $entrySources = $variables['navigation']->settings['entrySources'];
+        }
+
         // Get proper siteUrl
         $siteUrl = craft()->config->getLocalized('siteUrl', $locale);
 
@@ -82,6 +93,7 @@ class AmNavController extends BaseController
                 locale: "%s",
                 siteUrl: "%s",
                 isAdmin: %s,
+                entrySources: %s,
                 maxLevels: %s,
                 canDeleteFromLevel: %d,
                 canMoveFromLevel: %d
@@ -90,6 +102,7 @@ class AmNavController extends BaseController
             $locale,
             $siteUrl,
             craft()->userSession->isAdmin() ? 'true' : 'false',
+            json_encode($entrySources),
             $variables['navigation']->settings['maxLevels'] ?: 'null',
             $variables['navigation']->settings['canDeleteFromLevel'] ?: 0,
             $variables['navigation']->settings['canMoveFromLevel'] ?: 0
@@ -139,6 +152,9 @@ class AmNavController extends BaseController
 
         // Set attributes
         $attributes = craft()->request->getPost();
+        if (! isset($attributes['settings']['entrySources']) || $attributes['settings']['entrySources'] == '') {
+            $attributes['settings']['entrySources'] = '*';
+        }
         if (! is_numeric($attributes['settings']['maxLevels'])) {
             $attributes['settings']['maxLevels'] = '';
         }
@@ -167,5 +183,27 @@ class AmNavController extends BaseController
                 'navigation' => $navigation
             ));
         }
+    }
+
+    /**
+     * Get elementType information.
+     *
+     * @param string $type
+     *
+     * @return array
+     */
+    private function _getElementTypeInfo($type)
+    {
+        $sources = array();
+        $elementType = craft()->elements->getElementType($type);
+        foreach ($elementType->getSources() as $key => $source) {
+            if (!isset($source['heading'])) {
+                $sources[] = array('label' => $source['label'], 'value' => $key);
+            }
+        }
+        return array(
+            'type' => $elementType->getName(),
+            'sources' => $sources
+        );
     }
 }

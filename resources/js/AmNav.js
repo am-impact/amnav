@@ -9,6 +9,7 @@ Craft.AmNav = Garnish.Base.extend(
     locale: null,
     siteUrl: '',
     savingNode: false,
+    entrySources: '',
 
     $template: $('#amnav__row').html(),
     $buildContainer: $('.amnav__builder'),
@@ -23,9 +24,10 @@ Craft.AmNav = Garnish.Base.extend(
      * Initiate AmNav.
      */
     init: function(id, settings) {
-        this.id        = id;
-        this.locale    = settings.locale;
-        this.siteUrl   = settings.siteUrl;
+        this.id = id;
+        this.locale = settings.locale;
+        this.siteUrl = settings.siteUrl;
+        this.entrySources = settings.entrySources;
         this.structure = new Craft.AmNavStructure(id, '#amnav__builder', '.amnav__builder', settings);
 
         this.addListener(this.$addEntryButton, 'activate', 'showModal');
@@ -56,6 +58,7 @@ Craft.AmNav = Garnish.Base.extend(
             criteria: {
                 locale: this.locale
             },
+            sources: this.entrySources,
             multiSelect: true,
             onSelect: $.proxy(this, 'onModalSelect')
         });
