@@ -55,11 +55,12 @@ class AmNav_NavigationPositionFieldType extends BaseFieldType
 
         // Load resources
         $js = sprintf(
-            'new Craft.NavigationPosition("%s");',
-            $id
+            'new Craft.NavigationPosition("%s", %s);',
+            $id,
+            json_encode($navigation['settings'])
         );
         craft()->templates->includeJs($js);
-        craft()->templates->includeJsResource('amnav/js/NavigationPosition.js');
+        craft()->templates->includeJsResource('amnav/js/NavigationPosition.min.js');
         craft()->templates->includeCssResource('amnav/css/NavigationPosition.css');
         craft()->templates->includeTranslations('Position here', 'Add to navigation');
 

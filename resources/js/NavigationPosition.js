@@ -17,11 +17,14 @@ Craft.NavigationPosition = Garnish.Base.extend(
 
     parentId: 0,
     prevId: -1,
+    settings: {},
 
     /**
      * Initiate Navigation Position.
      */
-    init: function(id) {
+    init: function(id, settings) {
+        this.settings = settings;
+
         // Set Field
         this.$field = $('[id$='+id+']');
 
@@ -31,6 +34,16 @@ Craft.NavigationPosition = Garnish.Base.extend(
             this.$current.addClass('row--disabled');
             this.$current.parent().find('li .row').addClass('row--disabled');
             this.$current = this.$current.closest('li');
+        }
+        if (this.settings.maxLevels.length) {
+            var self = this,
+                $disableNodes = this.$field.find('li').filter(function() {
+                    return $(this).data('level') > self.settings.maxLevels;
+                });
+
+            if ($disableNodes.length) {
+                $disableNodes.find('.row').addClass('row--disabled');
+            }
         }
 
         // Set objects
@@ -80,13 +93,16 @@ Craft.NavigationPosition = Garnish.Base.extend(
     createIndications: function(event) {
         var $element = $(event.currentTarget).closest('li'),
             $elementContainer = $element.find('> ul'),
+            elementLevel = $element.data('level'),
             removeIndications = $element.hasClass('amnav__node--active');
 
         // Remove current position indications
         if (this.$tempBefore !== null) {
             this.$tempBefore.remove();
             this.$tempAfter.remove();
-            this.$tempUnder.remove();
+            if (this.$tempUnder !== null) {
+                this.$tempUnder.remove();
+            }
             this.$elements.closest('li').removeClass('amnav__node--active');
         }
 
@@ -98,17 +114,19 @@ Craft.NavigationPosition = Garnish.Base.extend(
             this.$tempBefore = $('<li class="indication" data-position-type="before"><div class="indication--label"><strong>'+Craft.t('Position here')+'</strong></div></li>').insertBefore($element),
             this.$tempAfter = $('<li class="indication" data-position-type="after"><div class="indication--label"><strong>'+Craft.t('Position here')+'</strong></div></li>').insertAfter($element);
 
-            if (! $elementContainer.length) {
-                this.$tempUnder = $('<ul><li class="indication" data-position-type="under"><div class="indication--label"><strong>'+Craft.t('Position here')+'</strong></li></div></ul>').appendTo($element);
-            }
-            else {
-                this.$tempUnder = $('<li class="indication" data-position-type="under"><div class="indication--label"><strong>'+Craft.t('Position here')+'</strong></div></li>').prependTo($elementContainer);
+            if (! this.settings.maxLevels.length || (this.settings.maxLevels.length && (elementLevel + 1) <= this.settings.maxLevels)) {
+                if (! $elementContainer.length) {
+                    this.$tempUnder = $('<ul><li class="indication" data-position-type="under"><div class="indication--label"><strong>'+Craft.t('Position here')+'</strong></li></div></ul>').appendTo($element);
+                }
+                else {
+                    this.$tempUnder = $('<li class="indication" data-position-type="under"><div class="indication--label"><strong>'+Craft.t('Position here')+'</strong></div></li>').prependTo($elementContainer);
+                }
+                this.addListener(this.$tempUnder, 'click', 'indicatePosition');
             }
 
             // Add events
             this.addListener(this.$tempBefore, 'click', 'indicatePosition');
             this.addListener(this.$tempAfter, 'click', 'indicatePosition');
-            this.addListener(this.$tempUnder, 'click', 'indicatePosition');
 
             // Clean up some of the indications?
             this.cleanIndications();
