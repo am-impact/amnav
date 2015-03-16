@@ -119,11 +119,12 @@ class AmNavService extends BaseApplicationComponent
      * Get parent options for given nodes.
      *
      * @param array $nodes
+     * @param mixed $maxLevel
      * @param bool  $skipFirst
      *
      * @return array
      */
-    public function getParentOptions($nodes, $skipFirst = false)
+    public function getParentOptions($nodes, $maxLevel = false, $skipFirst = false)
     {
         $parentOptions = array();
         if (! $skipFirst) {
@@ -141,10 +142,11 @@ class AmNavService extends BaseApplicationComponent
 
             $parentOptions[] = array(
                 'label' => $label,
-                'value' => $node['id']
+                'value' => $node['id'],
+                'disabled' => ($maxLevel !== false && $node['level'] >= $maxLevel) ? true : false
             );
             if (isset($node['children'])) {
-                foreach($this->getParentOptions($node['children'], true) as $childNode) {
+                foreach($this->getParentOptions($node['children'], $maxLevel, true) as $childNode) {
                     $parentOptions[] = $childNode;
                 }
             }

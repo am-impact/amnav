@@ -51,9 +51,10 @@ class AmNav_NodesController extends BaseController
                 $returnData['nodeData'] = $node;
 
                 // Get parent options
+                $navigation = craft()->amNav->getNavigationById($node->navId);
                 $nodes = craft()->amNav->getNodesByNavigationId($node->navId, $attributes['locale']);
                 $variables['selected'] = $node->parentId;
-                $variables['parentOptions'] = craft()->amNav->getParentOptions($nodes);
+                $variables['parentOptions'] = craft()->amNav->getParentOptions($nodes, ($navigation->settings['maxLevels'] ?: false));
                 $returnData['parentOptions'] = $this->renderTemplate('amNav/_build/parent', $variables, true);
             }
         }
@@ -129,9 +130,10 @@ class AmNav_NodesController extends BaseController
         $result = craft()->amNav_node->moveNode($node, $parentId, $prevId);
 
         // Get parent options
+        $navigation = craft()->amNav->getNavigationById($node->navId);
         $nodes = craft()->amNav->getNodesByNavigationId($node->navId, $node->locale);
         $variables['selected'] = $node->id;
-        $variables['parentOptions'] = craft()->amNav->getParentOptions($nodes);
+        $variables['parentOptions'] = craft()->amNav->getParentOptions($nodes, ($navigation->settings['maxLevels'] ?: false));
         $parentOptions = $this->renderTemplate('amNav/_build/parent', $variables, true);
 
         $returnData = array(
@@ -160,9 +162,10 @@ class AmNav_NodesController extends BaseController
         $result = craft()->amNav_node->deleteNodeById($nodeId);
 
         // Get parent options
+        $navigation = craft()->amNav->getNavigationById($node->navId);
         $nodes = craft()->amNav->getNodesByNavigationId($node->navId, $node->locale);
         $variables['selected'] = 0;
-        $variables['parentOptions'] = craft()->amNav->getParentOptions($nodes);
+        $variables['parentOptions'] = craft()->amNav->getParentOptions($nodes, ($navigation->settings['maxLevels'] ?: false));
         $parentOptions = $this->renderTemplate('amNav/_build/parent', $variables, true);
 
         $returnData = array(

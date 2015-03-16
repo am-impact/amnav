@@ -43,6 +43,7 @@ return array(
     'Position here' => 'Hier positioneren',
     'Position in navigation' => 'Positie in navigatie',
     'Positioning this' => 'Deze positioneren',
+    'The maximum level is: <strong>{level}</strong>' => 'Het maximale niveau is: <strong>{level}</strong>',
     'The maximum number of levels this navigation can have. Leave blank if you don’t care.' => 'Het maximum aantal niveau\'s dat deze navigatie kan hebben. Laat leeg als dit niet uitmaakt.',
     'The URL of this node.' => 'De URL van deze pagina.',
     'There are no navigations yet.' => 'Er zijn nog geen navigaties.',

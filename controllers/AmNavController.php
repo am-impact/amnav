@@ -74,7 +74,7 @@ class AmNavController extends BaseController
 
         // Get saved nodes
         $variables['nodes'] = craft()->amNav->getNodesByNavigationId($variables['navId'], $locale);
-        $variables['parentOptions'] = craft()->amNav->getParentOptions($variables['nodes']);
+        $variables['parentOptions'] = craft()->amNav->getParentOptions($variables['nodes'], ($variables['navigation']->settings['maxLevels'] ?: false));
 
         // Load javascript
         $js = sprintf(

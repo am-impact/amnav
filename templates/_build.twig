@@ -65,7 +65,8 @@
                             id: 'parent',
                             class: 'fullwidth',
                             name: 'parent',
-                            options: parentOptions
+                            options: parentOptions,
+                            instructions: (navigation.settings.maxLevels ? 'The maximum level is: <strong>{level}</strong>'|t({ level: navigation.settings.maxLevels }) : '')
                         }) }}
                     </div>
 
