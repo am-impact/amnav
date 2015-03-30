@@ -82,6 +82,9 @@ class AmNavController extends BaseController
 
         // Get proper siteUrl
         $siteUrl = craft()->config->getLocalized('siteUrl', $locale);
+        if (! $siteUrl) {
+            $siteUrl = craft()->getSiteUrl();
+        }
 
         // Get saved nodes
         $variables['nodes'] = craft()->amNav->getNodesByNavigationId($variables['navId'], $locale);
