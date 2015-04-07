@@ -317,12 +317,14 @@ class AmNavService extends BaseApplicationComponent
     /**
      * Parse URL.
      *
-     * @param string $url
+     * @param array $node
      *
      * @return string
      */
-    private function _parseUrl($url)
+    private function _parseUrl($node)
     {
+        $url        = ! empty($node['elementId']) ? '{siteUrl}' . $node['elementUrl'] : $node['url'];
+        $url        = str_replace('__home__', '', $url);
         $isAnchor   = substr(str_replace('{siteUrl}', '', $url), 0, 1) == '#';
         $isSiteLink = strpos($url, '{siteUrl}') !== false;
         $isHomepage = str_replace('{siteUrl}', '', $url) == '';
@@ -342,12 +344,13 @@ class AmNavService extends BaseApplicationComponent
      */
     private function _isNodeActive($node)
     {
-        $url = $node['url'];
+        $url = ! empty($node['elementId']) ? $node['elementUrl'] : $node['url'];
         $path = craft()->request->getPath();
         $segments = craft()->request->getSegments();
         $segmentCount = count($segments) > 0 ? count($segments) : 1;
 
         $url = str_replace('{siteUrl}', '', $url);
+        $url = str_replace('__home__', '', $url);
         if ($url == $path) {
             $this->_activeNodeIds[ $this->_navigation->handle ][ $segmentCount ] = $node['id'];
             return true;
@@ -442,7 +445,7 @@ class AmNavService extends BaseApplicationComponent
                 if ($this->_parseEnvironment) {
                     if ($node['enabled'] || $this->_getParam('overrideStatus', false)) {
                         $node['active'] = $this->_isNodeActive($node);
-                        $node['url'] = $this->_parseUrl($node['url']);
+                        $node['url'] = $this->_parseUrl($node);
                     }
                     else {
                         // Skip this node
@@ -521,7 +524,7 @@ class AmNavService extends BaseApplicationComponent
                 // Add curent node
                 $nav .= sprintf("\n" . '<li%1$s><a%5$s href="%2$s"%3$s>%4$s</a>',
                     count($nodeClasses) ? ' class="' . implode(' ', $nodeClasses) . '"' : '',
-                    $this->_parseUrl($node['url']),
+                    $this->_parseUrl($node),
                     $node['blank'] ? ' target="_blank"' : '',
                     $node['name'],
                     $this->_getParam('classBlank', false) !== false ? ' class="' . $this->_getParam('classBlank', false) . '"' : ''

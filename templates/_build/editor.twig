@@ -8,7 +8,7 @@
     instructions: 'Name of this node in the navigation.'|t
 }) }}
 
-{% if not node.entryId|length %}
+{% if not node.elementId|length %}
 	{{ forms.textField({
 	    id: 'url',
 	    name: 'url',
@@ -17,14 +17,16 @@
 	    instructions: 'The URL of this node.'|t
 	}) }}
 {% else %}
-    {% set entry = craft.entries.id(node.entryId).locale(node.locale).first() %}
+    {% if node.elementType == 'Entry' %}
+        {% set element = craft.entries.id(node.elementId).locale(node.locale).first() %}
+    {% endif %}
 
-    {% if entry %}
+    {% if element is defined and element %}
         <div class="field">
             <div class="heading">
                 <label>{{ 'Linked to'|t }}</label>
                 <div class="instructions">
-                    <p>{{ entry.title }}<br>{{ 'URI'|t }}: {{ entry.uri }}<br><a href="{{ entry.cpEditUrl }}" target="_blank">{{ 'Edit'|t }}</a></p>
+                    <p>{{ element.title }}<br>{{ 'URI'|t }}: {{ element.uri }}<br><a href="{{ element.cpEditUrl }}" target="_blank">{{ 'Edit'|t }}</a></p>
                 </div>
             </div>
         </div>

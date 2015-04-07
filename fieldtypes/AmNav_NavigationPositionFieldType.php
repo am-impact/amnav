@@ -146,9 +146,9 @@ class AmNav_NavigationPositionFieldType extends BaseFieldType
         // Prepare node model
         $node = new AmNav_NodeModel();
         $node->navId = $navId;
-        $node->entryId = $this->element->id;
+        $node->elementId = $this->element->id;
+        $node->elementType = $this->element->elementType;
         $node->name = $content->title;
-        $node->url = '{siteUrl}' . $this->element->uri;
         $node->blank = false;
         $node->enabled = true;
         $node->locale = $this->element->locale;

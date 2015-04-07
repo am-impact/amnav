@@ -39,10 +39,11 @@ class AmNav_NodeService extends BaseApplicationComponent
             return $this->_nodes[$navId];
         }
         $this->_nodes[$navId] = craft()->db->createCommand()
-            ->select('*')
-            ->from('amnav_nodes')
-            ->where(array('navId' => $navId, 'locale' => $locale))
-            ->order(array('parentId asc', 'order asc'))
+            ->select('nodes.*, i18n.uri elementUrl')
+            ->from('amnav_nodes nodes')
+            ->join('elements_i18n i18n', 'i18n.elementId = nodes.elementId AND i18n.locale = nodes.locale')
+            ->where(array('nodes.navId' => $navId, 'nodes.locale' => $locale, 'i18n.locale' => $locale))
+            ->order(array('nodes.parentId asc', 'nodes.order asc'))
             ->queryAll();
         return $this->_nodes[$navId];
     }
@@ -72,7 +73,7 @@ class AmNav_NodeService extends BaseApplicationComponent
         }
 
         // Set attributes
-        $nodeRecord->setAttributes($node->getAttributes());
+        $nodeRecord->setAttributes($node->getAttributes(), false);
         if ($isNewNode) {
             $nodeRecord->order = $this->_getNewOrderNumber($node->navId, $node->parentId, $node->locale);
         }
@@ -179,28 +180,22 @@ class AmNav_NodeService extends BaseApplicationComponent
      *
      * @param EntryModel $entry
      * @param bool       $beforeEntryEvent
-     * @param bool       $skipUpdatingDescendants
      */
-    public function updateNodesForEntry(EntryModel $entry, $beforeEntryEvent = false, $skipUpdatingDescendants = false)
+    public function updateNodesForEntry(EntryModel $entry, $beforeEntryEvent = false)
     {
         $nodeRecords = AmNav_NodeRecord::model()->findAllByAttributes(array(
-            'entryId' => $entry->id,
+            'elementId' => $entry->id,
+            'elementType' => ElementType::Entry,
             'locale'  => $entry->locale
         ));
         if (count($nodeRecords)) {
             // Get Entry model with data before it's being saved
             $beforeSaveEntry = $beforeEntryEvent ? craft()->entries->getEntryById($entry->id, $entry->locale) : false;
 
-            if (! $skipUpdatingDescendants) {
-                $updatedDescendants = false;
-            }
-
             // Update node records
             foreach ($nodeRecords as $nodeRecord) {
                 // Set update data
-                $newUrl = '{siteUrl}' . str_ireplace('__home__', '', $entry->uri);
                 $updateData = array(
-                    'url' => $newUrl,
                     'enabled' => $entry->enabled,
                 );
 
@@ -211,12 +206,6 @@ class AmNav_NodeService extends BaseApplicationComponent
 
                 // Save this node!
                 $this->_updateNodeById($nodeRecord->id, $updateData);
-
-                // Update URLs from possible entry descendant nodes
-                if (! $skipUpdatingDescendants && ! $updatedDescendants && $newUrl != $nodeRecord->url) {
-                    $updatedDescendants = true;
-                    $this->_updateDescendantsForEntry($entry);
-                }
             }
         }
     }
@@ -229,30 +218,12 @@ class AmNav_NodeService extends BaseApplicationComponent
     public function deleteNodesForEntry(EntryModel $entry)
     {
         $nodeRecords = AmNav_NodeRecord::model()->findAllByAttributes(array(
-            'entryId' => $entry->id,
+            'elementId' => $entry->id,
+            'elementType' => ElementType::Entry,
             'locale'  => $entry->locale
         ));
         foreach ($nodeRecords as $nodeRecord) {
             $this->deleteNodeById($nodeRecord->id);
-        }
-    }
-
-    /**
-     * Update entry descendants' nodes.
-     *
-     * @param EntryModel $entry
-     */
-    private function _updateDescendantsForEntry(EntryModel $entry)
-    {
-        $criteria = craft()->elements->getCriteria(ElementType::Entry);
-        $criteria->descendantOf = $entry;
-        $criteria->locale = $entry->locale;
-        $descendants = $criteria->find();
-
-        if (count($descendants)) {
-            foreach ($descendants as $descendant) {
-                $this->updateNodesForEntry($descendant, false, true);
-            }
         }
     }
 

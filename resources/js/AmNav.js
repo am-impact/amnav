@@ -76,18 +76,14 @@ Craft.AmNav = Garnish.Base.extend(
             // Unselect entry in modal
             this.modal.$body.find('.element[data-id="' + entry.id + '"]').closest('tr').removeClass('sel');
 
-            // We can't get the URI without much hassle
-            // Transform the URL of the selected Entry to {siteUrl}uri
-            entry.url = entry.url.replace(this.siteUrl, '{siteUrl}');
-
             var data = {
-                navId:    this.id,
-                name:     entry.label,
-                url:      entry.url,
-                enabled:  entry.status == 'live',
-                entryId:  entry.id,
-                locale:   this.locale,
-                parentId: parentId === undefined ? 0 : parentId
+                navId:       this.id,
+                name:        entry.label,
+                enabled:     entry.status == 'live',
+                elementId:   entry.id,
+                elementType: 'Entry',
+                locale:      this.locale,
+                parentId:    parentId === undefined ? 0 : parentId
             };
 
             this.saveNewNode(data, false);

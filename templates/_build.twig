@@ -26,14 +26,14 @@
 {% macro addNodeToStructure(navigation, node) %}
     <li data-level="{{ node.level }}">
         {% set indent = 8 + (node.level - 1) * 35 %}
+        {% set nodeUrl = (node.elementId ? node.elementUrl : node.url) %}
         {% set replaceWith = {
-            '%%id%%':       node.id,
-            '%%entryid%%':  node.entryId,
-            '%%label%%':    node.name,
-            '%%url%%':      node.url|replace('{siteUrl}', siteUrl),
-            '%%urlless%%':  node.url|replace('{siteUrl}', ''),
-            '%%status%%':   (node.enabled ? 'live' : 'expired'),
-            '%%blank%%':    (node.blank ? '' : 'visuallyhidden')
+            '%%id%%':           node.id,
+            '%%label%%':        node.name,
+            '%%url%%':          nodeUrl|replace({ '{siteUrl}': siteUrl, '__home__': siteUrl }),
+            '%%urlless%%':      nodeUrl|replace({ '{siteUrl}': '', '__home__': '<span data-icon="home" title="Homepage"></span>' }),
+            '%%status%%':       (node.enabled ? 'live' : 'expired'),
+            '%%blank%%':        (node.blank ? '' : 'visuallyhidden')
         } %}
         <div class="row" style="margin-left: -{{ indent }}px; padding-left: {{ indent }}px;">
             {% include 'amnav/_includes/node' with { replaceWith: replaceWith, level: node.level, settings: navigation.settings } only %}

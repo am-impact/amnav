@@ -11,22 +11,23 @@ class AmNav_NodeRecord extends BaseRecord
     protected function defineAttributes()
     {
         return array(
-            'navId'    => array(AttributeType::Number, 'required' => true),
-            'parentId' => array(AttributeType::Number, 'default' => null),
-            'order'    => array(AttributeType::Number, 'default' => 0),
-            'name'     => array(AttributeType::String, 'required' => true),
-            'url'      => array(AttributeType::String, 'required' => true),
-            'blank'    => array(AttributeType::Bool, 'default' => false),
-            'enabled'  => array(AttributeType::Bool, 'default' => true),
-            'entryId'  => array(AttributeType::Number, 'default' => null),
-            'locale'   => array(AttributeType::Locale, 'default' => null)
+            'navId'       => array(AttributeType::Number, 'required' => true),
+            'parentId'    => array(AttributeType::Number, 'default' => null),
+            'order'       => array(AttributeType::Number, 'default' => 0),
+            'name'        => array(AttributeType::String, 'required' => true),
+            'url'         => array(AttributeType::String, 'default' => null),
+            'blank'       => array(AttributeType::Bool, 'default' => false),
+            'enabled'     => array(AttributeType::Bool, 'default' => true),
+            'elementId'   => array(AttributeType::Number, 'default' => null),
+            'elementType' => array(AttributeType::String, 'default' => null),
+            'locale'      => array(AttributeType::Locale, 'default' => null)
         );
     }
 
     public function defineIndexes()
     {
         return array(
-            array('columns' => array('entryId', 'locale'), 'unique' => false)
+            array('columns' => array('elementId', 'elementType', 'locale'), 'unique' => false)
         );
     }
 }
