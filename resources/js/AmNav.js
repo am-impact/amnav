@@ -3,7 +3,9 @@
 Craft.AmNav = Garnish.Base.extend(
 {
     id: null,
-    modal: null,
+    entryModal: null,
+    categoryModal: null,
+    currentElementType: null,
     structure: null,
 
     locale: null,
@@ -14,8 +16,8 @@ Craft.AmNav = Garnish.Base.extend(
     $template: $('#amnav__row').html(),
     $buildContainer: $('.amnav__builder'),
     $parentContainer: $('.amnav__parent'),
-    $addEntryButton: $('.amnav__button'),
-    $addEntryLoader: $('.amnav__button').parent().find('.spinner'),
+    $addElementButton: $('.amnav__button'),
+    $addElementLoader: $('.amnav .buttons .spinner'),
     $manualForm: $('#manual-form'),
     $manualLoader: $('#manual-form').find('.spinner'),
     $displayIdsButton: $('.amnav__nodeids'),
@@ -30,63 +32,81 @@ Craft.AmNav = Garnish.Base.extend(
         this.entrySources = settings.entrySources;
         this.structure = new Craft.AmNavStructure(id, '#amnav__builder', '.amnav__builder', settings);
 
-        this.addListener(this.$addEntryButton, 'activate', 'showModal');
+        this.addListener(this.$addElementButton, 'activate', 'showModal');
         this.addListener(this.$manualForm, 'submit', 'onManualSubmit');
         this.addListener(this.$displayIdsButton, 'click', 'showNodeIds');
     },
 
     /**
-     * Display EntrySelectorModal.
+     * Display ElementSelectorModal.
      */
-    showModal: function() {
-        // Make sure we can't select entries while a node is being saved
+    showModal: function(ev) {
+        // Make sure we can't select elements while a node is being saved
         if (! this.savingNode) {
-            if (! this.modal) {
-                this.modal = this.createModal();
+            this.currentElementType = $(ev.currentTarget).data('element-type');
+
+            if (this.currentElementType == 'Entry') {
+                if (! this.entryModal) {
+                    this.entryModal = this.createModal('Entry', this.entrySources);
+                }
+                else {
+                    this.entryModal.show();
+                }
             }
-            else {
-                this.modal.show();
+            else if (this.currentElementType == 'Category') {
+                if (! this.categoryModal) {
+                    this.categoryModal = this.createModal('Category', '*');
+                }
+                else {
+                    this.categoryModal.show();
+                }
             }
         }
     },
 
     /**
-     * Create EntrySelectorModal.
+     * Create ElementSelectorModal.
      */
-    createModal: function() {
-        return Craft.createElementSelectorModal("Entry", {
+    createModal: function(elementType, elementSources) {
+        return Craft.createElementSelectorModal(elementType, {
             criteria: {
                 locale: this.locale
             },
-            sources: this.entrySources,
+            sources: elementSources,
             multiSelect: true,
             onSelect: $.proxy(this, 'onModalSelect')
         });
     },
 
     /**
-     * Handle selected entries from the EntrySelectorModal.
+     * Handle selected elements from the ElementSelectorModal.
      */
-    onModalSelect: function(entries) {
-        var parentId = this.$parentContainer.find('#parent').val();
+    onModalSelect: function(elements) {
+        var parentId = this.$parentContainer.find('#parent').val(),
+            elementType = this.currentElementType;
 
-        for (var i = 0; i < entries.length; i++) {
-            var entry = entries[i];
+        for (var i = 0; i < elements.length; i++) {
+            var element = elements[i];
 
-            // Unselect entry in modal
-            this.modal.$body.find('.element[data-id="' + entry.id + '"]').closest('tr').removeClass('sel');
+            // Unselect element in modal
+            if (elementType == 'Entry') {
+                this.entryModal.$body.find('.element[data-id="' + element.id + '"]').closest('tr').removeClass('sel');
+            }
+            else if (elementType == 'Category') {
+                this.categoryModal.$body.find('.element[data-id="' + element.id + '"]').closest('tr').removeClass('sel');
+            }
 
             var data = {
                 navId:       this.id,
-                name:        entry.label,
-                enabled:     entry.status == 'live',
-                elementId:   entry.id,
-                elementType: 'Entry',
+                name:        element.label,
+                enabled:     element.status == 'live',
+                elementId:   element.id,
+                elementType: elementType,
                 locale:      this.locale,
                 parentId:    parentId === undefined ? 0 : parentId
             };
 
-            this.saveNewNode(data, false);
+            this.saveNewNode(data, elementType);
         }
     },
 
@@ -107,7 +127,7 @@ Craft.AmNav = Garnish.Base.extend(
                 parentId: parentId === undefined ? 0 : parentId
             };
 
-            this.saveNewNode(data, true);
+            this.saveNewNode(data, 'manual');
         }
         ev.preventDefault();
     },
@@ -115,31 +135,31 @@ Craft.AmNav = Garnish.Base.extend(
     /**
      * Save a new node to the database.
      *
-     * @param array data
-     * @param bool  isManualNode
+     * @param array  data
+     * @param string nodeType
      */
-    saveNewNode: function(data, isManualNode) {
+    saveNewNode: function(data, nodeType) {
         // Make sure we can only save one node at a time
         this.savingNode = true;
-        if (isManualNode) {
+        if (nodeType == 'manual') {
             this.$manualLoader.removeClass('hidden');
         }
         else {
-            this.$addEntryLoader.removeClass('hidden');
+            this.$addElementLoader.removeClass('hidden');
         }
 
         Craft.postActionRequest('amNav/nodes/saveNewNode', data, $.proxy(function(response, textStatus) {
             if (textStatus == 'success') {
                 this.savingNode = false;
-                if (isManualNode) {
+                if (nodeType == 'manual') {
                     this.$manualLoader.addClass('hidden');
                 }
                 else {
-                    this.$addEntryLoader.addClass('hidden');
+                    this.$addElementLoader.addClass('hidden');
                 }
 
                 if (response.success) {
-                    if (isManualNode) {
+                    if (nodeType == 'manual') {
                         // Reset fields
                         this.$manualForm.find('#name').val('');
                         this.$manualForm.find('#url').val('');

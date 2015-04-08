@@ -59,6 +59,13 @@ class AmNav_NodesController extends BaseController
                                 $node->url = $entry->uri == '__home__' ? '{siteUrl}' : '{siteUrl}' . $entry->uri;
                             }
                             break;
+
+                        case ElementType::Category:
+                            $category = craft()->categories->getCategoryById($node->elementId, $node->locale);
+                            if ($category) {
+                                $node->url = '{siteUrl}' . $category->uri;
+                            }
+                            break;
                     }
                 }
 

@@ -55,6 +55,7 @@
                 <div class="pane">
                     {% set paneTabs = {
                         entries: { label: "Existing entries"|t, url: '#amnav-entries' },
+                        categories: { label: "Existing categories"|t, url: '#amnav-categories' },
                         url: { label: "My own URL"|t, url: '#amnav-url' },
                     } %}
                     {% include "_includes/tabs" with { tabs: paneTabs } %}
@@ -72,7 +73,14 @@
 
                     <div id="amnav-entries">
                         <div class="buttons">
-                            <div class="btn submit add icon amnav__button">{{ 'Add an entry'|t }}</div>
+                            <div class="btn submit add icon amnav__button" data-element-type="Entry">{{ 'Add an entry'|t }}</div>
+                            <div class="spinner hidden"></div>
+                        </div>
+                    </div>
+
+                    <div id="amnav-categories" class="hidden">
+                        <div class="buttons">
+                            <div class="btn submit add icon amnav__button" data-element-type="Category">{{ 'Add a category'|t }}</div>
                             <div class="spinner hidden"></div>
                         </div>
                     </div>
