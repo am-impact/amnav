@@ -20,7 +20,7 @@ class AmNavPlugin extends BasePlugin
 
     public function getVersion()
     {
-        return '1.5.0';
+        return '1.5.1';
     }
 
     public function getDeveloper()
@@ -86,18 +86,23 @@ class AmNavPlugin extends BasePlugin
             // Update nodes in a navigation if an Entry was saved
             craft()->on('entries.beforeSaveEntry', function(Event $event) {
                 if (! $event->params['isNewEntry']) {
-                    craft()->amNav_node->updateNodesForEntry($event->params['entry'], true);
-                }
-            });
-            // Update nodes again, since the URI update is only available after the Entry has been saved
-            craft()->on('entries.saveEntry', function(Event $event) {
-                if (! $event->params['isNewEntry']) {
-                    craft()->amNav_node->updateNodesForEntry($event->params['entry']);
+                    craft()->amNav_node->updateNodesForElement($event->params['entry'], ElementType::Entry);
                 }
             });
             // Delete nodes from a navigation if an Entry was deleted
             craft()->on('entries.deleteEntry', function(Event $event) {
-                craft()->amNav_node->deleteNodesForEntry($event->params['entry']);
+                craft()->amNav_node->deleteNodesForElement($event->params['entry'], ElementType::Entry);
+            });
+
+            // Update nodes in a navigation if an Category was saved
+            craft()->on('categories.beforeSaveCategory', function(Event $event) {
+                if (! $event->params['isNewCategory']) {
+                    craft()->amNav_node->updateNodesForElement($event->params['category'], ElementType::Category);
+                }
+            });
+            // Delete nodes from a navigation if an Category was deleted
+            craft()->on('categories.deleteCategory', function(Event $event) {
+                craft()->amNav_node->deleteNodesForElement($event->params['category'], ElementType::Category);
             });
         }
     }

@@ -176,32 +176,40 @@ class AmNav_NodeService extends BaseApplicationComponent
     }
 
     /**
-     * Update nodes in a navigation based on the Entry that was just saved.
+     * Update nodes in a navigation based on the element that was just saved.
      *
-     * @param EntryModel $entry
-     * @param bool       $beforeEntryEvent
+     * @param EntryModel|CategoryModel $element
+     * @param string                   $elementType
      */
-    public function updateNodesForEntry(EntryModel $entry, $beforeEntryEvent = false)
+    public function updateNodesForElement($element, $elementType)
     {
         $nodeRecords = AmNav_NodeRecord::model()->findAllByAttributes(array(
-            'elementId' => $entry->id,
-            'elementType' => ElementType::Entry,
-            'locale'  => $entry->locale
+            'elementId' => $element->id,
+            'elementType' => $elementType,
+            'locale'  => $element->locale
         ));
         if (count($nodeRecords)) {
-            // Get Entry model with data before it's being saved
-            $beforeSaveEntry = $beforeEntryEvent ? craft()->entries->getEntryById($entry->id, $entry->locale) : false;
+            // Get element's model with data before it's being saved
+            switch ($elementType) {
+                case ElementType::Category:
+                    $beforeSaveElement = craft()->categories->getCategoryById($element->id, $element->locale);
+                    break;
+
+                default:
+                    $beforeSaveElement = craft()->entries->getEntryById($element->id, $element->locale);
+                    break;
+            }
 
             // Update node records
             foreach ($nodeRecords as $nodeRecord) {
                 // Set update data
                 $updateData = array(
-                    'enabled' => $entry->enabled,
+                    'enabled' => $element->enabled,
                 );
 
-                // Only update the node name if they were the same before the Entry was saved
-                if ($beforeSaveEntry && $beforeSaveEntry->title == $nodeRecord->name) {
-                    $updateData['name'] = $entry->title;
+                // Only update the node name if they were the same before the element was saved
+                if ($beforeSaveElement && $beforeSaveElement->title == $nodeRecord->name) {
+                    $updateData['name'] = $element->title;
                 }
 
                 // Save this node!
@@ -211,16 +219,17 @@ class AmNav_NodeService extends BaseApplicationComponent
     }
 
     /**
-     * Delete nodes in a navigation based on the Entry that was just deleted.
+     * Delete nodes in a navigation based on the element that was just deleted.
      *
-     * @param EntryModel $entry
+     * @param EntryModel|CategoryModel $element
+     * @param string                   $elementType
      */
-    public function deleteNodesForEntry(EntryModel $entry)
+    public function deleteNodesForElement($element, $elementType)
     {
         $nodeRecords = AmNav_NodeRecord::model()->findAllByAttributes(array(
-            'elementId' => $entry->id,
-            'elementType' => ElementType::Entry,
-            'locale'  => $entry->locale
+            'elementId' => $element->id,
+            'elementType' => $elementType,
+            'locale'  => $element->locale
         ));
         foreach ($nodeRecords as $nodeRecord) {
             $this->deleteNodeById($nodeRecord->id);

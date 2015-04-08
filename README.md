@@ -25,7 +25,7 @@ When you create or edit a navigation, you can set the following settings:
 
 Let's start building a navigation!
 Non-admins don't see the **Display navigation** section. This is for admins only so they know what to put in the templates.
-You have the option to add existing entries or..
+You have the option to add existing entries, categories or..
 
 ![Build](https://raw.githubusercontent.com/am-impact/am-impact.github.io/master/img/readme/amnav/build.jpg "Build")
 
