@@ -41,8 +41,8 @@ class AmNav_NodeService extends BaseApplicationComponent
         $this->_nodes[$navId] = craft()->db->createCommand()
             ->select('nodes.*, i18n.uri elementUrl')
             ->from('amnav_nodes nodes')
-            ->join('elements_i18n i18n', 'i18n.elementId = nodes.elementId AND i18n.locale = nodes.locale')
-            ->where(array('nodes.navId' => $navId, 'nodes.locale' => $locale, 'i18n.locale' => $locale))
+            ->leftJoin('elements_i18n i18n', 'i18n.elementId = nodes.elementId AND i18n.locale = nodes.locale')
+            ->where(array('nodes.navId' => $navId, 'nodes.locale' => $locale))
             ->order(array('nodes.parentId asc', 'nodes.order asc'))
             ->queryAll();
         return $this->_nodes[$navId];
