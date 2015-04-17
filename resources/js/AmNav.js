@@ -270,9 +270,7 @@ Craft.AmNavStructure = Craft.Structure.extend(
             }
             $appendTo = $parentContainer;
             // Update level
-            if (parentLevel > 1) {
-                level = parentLevel + 1;
-            }
+            level = parentLevel + 1;
         }
 
         // Add node to the structure
