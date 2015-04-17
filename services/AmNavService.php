@@ -13,6 +13,7 @@ class AmNavService extends BaseApplicationComponent
     private $_siteUrl;
     private $_addTrailingSlash = false;
     private $_activeNodeIds = array();
+    private $_activeNodeIdsForLevel = array();
 
     /**
      * Get all build navigations.
@@ -108,7 +109,15 @@ class AmNavService extends BaseApplicationComponent
             $parentId = $startFromId;
         }
 
+        // Get nodes
         $nodes = craft()->amNav_node->getAllNodesByNavigationId($navId, $locale);
+
+        // Find the active nodes if needed
+        if ($this->_parseEnvironment) {
+            $this->_setActiveNodes($nodes);
+        }
+
+        // Return the navigation
         if ($this->_parseHtml) {
             return $this->_buildNavHtml($nodes, $parentId);
         }
@@ -267,8 +276,8 @@ class AmNavService extends BaseApplicationComponent
      */
     public function getActiveNodeIdForLevel($handle, $segmentLevel = 1)
     {
-        if (isset($this->_activeNodeIds[$handle][$segmentLevel])) {
-            return $this->_activeNodeIds[$handle][$segmentLevel];
+        if (isset($this->_activeNodeIdsForLevel[$handle][$segmentLevel])) {
+            return $this->_activeNodeIdsForLevel[$handle][$segmentLevel];
         }
         return false;
     }
@@ -336,7 +345,45 @@ class AmNavService extends BaseApplicationComponent
     }
 
     /**
-     * Check whether the URL is currently active.
+     * Check if nodes should be active based on the current URL.
+     *
+     * @param array $nodes
+     */
+    private function _setActiveNodes($nodes)
+    {
+        $path = craft()->request->getPath();
+        $segments = craft()->request->getSegments();
+        $segmentCount = count($segments) > 0 ? count($segments) : 1;
+
+        foreach ($nodes as $node) {
+            $url = ! empty($node['elementId']) ? $node['elementUrl'] : $node['url'];
+            $url = str_replace('{siteUrl}', '', $url);
+            $url = str_replace('__home__', '', $url);
+            if ($url == $path) {
+                $this->_activeNodeIds[ $this->_navigation->handle ][] = $node['id'];
+                $this->_activeNodeIdsForLevel[ $this->_navigation->handle ][ $segmentCount ] = $node['id'];
+            }
+            if (count($segments)) {
+                $found = false;
+                $count = 1; // Start at second
+                $segmentString = $segments[0]; // Add first
+                while ($count < count($segments)) {
+                    if ($url == $segmentString) {
+                        $found = true;
+                        break;
+                    }
+                    $segmentString .= '/' . $segments[$count];
+                    $count ++;
+                }
+                if ($found) {
+                    $this->_activeNodeIdsForLevel[ $this->_navigation->handle ][$count] = $node['id'];
+                }
+            }
+        }
+    }
+
+    /**
+     * Check whether the current node is active.
      *
      * @param array $node
      *
@@ -344,32 +391,30 @@ class AmNavService extends BaseApplicationComponent
      */
     private function _isNodeActive($node)
     {
-        $url = ! empty($node['elementId']) ? $node['elementUrl'] : $node['url'];
-        $path = craft()->request->getPath();
-        $segments = craft()->request->getSegments();
-        $segmentCount = count($segments) > 0 ? count($segments) : 1;
+        return in_array($node['id'], $this->_activeNodeIds[ $this->_navigation->handle ]);
+    }
 
-        $url = str_replace('{siteUrl}', '', $url);
-        $url = str_replace('__home__', '', $url);
-        if ($url == $path) {
-            $this->_activeNodeIds[ $this->_navigation->handle ][ $segmentCount ] = $node['id'];
-            return true;
-        }
-        if (count($segments)) {
-            $found = false;
-            $count = 1; // Start at second
-            $segmentString = $segments[0]; // Add first
-            while ($count < count($segments)) {
-                if ($url == $segmentString) {
-                    $found = true;
-                    break;
+    /**
+     * Check whether a node has an active child.
+     *
+     * @param array $nodes
+     * @param int   $parentId
+     *
+     * @return bool
+     */
+    private function _isChildActive($nodes, $parentId)
+    {
+        foreach ($nodes as $node) {
+            if ($node['parentId'] == $parentId) {
+                // Is current node active?
+                if (in_array($node['id'], $this->_activeNodeIds[ $this->_navigation->handle ])) {
+                    return true;
                 }
-                $segmentString .= '/' . $segments[$count];
-                $count ++;
-            }
-            if ($found) {
-                $this->_activeNodeIds[ $this->_navigation->handle ][$count] = $node['id'];
-                return true;
+                // Is any of it's children active?
+                $childrenResult = $this->_isChildActive($nodes, $node['id']);
+                if ($childrenResult) {
+                    return true;
+                }
             }
         }
         return false;
@@ -445,6 +490,7 @@ class AmNavService extends BaseApplicationComponent
                 if ($this->_parseEnvironment) {
                     if ($node['enabled'] || $this->_getParam('overrideStatus', false)) {
                         $node['active'] = $this->_isNodeActive($node);
+                        $node['hasActiveChild'] = $this->_isChildActive($nodes, $node['id']);
                         $node['url'] = $this->_parseUrl($node);
                     }
                     else {
@@ -455,6 +501,7 @@ class AmNavService extends BaseApplicationComponent
 
                 $node['level'] = $level;
                 $children = $this->_buildNav($nodes, $node['id'], $level + 1);
+                $node['hasChildren'] = $children ? true : false;
                 if ($children) {
                     $node['children'] = $children;
                 }
@@ -514,7 +561,7 @@ class AmNavService extends BaseApplicationComponent
                 if ($children) {
                     $nodeClasses[] = $this->_getParam('classChildren', 'has-children');
                 }
-                if ($this->_isNodeActive($node)) {
+                if ($this->_isNodeActive($node) || $this->_isChildActive($nodes, $node['id'])) {
                     $nodeClasses[] = $this->_getParam('classActive', 'active');
                 }
                 if ($level == 1 && $count == 1) {

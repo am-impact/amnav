@@ -59,7 +59,7 @@ Now you can add your own HTML if necessary!
 {% macro addNodeToNavigation(node) %}
     <li{% if node.active %} class="active"{% endif %}>
         <a href="{{ node.url }}" title="{{ node.name }}">{{ node.name }}</a>
-        {% if node.children is defined %}
+        {% if node.hasChildren %}
             <span class="navmain__more"></span>
             <div class="level{{ node.level }}">
                 <span class="navmain__back">&lsaquo; Back</span>
