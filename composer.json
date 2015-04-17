@@ -1,0 +1,14 @@
+{
+    "name": "am-impact/amnav",
+    "description": "Navigation Plugin for Craft",
+    "authors": [
+        {
+            "name": "Hubert Prein",
+            "email": "h.prein@am-impact.nl"
+        }
+    ],
+    "type": "craft-plugin",
+    "require": {
+        "composer/installers": "~1.0"
+    }
+}
