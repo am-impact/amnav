@@ -354,6 +354,10 @@ class AmNavService extends BaseApplicationComponent
         $path = craft()->request->getPath();
         $segments = craft()->request->getSegments();
         $segmentCount = count($segments) > 0 ? count($segments) : 1;
+        
+        // Set empty array for specific navigation
+        $this->_activeNodeIds[ $this->_navigation->handle ] = array();
+        $this->_activeNodeIdsForLevel[ $this->_navigation->handle ] = array();
 
         foreach ($nodes as $node) {
             $url = ! empty($node['elementId']) ? $node['elementUrl'] : $node['url'];
