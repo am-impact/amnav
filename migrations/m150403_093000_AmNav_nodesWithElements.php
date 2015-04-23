@@ -6,9 +6,7 @@ class m150403_093000_AmNav_nodesWithElements extends BaseMigration
     public function safeUp()
     {
         // Delete the old index
-        $this->renameTable('amnav_nodes', 'amnav_pages');
-        $this->dropIndex('amnav_pages', 'entryId,locale');
-        $this->renameTable('amnav_pages', 'amnav_nodes');
+        $this->dropIndex('amnav_nodes', 'entryId,locale');
 
         // Edit stuff!
         $this->renameColumn('amnav_nodes', 'entryId', 'elementId');

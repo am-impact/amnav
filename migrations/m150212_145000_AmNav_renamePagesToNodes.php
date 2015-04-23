@@ -5,6 +5,8 @@ class m150212_145000_AmNav_renamePagesToNodes extends BaseMigration
 {
     public function safeUp()
     {
-        $this->renameTable('amnav_pages', 'amnav_nodes');
+        if (craft()->db->tableExists('amnav_pages')) {
+            $this->renameTable('amnav_pages', 'amnav_nodes');
+        }
     }
 }
