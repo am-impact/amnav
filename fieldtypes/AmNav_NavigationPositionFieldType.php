@@ -1,9 +1,6 @@
 <?php
 namespace Craft;
 
-// TODO: Rekening houden met instellingen (maxLevels etc)
-// TODO: Alleen fieldType bij entries laten werken
-
 class AmNav_NavigationPositionFieldType extends BaseFieldType
 {
     public function getName()
@@ -32,6 +29,13 @@ class AmNav_NavigationPositionFieldType extends BaseFieldType
                 $currentNode = craft()->amNav_node->getNodeById($currentNodeId);
                 if (! $currentNode) {
                     // Don't save the nodeId for next save moment
+                    $currentNodeId = false;
+                    unset($value['nodeId']);
+                }
+                elseif ($currentNode->locale != $this->element->locale) {
+                    // When an entry is activated for a different locale, it contains the data
+                    // from the locale entry that was created from an earlier moment.
+                    // We don't want the fieldtype to use this data though, so unset it.
                     $currentNodeId = false;
                     unset($value['nodeId']);
                 }
