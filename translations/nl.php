@@ -14,6 +14,7 @@ return array(
     'Created navigations' => 'Beschikbare navigaties',
     'Delete from navigation when saving content.' => 'Verwijder uit de navigatie wanneer de inhoud wordt opgeslagen.',
     'Determine position' => 'Positie bepalen',
+    'Display navigation' => 'Navigatie weergeven',
     'Display in navigation.' => 'Weergeven in de navigatie.',
     'Display navigation' => 'Navigatie weergeven',
     'Display node IDs' => 'Toon node ID\'s',

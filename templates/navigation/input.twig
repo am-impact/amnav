@@ -1,0 +1,15 @@
+{% import "_includes/forms" as forms %}
+
+<div id="{{ id }}">
+    {% if navigations|length %}
+        {{ forms.selectField({
+            name: name,
+            value: value,
+            options: { '': 'Select'|t ~ '..' }|merge(navigations)
+        }) }}
+    {% else %}
+        {{ forms.errorList({
+            errors: 'There are no navigations yet.'|t
+        }) }}
+    {% endif %}
+</div>
