@@ -16,6 +16,7 @@ class AmNav_NodeRecord extends BaseRecord
             'order'       => array(AttributeType::Number, 'default' => 0),
             'name'        => array(AttributeType::String, 'required' => true),
             'url'         => array(AttributeType::String, 'default' => null),
+            'listClass'   => array(AttributeType::String, 'default' => null),
             'blank'       => array(AttributeType::Bool, 'default' => false),
             'enabled'     => array(AttributeType::Bool, 'default' => true),
             'elementId'   => array(AttributeType::Number, 'default' => null),

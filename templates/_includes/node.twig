@@ -3,6 +3,9 @@
         <span class="amnav__id visuallyhidden"><strong>{{ '%%id%%'|replace(replaceWith) }}</strong></span>
         <span class="status {{ '%%status%%'|replace(replaceWith) }}"></span>
         <span class="title">{{ '%%label%%'|replace(replaceWith) }}</span>
+        {% if replaceWith|length and currentUser.admin -%}
+            <span class="amnav__listclass">{{ '%%listClass%%'|replace(replaceWith) }}</span>
+        {% endif %}
         <span class="amnav__blank {{ '%%blank%%'|replace(replaceWith) }}" title="{{ 'Opens in a new window'|t }}"></span>
     </div>
 </div>

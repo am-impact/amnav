@@ -70,6 +70,7 @@
     text-overflow: ellipsis;
 }
 
+.amnav__listclass,
 .amnav__builder .amnav__url a {
     color: #8f98a3;
 }
@@ -83,6 +84,7 @@
 }
 
 .structure .draghelper .amnav__url,
+.structure .draghelper .amnav__listclass,
 .structure .draghelper .icon.settings,
 .structure .draghelper .icon.delete {
     display: none;

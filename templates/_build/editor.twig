@@ -8,6 +8,17 @@
     instructions: 'Name of this node in the navigation.'|t
 }) }}
 
+{% if currentUser.admin %}
+    {{ forms.textField({
+        id: 'listClass',
+        name: 'listClass',
+        label: 'Class for list item'|t,
+        value: node.listClass,
+        instructions: 'Add a custom class to this node.'|t,
+        placeholder: 'Optional'|t
+    }) }}
+{% endif %}
+
 {% if not node.elementId|length %}
 	{{ forms.textField({
 	    id: 'url',

@@ -567,9 +567,10 @@ Craft.AmNavEditor = Garnish.Base.extend(
 
         this.$spinner.removeClass('hidden');
 
-        var data    = this.$form.serialize(),
-            $status = this.$node.find('.status'),
-            $blank  = this.$node.find('.amnav__blank');
+        var data       = this.$form.serialize(),
+            $status    = this.$node.find('.status'),
+            $blank     = this.$node.find('.amnav__blank'),
+            $listClass = this.$node.find('.amnav__listclass');
 
         Craft.postActionRequest('amNav/nodes/saveNode', data, $.proxy(function(response, textStatus) {
             this.$spinner.addClass('hidden');
@@ -594,6 +595,10 @@ Craft.AmNavEditor = Garnish.Base.extend(
                         $blank.removeClass('visuallyhidden');
                     } else {
                         $blank.addClass('visuallyhidden');
+                    }
+                    // Update list class
+                    if ($listClass.length) {
+                        $listClass.text((response.nodeData.listClass.length ? '.' : '') + response.nodeData.listClass);
                     }
 
                     this.closeHud();

@@ -354,7 +354,7 @@ class AmNavService extends BaseApplicationComponent
         $path = craft()->request->getPath();
         $segments = craft()->request->getSegments();
         $segmentCount = count($segments) > 0 ? count($segments) : 1;
-        
+
         // Set empty array for specific navigation
         $this->_activeNodeIds[ $this->_navigation->handle ] = array();
         $this->_activeNodeIdsForLevel[ $this->_navigation->handle ] = array();
@@ -570,6 +570,9 @@ class AmNavService extends BaseApplicationComponent
                 }
                 if ($level == 1 && $count == 1) {
                     $nodeClasses[] = $this->_getParam('classFirst', 'first');
+                }
+                if (! empty($node['listClass'])) {
+                    $nodeClasses[] = $node['listClass'];
                 }
 
                 // Add curent node

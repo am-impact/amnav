@@ -32,6 +32,7 @@
             '%%label%%':        node.name,
             '%%url%%':          nodeUrl|replace({ '{siteUrl}': siteUrl, '__home__': siteUrl }),
             '%%urlless%%':      nodeUrl|replace({ '{siteUrl}': '', '__home__': '<span data-icon="home" title="Homepage"></span>' }),
+            '%%listClass%%':    (node.listClass|length ? '.' ~ node.listClass : ''),
             '%%status%%':       (node.enabled ? 'live' : 'expired'),
             '%%blank%%':        (node.blank ? '' : 'visuallyhidden')
         } %}

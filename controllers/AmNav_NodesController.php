@@ -120,6 +120,10 @@ class AmNav_NodesController extends BaseController
             $url = str_ireplace('__home__', '', $url);
             $node->setAttribute('url', $url);
         }
+        // Is there a list item class available?
+        if (isset($attributes['listClass'])) {
+            $node->setAttribute('listClass', $attributes['listClass']);
+        }
 
         // Save the node!
         $returnData = array('success' => false);
