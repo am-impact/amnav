@@ -113,13 +113,13 @@ class AmNavPlugin extends BasePlugin
      * @return array
      */
     public function addCommands() {
-        $pluginName = $this->getName();
-        $commands = array(
-            array(
-                'name'    => $pluginName . ': ' . Craft::t('New navigation'),
-                'url'     => UrlHelper::getUrl('amnav/new')
-            ),
-            array(
+        $commands = array();
+
+        if (craft()->userSession->getUser()->can('accessPlugin-AmNav')) {
+            $pluginName = $this->getName();
+            $pluginSettings = $this->getSettings();
+
+            $commands[] = array(
                 'name'    => $pluginName . ': ' . Craft::t('Build navigation'),
                 'more'    => true,
                 'call'    => 'getNavigationsByCommand',
@@ -127,17 +127,25 @@ class AmNavPlugin extends BasePlugin
                 'vars'    => array(
                     'command' => 'build'
                 )
-            ),
-            array(
-                'name'    => $pluginName . ': ' . Craft::t('Navigation settings'),
-                'more'    => true,
-                'call'    => 'getNavigationsByCommand',
-                'service' => 'amNav',
-                'vars'    => array(
-                    'command' => 'settings'
-                )
-            )
-        );
+            );
+
+            if (craft()->userSession->isAdmin() || $pluginSettings->canDoActions) {
+                $commands[] = array(
+                    'name'    => $pluginName . ': ' . Craft::t('New navigation'),
+                    'url'     => UrlHelper::getUrl('amnav/new')
+                );
+                $commands[] = array(
+                    'name'    => $pluginName . ': ' . Craft::t('Navigation settings'),
+                    'more'    => true,
+                    'call'    => 'getNavigationsByCommand',
+                    'service' => 'amNav',
+                    'vars'    => array(
+                        'command' => 'settings'
+                    )
+                );
+            }
+        }
+
         return $commands;
     }
 
