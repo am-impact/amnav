@@ -608,13 +608,27 @@ class AmNavService extends BaseApplicationComponent
                     $nodeClasses[] = $node['listClass'];
                 }
 
+                // Set hyperlink attributes
+                $hyperlinkAttributes = array(
+                    'title="' . $node['name'] . '"'
+                );
+                if ($node['blank']) {
+                    $hyperlinkAttributes[] = 'target="_blank"';
+
+                    if ($this->_getParam('classBlank', false) !== false) {
+                        $hyperlinkAttributes[] = 'class="' . $this->_getParam('classBlank', '') . '"';
+                    }
+                }
+                if ($this->_getParam('linkRel', false) !== false) {
+                    $hyperlinkAttributes[] = 'rel="' . $this->_getParam('linkRel', '') . '"';
+                }
+
                 // Add curent node
-                $nav .= sprintf("\n" . '<li%1$s><a%5$s href="%2$s"%3$s>%4$s</a>',
+                $nav .= sprintf("\n" . '<li%1$s><a href="%2$s"%4$s>%3$s</a>',
                     count($nodeClasses) ? ' class="' . implode(' ', $nodeClasses) . '"' : '',
                     $this->_parseUrl($node),
-                    $node['blank'] ? ' target="_blank"' : '',
                     $node['name'],
-                    $this->_getParam('classBlank', false) !== false ? ' class="' . $this->_getParam('classBlank', false) . '"' : ''
+                    ' ' . implode(' ', $hyperlinkAttributes)
                 );
 
                 // Add children to the navigation

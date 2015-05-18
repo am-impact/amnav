@@ -30,6 +30,8 @@ class AmNavVariable
      * - classChildren      Class name for a node that has children.
      * - classFirst         Class name for the first node in the navigation.
      *
+     * - linkRel            Rel (relationship) for each hyperlink.
+     *
      * - excludeUl          Exclude the main UL wrapper.
      * - maxLevel           Build the navigation till a certain level.
      * - overrideStatus     Includes every node whatever the status.
