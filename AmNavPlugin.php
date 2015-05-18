@@ -108,6 +108,40 @@ class AmNavPlugin extends BasePlugin
     }
 
     /**
+     * Add commands to a&m command through this hook function.
+     *
+     * @return array
+     */
+    public function addCommands() {
+        $pluginName = $this->getName();
+        $commands = array(
+            array(
+                'name'    => $pluginName . ': ' . Craft::t('New navigation'),
+                'url'     => UrlHelper::getUrl('amnav/new')
+            ),
+            array(
+                'name'    => $pluginName . ': ' . Craft::t('Build navigation'),
+                'more'    => true,
+                'call'    => 'getNavigationsByCommand',
+                'service' => 'amNav',
+                'vars'    => array(
+                    'command' => 'build'
+                )
+            ),
+            array(
+                'name'    => $pluginName . ': ' . Craft::t('Navigation settings'),
+                'more'    => true,
+                'call'    => 'getNavigationsByCommand',
+                'service' => 'amNav',
+                'vars'    => array(
+                    'command' => 'settings'
+                )
+            )
+        );
+        return $commands;
+    }
+
+    /**
      * Plugin settings.
      *
      * @return array

@@ -27,6 +27,7 @@ return array(
     'Linked to' => 'Gekoppeld aan',
     'Navigation deleted.' => 'Navigatie verwijderd.',
     'Navigation saved.' => 'Navigatie opgeslagen.',
+    'Navigation settings' => 'Navigatie instellingen',
     'My own URL' => 'Mijn eigen URL',
     'Name of this node in the navigation.' => 'Naam van deze node in de navigatie.',
     'Name of this navigation in the CP.' => 'Naam van deze navigatie in de CP.',

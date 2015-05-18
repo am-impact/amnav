@@ -38,6 +38,39 @@ class AmNavService extends BaseApplicationComponent
     }
 
     /**
+     * Get navigations by a given command.
+     *
+     * @param array $variables
+     *
+     * @return array
+     */
+    public function getNavigationsByCommand($variables)
+    {
+        // We need to know which type
+        if (! isset($variables['command'])) {
+            return false;
+        }
+
+        // Do we have any navigations?
+        $navigations = $this->getNavigations();
+        if (! $navigations) {
+            craft()->amCommand->setReturnMessage(Craft::t('There are no navigations yet.'));
+            return false;
+        }
+
+        // Return commands based on given command type
+        $commands = array();
+        $commandType = $variables['command'] == 'settings' ? 'edit' : 'build';
+        foreach ($navigations as $navigation) {
+            $commands[] = array(
+                'name' => $navigation->name,
+                'url'  => UrlHelper::getUrl('amnav/' . $commandType . '/' . $navigation->id)
+            );
+        }
+        return $commands;
+    }
+
+    /**
      * Get a navigation by its ID.
      *
      * @param int $navId
