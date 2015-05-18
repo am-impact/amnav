@@ -228,8 +228,7 @@ class AmNav_NodeService extends BaseApplicationComponent
     {
         $nodeRecords = AmNav_NodeRecord::model()->findAllByAttributes(array(
             'elementId' => $element->id,
-            'elementType' => $elementType,
-            'locale'  => $element->locale
+            'elementType' => $elementType
         ));
         foreach ($nodeRecords as $nodeRecord) {
             $this->deleteNodeById($nodeRecord->id);
