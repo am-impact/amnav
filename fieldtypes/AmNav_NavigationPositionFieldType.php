@@ -20,7 +20,7 @@ class AmNav_NavigationPositionFieldType extends BaseFieldType
     {
         $currentNodeId = false;
         // Fix value if saved in the database
-        if (($fixedValue = json_decode($value, true)) !== null) {
+        if (is_string($value) && ($fixedValue = json_decode($value, true)) !== null) {
             $value = $fixedValue; // Override value
             if (isset($value['nodeId'])) {
                 $currentNodeId = $value['nodeId'];
