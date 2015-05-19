@@ -99,6 +99,18 @@ class AmNavVariable
     }
 
     /**
+     * Get a node by its ID.
+     *
+     * @param int $nodeId
+     *
+     * @return AmNav_NodeModel|null
+     */
+    public function getNodeById($id)
+    {
+        return craft()->amNav_node->getNodeById($id);
+    }
+
+    /**
      * Get breadcrumbs as HTML.
      *
      * @param array  $params

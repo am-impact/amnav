@@ -9,7 +9,7 @@ class AmNav_NodeService extends BaseApplicationComponent
     private $_nodes;
 
     /**
-     * Get a navigation by its ID.
+     * Get a node by its ID.
      *
      * @param int $nodeId
      *
