@@ -413,6 +413,7 @@ class AmNavService extends BaseApplicationComponent
                     $count ++;
                 }
                 if ($found) {
+                    $this->_activeNodeIds[ $this->_navigation->handle ][] = $node['id'];
                     $this->_activeNodeIdsForLevel[ $this->_navigation->handle ][$count] = $node['id'];
                 }
             }
