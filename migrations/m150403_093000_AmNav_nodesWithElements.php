@@ -6,7 +6,12 @@ class m150403_093000_AmNav_nodesWithElements extends BaseMigration
     public function safeUp()
     {
         // Delete the old index
-        $this->dropIndex('amnav_nodes', 'entryId,locale');
+        $indexName = $this->dbConnection->getIndexName('amnav_nodes', 'entryId,locale');
+        $sql = "SHOW INDEX FROM craft_amnav_nodes WHERE Key_name = '" . $indexName . "';";
+        $result = $this->dbConnection->createCommand($sql)->execute(array());
+        if ($result) {
+            $this->dropIndex('amnav_nodes', 'entryId,locale');
+        }
 
         // Edit stuff!
         $this->renameColumn('amnav_nodes', 'entryId', 'elementId');
