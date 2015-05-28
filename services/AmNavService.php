@@ -259,9 +259,18 @@ class AmNavService extends BaseApplicationComponent
     public function getNav($handle, $params)
     {
         $navigation = $this->getNavigationByHandle($handle);
+
+        // Check for a missing nav and report the error appropriately
         if (! $navigation) {
-            throw new Exception(Craft::t('No navigation exists with the handle “{handle}”.', array('handle' => $handle)));
+            $e = new Exception(Craft::t('No navigation exists with the handle “{handle}”.', array('handle' => $handle)));
+            if($this->_isQuietErrorsEnabled()) {
+                Craft::log('Error::', $e->getMessage(), LogLevel::Warning);
+                return $navigation;
+            } else {
+                throw $e;
+            }
         }
+
         $this->_navigation = $navigation;
         // We want correct URLs now
         $this->_parseEnvironment = true;
@@ -285,9 +294,18 @@ class AmNavService extends BaseApplicationComponent
     public function getNavRaw($handle, $params)
     {
         $navigation = $this->getNavigationByHandle($handle);
+
+        // Check for a missing nav and report the error appropriately
         if (! $navigation) {
-            throw new Exception(Craft::t('No navigation exists with the handle “{handle}”.', array('handle' => $handle)));
+            $e = new Exception(Craft::t('No navigation exists with the handle “{handle}”.', array('handle' => $handle)));
+            if($this->_isQuietErrorsEnabled()) {
+                Craft::log('Error::', $e->getMessage(), LogLevel::Warning);
+                return $navigation;
+            } else {
+                throw $e;
+            }
         }
+
         $this->_navigation = $navigation;
         // We want correct URLs now
         $this->_parseEnvironment = true;
@@ -708,4 +726,20 @@ class AmNavService extends BaseApplicationComponent
         );
         return TemplateHelper::getRaw($breadcrumbs);
     }
+
+    /**
+     * Tells you if we should silently log errors or throw them.
+     * @return boolean true if we should silently log front-end exceptions instead of throwing them 
+     */
+    protected function _isQuietErrorsEnabled()
+    {
+        $plugin = craft()->plugins->getPlugin('amnav');
+        $settings = $plugin->getSettings();
+        if($settings->quietErrors) {
+            return true;
+        }
+
+        return false;
+    }
+
 }
