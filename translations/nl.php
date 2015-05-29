@@ -49,6 +49,7 @@ return array(
     'Position here' => 'Hier positioneren',
     'Position in navigation' => 'Positie in navigatie',
     'Positioning this' => 'Deze positioneren',
+    'Quiet errors' => 'Stil falen bij fouten',
     'The maximum level is: <strong>{level}</strong>' => 'Het maximale niveau is: <strong>{level}</strong>',
     'The maximum number of levels this navigation can have. Leave blank if you don’t care.' => 'Het maximum aantal niveau\'s dat deze navigatie kan hebben. Laat leeg als dit niet uitmaakt.',
     'The URL of this node.' => 'De URL van deze node.',
@@ -57,5 +58,6 @@ return array(
     'Whether non-admins can add, edit and delete navigations.' => 'Of gebruikers die geen systeembeheerders zijn, navigaties kunnen toevoegen, wijzigen en verwijderen.',
     'Whether non-admins can delete nodes from a specific level. Leave blank if you don’t care.' => 'Of gebruikers die geen systeembeheerders zijn, de nodes vanaf een specifiek niveau kunnen verwijderen. Laat leeg als dit niet uitmaakt.',
     'Whether non-admins can move nodes from a specific level. Leave blank if you don’t care.' => 'Of gebruikers die geen systeembeheerders zijn, de nodes vanaf een specifiek niveau kunnen verplaatsen. Laat leeg als dit niet uitmaakt.',
-    'Whether to open this node in a new window.' => 'Of deze node in een nieuw venster geopend moet worden.'
+    'Whether to open this node in a new window.' => 'Of deze node in een nieuw venster geopend moet worden.',
+    'Whether to silently log an error or throw an exception if a navigation does not exist. By default, it will throw an exception.' => 'Of er stil gefaald en de fout gelogd moet worden, of de fout door middel van een exception wordt getoond. Standaard wordt de fout getoond.'
 );

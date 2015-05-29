@@ -263,7 +263,7 @@ class AmNavService extends BaseApplicationComponent
         // Check for a missing nav and report the error appropriately
         if (! $navigation) {
             $e = new Exception(Craft::t('No navigation exists with the handle “{handle}”.', array('handle' => $handle)));
-            if($this->_isQuietErrorsEnabled()) {
+            if ($this->_isQuietErrorsEnabled()) {
                 Craft::log('Error::', $e->getMessage(), LogLevel::Warning);
                 return $navigation;
             } else {
@@ -298,7 +298,7 @@ class AmNavService extends BaseApplicationComponent
         // Check for a missing nav and report the error appropriately
         if (! $navigation) {
             $e = new Exception(Craft::t('No navigation exists with the handle “{handle}”.', array('handle' => $handle)));
-            if($this->_isQuietErrorsEnabled()) {
+            if ($this->_isQuietErrorsEnabled()) {
                 Craft::log('Error::', $e->getMessage(), LogLevel::Warning);
                 return $navigation;
             } else {
@@ -729,10 +729,11 @@ class AmNavService extends BaseApplicationComponent
     }
 
     /**
-     * Tells you if we should silently log errors or throw them.
-     * @return boolean true if we should silently log front-end exceptions instead of throwing them 
+     * Check whether to log errors or throw them.
+     *
+     * @return bool
      */
-    protected function _isQuietErrorsEnabled()
+    private function _isQuietErrorsEnabled()
     {
         $plugin = craft()->plugins->getPlugin('amnav');
         $settings = $plugin->getSettings();

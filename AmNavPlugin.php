@@ -20,7 +20,7 @@ class AmNavPlugin extends BasePlugin
 
     public function getVersion()
     {
-        return '1.6.5';
+        return '1.6.6';
     }
 
     public function getDeveloper()
