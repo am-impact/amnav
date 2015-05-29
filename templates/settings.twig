@@ -17,3 +17,11 @@
     on: settings.canDoActions,
     instructions: 'Whether non-admins can add, edit and delete navigations.'|t
 }) }}
+<hr>
+{{ forms.lightswitchField({
+    id: 'quietErrors',
+    name: 'quietErrors',
+    label: "Quiet Errors"|t,
+    on: settings.quietErrors,
+    instructions: "If this option is enabled then the plugin will silently log an error and return an empty result if the nav element handle does not exist. If disabled (default) it will throw the exception to the browser."|t
+}) }}

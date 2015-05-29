@@ -158,7 +158,8 @@ class AmNavPlugin extends BasePlugin
     {
         return array(
             'pluginName'   => array(AttributeType::String),
-            'canDoActions' => array(AttributeType::Bool, 'default' => false)
+            'canDoActions' => array(AttributeType::Bool, 'default' => false),
+            'quietErrors' => array(AttributeType::Bool, 'default' => false)
         );
     }
 }
