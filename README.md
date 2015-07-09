@@ -56,35 +56,37 @@ Now you can add your own HTML if necessary!
 ```
 {% set nav = craft.amNav.getNavRaw("yourNavigationHandle") %}
 
-{% macro addNodeToNavigation(node) %}
+{% macro addNodeToNavigation(node, index) %}
     {%- set nodeClasses = [] -%}
-    {%- if node.listClass|length -%}
-        {%- set nodeClasses = nodeClasses|merge([node.listClass]) -%}
+    {%- if node.hasChildren -%}
+        {%- set nodeClasses = nodeClasses|merge(['has-children']) -%}
     {%- endif -%}
     {%- if node.active or node.hasActiveChild -%}
         {%- set nodeClasses = nodeClasses|merge(['active']) -%}
     {%- endif -%}
+    {%- if node.level == 1 and index == 1 -%}
+        {%- set nodeClasses = nodeClasses|merge(['first']) -%}
+    {%- endif -%}
+    {%- if node.listClass|length -%}
+        {%- set nodeClasses = nodeClasses|merge([node.listClass]) -%}
+    {%- endif -%}
 
     <li{% if nodeClasses|length %} class="{{ nodeClasses|join(' ') }}"{% endif %}>
-        <a href="{{ node.url }}" title="{{ node.name }}">{{ node.name }}</a>
+        <a href="{{ node.url }}" title="{{ node.name }}"{% if node.blank %} target="_blank"{% endif %}>{{ node.name }}</a>
         {% if node.hasChildren %}
-            <span class="navmain__more"></span>
-            <div class="level{{ node.level }}">
-                <span class="navmain__back">&lsaquo; Back</span>
-                <ul>
-                    {% for subnode in node.children %}
-                        {{ _self.addNodeToNavigation(subnode) }}
-                    {% endfor %}
-                </ul>
-            </div>
+            <ul class="nav__level{{ (node.level + 1) }}">
+                {% for subnode in node.children %}
+                    {{ _self.addNodeToNavigation(subnode, loop.index) }}
+                {% endfor %}
+            </ul>
         {% endif %}
     </li>
 {% endmacro %}
 
 <nav class="navmain">
-    <ul class="level0">
+    <ul class="nav">
         {% for node in nav %}
-            {{ _self.addNodeToNavigation(node) }}
+            {{ _self.addNodeToNavigation(node, loop.index) }}
         {% endfor %}
     </ul>
 </nav>
