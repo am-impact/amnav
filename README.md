@@ -57,7 +57,15 @@ Now you can add your own HTML if necessary!
 {% set nav = craft.amNav.getNavRaw("yourNavigationHandle") %}
 
 {% macro addNodeToNavigation(node) %}
-    <li{% if node.active %} class="active"{% endif %}>
+    {%- set nodeClasses = [] -%}
+    {%- if node.listClass|length -%}
+        {%- set nodeClasses = nodeClasses|merge([node.listClass]) -%}
+    {%- endif -%}
+    {%- if node.active or node.hasActiveChild -%}
+        {%- set nodeClasses = nodeClasses|merge(['active']) -%}
+    {%- endif -%}
+
+    <li{% if nodeClasses|length %} class="{{ nodeClasses|join(' ') }}"{% endif %}>
         <a href="{{ node.url }}" title="{{ node.name }}">{{ node.name }}</a>
         {% if node.hasChildren %}
             <span class="navmain__more"></span>
