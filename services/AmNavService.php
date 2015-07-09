@@ -591,9 +591,12 @@ class AmNavService extends BaseApplicationComponent
         $nav = '';
         if ($level == 1) {
             if (! $this->_getParam('excludeUl', false)) {
-                $nav = sprintf("\n" . '<ul id="%1$s" class="%2$s">',
-                    $this->_getParam('id', $this->_navigation->handle),
-                    $this->_getParam('class', 'nav')
+                $id = $this->_getParam('id', $this->_navigation->handle);
+                $class = $this->_getParam('class', 'nav');
+
+                $nav = sprintf("\n" . '<ul%1$s%2$s>',
+                    $id !== false ? ' id="' . $id . '"' : '',
+                    $class !== false ? ' class="' . $class . '"' : ''
                 );
             }
         } else {
