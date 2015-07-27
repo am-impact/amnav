@@ -22,20 +22,21 @@ class AmNavVariable
      * @param array  $params
      *
      * Params possibilities:
-     * - id                 ID for the navigation UL.
-     * - class              Class name for the navigation UL.
-     * - classActive        Class name for the active nodes.
-     * - classBlank         Class name for hyperlinks that have a _blank target.
-     * - classLevel2        Class name for the children UL. You can add a classLevel for every level you need (e.g.: classLevel2, classLevel3).
-     * - classChildren      Class name for a node that has children.
-     * - classFirst         Class name for the first node in the navigation.
+     * - id                  ID for the navigation UL.
+     * - class               Class name for the navigation UL.
+     * - classActive         Class name for the active nodes.
+     * - classBlank          Class name for hyperlinks that have a _blank target.
+     * - classLevel2         Class name for the children UL. You can add a classLevel for every level you need (e.g.: classLevel2, classLevel3).
+     * - classChildren       Class name for a node that has children.
+     * - classFirst          Class name for the first node in the navigation.
      *
-     * - linkRel            Rel (relationship) for each hyperlink.
+     * - linkRel             Rel (relationship) for each hyperlink.
      *
-     * - excludeUl          Exclude the main UL wrapper.
-     * - maxLevel           Build the navigation till a certain level.
-     * - overrideStatus     Includes every node whatever the status.
-     * - startFromId        Begin the navigation at a specific node ID.
+     * - excludeUl           Exclude the main UL wrapper.
+     * - maxLevel            Build the navigation till a certain level.
+     * - overrideStatus      Includes every node whatever the status.
+     * - startFromId         Begin the navigation at a specific node ID.
+     * - ignoreActiveChilds  Won't make a node active if a node's child is active.
      *
      * @return string
      */

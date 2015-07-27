@@ -620,8 +620,13 @@ class AmNavService extends BaseApplicationComponent
                 if ($children) {
                     $nodeClasses[] = $this->_getParam('classChildren', 'has-children');
                 }
-                if ($this->_isNodeActive($node) || $this->_isChildActive($nodes, $node['id'])) {
+                if ($this->_isNodeActive($node)) {
                     $nodeClasses[] = $this->_getParam('classActive', 'active');
+                }
+                if ($this->_getParam('ignoreActiveChilds', false) === false) {
+                    if ($this->_isChildActive($nodes, $node['id']) && ! in_array($this->_getParam('classActive', 'active'), $nodeClasses)) {
+                        $nodeClasses[] = $this->_getParam('classActive', 'active');
+                    }
                 }
                 if ($level == 1 && $count == 1) {
                     $nodeClasses[] = $this->_getParam('classFirst', 'first');
