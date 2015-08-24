@@ -414,6 +414,9 @@ class AmNavService extends BaseApplicationComponent
             $url = ! empty($node['elementId']) ? $node['elementUrl'] : $node['url'];
             $url = str_replace('{siteUrl}', '', $url);
             $url = str_replace('__home__', '', $url);
+            if (substr($url, 0, 1) == '/') {
+                $url = substr($url, 1); // Fix for relative URLs
+            }
             if ($url == $path) {
                 $this->_activeNodeIds[ $this->_navigation->handle ][] = $node['id'];
                 $this->_activeNodeIdsForLevel[ $this->_navigation->handle ][ $segmentCount ] = $node['id'];
