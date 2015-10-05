@@ -5,6 +5,7 @@ Craft.AmNav = Garnish.Base.extend(
     id: null,
     entryModal: null,
     categoryModal: null,
+    assetModal: null,
     currentElementType: null,
     structure: null,
 
@@ -61,6 +62,14 @@ Craft.AmNav = Garnish.Base.extend(
                     this.categoryModal.show();
                 }
             }
+            else if (this.currentElementType == 'Asset') {
+                if (! this.assetModal) {
+                    this.assetModal = this.createModal('Asset', '*');
+                }
+                else {
+                    this.assetModal.show();
+                }
+            }
         }
     },
 
@@ -94,6 +103,9 @@ Craft.AmNav = Garnish.Base.extend(
             }
             else if (elementType == 'Category') {
                 this.categoryModal.$body.find('.element[data-id="' + element.id + '"]').closest('tr').removeClass('sel');
+            }
+            else if (elementType == 'Asset') {
+                this.assetModal.$body.find('.element[data-id="' + element.id + '"]').closest('tr').removeClass('sel');
             }
 
             var data = {
@@ -190,6 +202,8 @@ Craft.AmNav = Garnish.Base.extend(
            .replace(/%%id%%/ig, nodeData.id)
            .replace(/%%status%%/ig, (nodeData.enabled ? "live" : "expired"))
            .replace(/%%label%%/ig, nodeData.name)
+           .replace(/%%type%%/ig, nodeData.elementType ? nodeData.elementType.toLowerCase() : "manual")
+           .replace(/%%typeLabel%%/ig, nodeData.elementType ? Craft.t(nodeData.elementType) : Craft.t("Manual"))
            .replace(/%%url%%/ig, nodeData.url.replace('{siteUrl}', this.siteUrl))
            .replace(/%%urlless%%/ig, nodeData.url.replace('{siteUrl}', ''))
            .replace(/%%blank%%/ig, (nodeData.blank ? "" : "visuallyhidden")),
@@ -294,7 +308,7 @@ Craft.AmNavStructure = Craft.Structure.extend(
             this.removeElement($(ev.currentTarget));
         }, this));
 
-        $element.on('dblclick', $.proxy(function(ev) {
+        $row.find('.amnav__node').on('dblclick', $.proxy(function(ev) {
             this.showNodeEditor($(ev.currentTarget));
         }, this));
 

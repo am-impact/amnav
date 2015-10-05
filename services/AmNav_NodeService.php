@@ -178,8 +178,8 @@ class AmNav_NodeService extends BaseApplicationComponent
     /**
      * Update nodes in a navigation based on the element that was just saved.
      *
-     * @param EntryModel|CategoryModel $element
-     * @param string                   $elementType
+     * @param EntryModel|CategoryModel|AssetFileModel $element
+     * @param string                                  $elementType
      */
     public function updateNodesForElement($element, $elementType)
     {
@@ -193,6 +193,10 @@ class AmNav_NodeService extends BaseApplicationComponent
             switch ($elementType) {
                 case ElementType::Category:
                     $beforeSaveElement = craft()->categories->getCategoryById($element->id, $element->locale);
+                    break;
+
+                case ElementType::Asset:
+                    $beforeSaveElement = craft()->assets->getFileById($element->id, $element->locale);
                     break;
 
                 default:
@@ -221,8 +225,8 @@ class AmNav_NodeService extends BaseApplicationComponent
     /**
      * Delete nodes in a navigation based on the element that was just deleted.
      *
-     * @param EntryModel|CategoryModel $element
-     * @param string                   $elementType
+     * @param EntryModel|CategoryModel|AssetFileModel $element
+     * @param string                                  $elementType
      */
     public function deleteNodesForElement($element, $elementType)
     {

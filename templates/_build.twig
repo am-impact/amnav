@@ -30,6 +30,8 @@
         {% set replaceWith = {
             '%%id%%':           node.id,
             '%%label%%':        node.name,
+            '%%type%%':         (node.elementType ? node.elementType : 'manual'),
+            '%%typeLabel%%':    (node.elementType ? node.elementType : 'Manual'),
             '%%url%%':          nodeUrl|replace({ '{siteUrl}': siteUrl, '__home__': siteUrl }),
             '%%urlless%%':      nodeUrl|replace({ '{siteUrl}': '', '__home__': '<span data-icon="home" title="Homepage"></span>' }),
             '%%listClass%%':    (node.listClass|length ? '.' ~ node.listClass : ''),
@@ -55,8 +57,9 @@
             <div class="item" data-colspan="2">
                 <div class="pane">
                     {% set paneTabs = {
-                        entries: { label: "Existing entries"|t, url: '#amnav-entries' },
-                        categories: { label: "Existing categories"|t, url: '#amnav-categories' },
+                        entries: { label: "Entries"|t, url: '#amnav-entries' },
+                        categories: { label: "Categories"|t, url: '#amnav-categories' },
+                        assets: { label: "Assets"|t, url: '#amnav-assets' },
                         url: { label: "My own URL"|t, url: '#amnav-url' },
                     } %}
                     {% include "_includes/tabs" with { tabs: paneTabs } %}
@@ -82,6 +85,13 @@
                     <div id="amnav-categories" class="hidden">
                         <div class="buttons">
                             <div class="btn submit add icon amnav__button" data-element-type="Category">{{ 'Add a category'|t }}</div>
+                            <div class="spinner hidden"></div>
+                        </div>
+                    </div>
+
+                    <div id="amnav-assets" class="hidden">
+                        <div class="buttons">
+                            <div class="btn submit add icon amnav__button" data-element-type="Asset">{{ 'Add an asset'|t }}</div>
                             <div class="spinner hidden"></div>
                         </div>
                     </div>

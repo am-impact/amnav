@@ -113,7 +113,7 @@ class AmNavController extends BaseController
         craft()->templates->includeJs($js);
         craft()->templates->includeJsResource('amnav/js/AmNav.min.js');
         craft()->templates->includeCssResource('amnav/css/AmNav.css');
-        craft()->templates->includeTranslations('Are you sure you want to delete “{name}” and its descendants?');
+        craft()->templates->includeTranslations('Are you sure you want to delete “{name}” and its descendants?', 'Asset', 'Category', 'Entry', 'Manual');
 
         // Render the template
         $this->renderTemplate('amNav/_build', $variables);

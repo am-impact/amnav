@@ -94,15 +94,26 @@ class AmNavPlugin extends BasePlugin
                 craft()->amNav_node->deleteNodesForElement($event->params['entry'], ElementType::Entry);
             });
 
-            // Update nodes in a navigation if an Category was saved
+            // Update nodes in a navigation if a Category was saved
             craft()->on('categories.beforeSaveCategory', function(Event $event) {
                 if (! $event->params['isNewCategory']) {
                     craft()->amNav_node->updateNodesForElement($event->params['category'], ElementType::Category);
                 }
             });
-            // Delete nodes from a navigation if an Category was deleted
+            // Delete nodes from a navigation if a Category was deleted
             craft()->on('categories.deleteCategory', function(Event $event) {
                 craft()->amNav_node->deleteNodesForElement($event->params['category'], ElementType::Category);
+            });
+
+            // Update nodes in a navigation if an Asset was saved
+            craft()->on('assets.beforeSaveAsset', function(Event $event) {
+                if (! $event->params['isNewAsset']) {
+                    craft()->amNav_node->updateNodesForElement($event->params['asset'], ElementType::Asset);
+                }
+            });
+            // Delete nodes from a navigation if an Asset was deleted
+            craft()->on('assets.deleteAsset', function(Event $event) {
+                craft()->amNav_node->deleteNodesForElement($event->params['asset'], ElementType::Asset);
             });
         }
     }

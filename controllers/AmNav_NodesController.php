@@ -66,6 +66,13 @@ class AmNav_NodesController extends BaseController
                                 $node->url = '{siteUrl}' . $category->uri;
                             }
                             break;
+
+                        case ElementType::Asset:
+                            $asset = craft()->assets->getFileById($node->elementId, $node->locale);
+                            if ($asset) {
+                                $node->url = '{siteUrl}' . $asset->uri;
+                            }
+                            break;
                     }
                 }
 

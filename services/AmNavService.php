@@ -383,14 +383,23 @@ class AmNavService extends BaseApplicationComponent
      */
     private function _parseUrl($node)
     {
-        $url        = ! empty($node['elementId']) ? '{siteUrl}' . $node['elementUrl'] : $node['url'];
-        $url        = str_replace('__home__', '', $url);
-        $isAnchor   = substr(str_replace('{siteUrl}', '', $url), 0, 1) == '#';
-        $isSiteLink = strpos($url, '{siteUrl}') !== false;
-        $isHomepage = str_replace('{siteUrl}', '', $url) == '';
-        $url        = str_replace('{siteUrl}', $this->_siteUrl, $url);
-        if ($this->_addTrailingSlash && ! $isAnchor && $isSiteLink && ! $isHomepage) {
-            $url .= '/';
+        switch ($node['elementType']) {
+            case ElementType::Asset:
+                $asset = craft()->assets->getFileById($node['elementId'], $node['locale']);
+                $url = $asset->getUrl();
+                break;
+
+            default:
+                $url        = ! empty($node['elementId']) ? '{siteUrl}' . $node['elementUrl'] : $node['url'];
+                $url        = str_replace('__home__', '', $url);
+                $isAnchor   = substr(str_replace('{siteUrl}', '', $url), 0, 1) == '#';
+                $isSiteLink = strpos($url, '{siteUrl}') !== false;
+                $isHomepage = str_replace('{siteUrl}', '', $url) == '';
+                $url        = str_replace('{siteUrl}', $this->_siteUrl, $url);
+                if ($this->_addTrailingSlash && ! $isAnchor && $isSiteLink && ! $isHomepage) {
+                    $url .= '/';
+                }
+                break;
         }
         return $url;
     }

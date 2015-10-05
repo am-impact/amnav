@@ -61,6 +61,37 @@
 	color: #0d78f2;
 }
 
+.amnav__builder .amnav__type {
+    float: right;
+    width: 80px;
+    font-size: 12px;
+    text-transform: lowercase;
+    padding: 6px 7px;
+    cursor: default;
+}
+
+.amnav__builder .amnav__type span {
+    padding: 3px 10px;
+    border-left: 2px solid #CCC;
+    color: #999;
+    background: #F5F5F5;
+}
+
+.amnav__builder .amnav__type .amnav__type--manual {
+    color: #0d78f2;
+    border-color: #0d78f2;
+}
+
+.amnav__builder .amnav__type .amnav__type--category {
+    color: #1BB311;
+    border-color: #1BB311;
+}
+
+.amnav__builder .amnav__type .amnav__type--asset {
+    color: #da5a47;
+    border-color: #da5a47;
+}
+
 .amnav__builder .amnav__url {
     float: right;
     padding: 6px 7px;
