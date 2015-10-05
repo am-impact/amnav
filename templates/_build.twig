@@ -75,6 +75,14 @@
                         }) }}
                     </div>
 
+                    {{ forms.lightswitchField({
+                        id: 'blank',
+                        name: 'blank',
+                        label: 'New window'|t,
+                        on: false,
+                        instructions: 'Whether to open this node in a new window.'|t
+                    }) }}
+
                     <div id="amnav-entries">
                         <div class="buttons">
                             <div class="btn submit add icon amnav__button" data-element-type="Entry">{{ 'Add an entry'|t }}</div>
@@ -112,13 +120,6 @@
                                 name: 'url',
                                 required: true,
                                 instructions: 'The URL of this node.'|t
-                            }) }}
-                            {{ forms.lightswitchField({
-                                id: 'blank',
-                                name: 'blank',
-                                label: 'New window'|t,
-                                on: false,
-                                instructions: 'Whether to open this node in a new window.'|t
                             }) }}
 
                             <div class="buttons">

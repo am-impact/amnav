@@ -17,6 +17,7 @@ Craft.AmNav = Garnish.Base.extend(
     $template: $('#amnav__row').html(),
     $buildContainer: $('.amnav__builder'),
     $parentContainer: $('.amnav__parent'),
+    $newWindowElement: $('.amnav .field input[name="blank"]'),
     $addElementButton: $('.amnav__button'),
     $addElementLoader: $('.amnav .buttons .spinner'),
     $manualForm: $('#manual-form'),
@@ -114,6 +115,7 @@ Craft.AmNav = Garnish.Base.extend(
                 enabled:     element.status == 'live',
                 elementId:   element.id,
                 elementType: elementType,
+                blank:       this.$newWindowElement.val() == '1',
                 locale:      this.locale,
                 parentId:    parentId === undefined ? 0 : parentId
             };
@@ -134,7 +136,7 @@ Craft.AmNav = Garnish.Base.extend(
                 navId:    this.id,
                 name:     this.$manualForm.find('#name').val(),
                 url:      this.$manualForm.find('#url').val(),
-                blank:    this.$manualForm.find('input[name="blank"]').val() == '1',
+                blank:    this.$newWindowElement.val() == '1',
                 locale:   this.locale,
                 parentId: parentId === undefined ? 0 : parentId
             };
