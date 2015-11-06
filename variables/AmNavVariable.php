@@ -20,6 +20,7 @@ class AmNavVariable
      *
      * @param string $handle
      * @param array  $params
+     * @param string  $locale
      *
      * Params possibilities:
      * - id                  ID for the navigation UL.
@@ -40,9 +41,9 @@ class AmNavVariable
      *
      * @return string
      */
-    public function getNav($handle, $params = array())
+    public function getNav($handle, $params = array(), $locale = null)
     {
-        return craft()->amNav->getNav($handle, $params);
+        return craft()->amNav->getNav($handle, $params, $locale);
     }
 
     /**
@@ -62,6 +63,7 @@ class AmNavVariable
      *
      * @param string $handle
      * @param array  $params
+     * @param string  $locale
      *
      * Params possibilities:
      * - maxLevel           Build the navigation till a certain level.
@@ -70,9 +72,9 @@ class AmNavVariable
      *
      * @return array
      */
-    public function getNavRaw($handle, $params = array())
+    public function getNavRaw($handle, $params = array(), $locale = null)
     {
-        return craft()->amNav->getNavRaw($handle, $params);
+        return craft()->amNav->getNavRaw($handle, $params, $locale);
     }
 
     /**
