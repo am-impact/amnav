@@ -4,9 +4,11 @@
 {% set docsUrl = 'https://github.com/am-impact/amnav' %}
 
 {% if currentUser.admin or settings.canDoActions %}
-    {% set sidebar %}
-        <div class="buttons">
-            <a href="{{ url('amnav/new') }}"><div class="btn submit add icon">{{ 'New navigation'|t }}</div></a>
+    {% set extraPageHeaderHtml %}
+        <div class="buttons right">
+            <div class="btngroup submit">
+                <a class="btn submit add icon" href="{{ url('amnav/new') }}">{{ 'New navigation'|t }}</a>
+            </div>
         </div>
     {% endset %}
 {% endif %}

@@ -2,6 +2,10 @@
     display: none !important;
 }
 
+.hud .elementeditor .fields {
+    padding: 24px;
+}
+
 .amnav__builder .hidden {
     display: list-item !important;
 }
@@ -59,6 +63,15 @@
 
 .amnav__builder .icon.settings:hover:before {
 	color: #0d78f2;
+}
+
+.amnav__builder .amnav__node.element {
+    display: inline-block;
+    padding: 6px 7px;
+}
+
+.amnav__builder .amnav__node.element.loading {
+    padding-right: 29px;
 }
 
 .amnav__builder .amnav__type {
