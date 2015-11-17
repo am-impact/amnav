@@ -127,8 +127,11 @@ class AmNavService extends BaseApplicationComponent
      *
      * @return array
      */
-    public function getNodesByNavigationId($navId, $locale)
+    public function getNodesByNavigationId($navId, $locale = null)
     {
+        // Fallback to current locale
+        $locale = is_null($locale) ? craft()->language : $locale;
+
         // Set necessary variables
         $this->_siteUrl = craft()->getSiteUrl();
         $this->_addTrailingSlash = craft()->config->get('addTrailingSlashesToUrls');
@@ -252,11 +255,12 @@ class AmNavService extends BaseApplicationComponent
      *
      * @param string $handle
      * @param array  $params
+     * @param array  $locale
      *
      * @throws Exception
      * @return string
      */
-    public function getNav($handle, $params)
+    public function getNav($handle, $params, $locale = null)
     {
         $navigation = $this->getNavigationByHandle($handle);
 
@@ -279,7 +283,7 @@ class AmNavService extends BaseApplicationComponent
         // We want HTML returned
         $this->_parseHtml = true;
         // Return build HTML
-        return $this->getNodesByNavigationId($navigation->id, craft()->language);
+        return $this->getNodesByNavigationId($navigation->id, $locale);
     }
 
     /**
@@ -287,11 +291,12 @@ class AmNavService extends BaseApplicationComponent
      *
      * @param string $handle
      * @param array  $params
+     * @param string  $locale
      *
      * @throws Exception
      * @return array
      */
-    public function getNavRaw($handle, $params)
+    public function getNavRaw($handle, $params, $locale = null)
     {
         $navigation = $this->getNavigationByHandle($handle);
 
@@ -314,7 +319,7 @@ class AmNavService extends BaseApplicationComponent
         // We don't want HTML returned
         $this->_parseHtml = false;
         // Return the array structure
-        return $this->getNodesByNavigationId($navigation->id, craft()->language);
+        return $this->getNodesByNavigationId($navigation->id, $locale);
     }
 
     /**
