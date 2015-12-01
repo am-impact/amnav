@@ -554,7 +554,7 @@ Craft.AmNavEditor = Garnish.Base.extend(
 
             var $buttonsOuterContainer = $('<div class="footer"/>').appendTo(this.$form);
 
-            this.$spinner = $('<div class="spinner hidden"/>').appendTo($buttonsOuterContainer);
+            this.$spinner = $('<div class="spinner left hidden"/>').appendTo($buttonsOuterContainer);
 
             var $buttonsContainer = $('<div class="buttons right"/>').appendTo($buttonsOuterContainer);
             this.$cancelBtn = $('<div class="btn">'+Craft.t('Cancel')+'</div>').appendTo($buttonsContainer);
@@ -571,7 +571,7 @@ Craft.AmNavEditor = Garnish.Base.extend(
                 delete this.hud;
             }, this));
 
-            this.addListener(this.$form, 'submit', 'saveNode');
+            this.addListener(this.$saveBtn, 'click', 'saveNode');
             this.addListener(this.$cancelBtn, 'click', function() {
                 this.hud.hide()
             });
