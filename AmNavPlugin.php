@@ -18,9 +18,14 @@ class AmNavPlugin extends BasePlugin
         return Craft::t('a&m nav');
     }
 
+    public function getReleaseFeedUrl()
+    {
+        return 'https://raw.githubusercontent.com/am-impact/amnav/master/releases.json';
+    }
+
     public function getVersion()
     {
-        return '1.7.1';
+        return '1.7.2';
     }
 
     public function getDeveloper()

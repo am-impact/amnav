@@ -494,42 +494,42 @@ class AmNavService extends BaseApplicationComponent
     }
 
     /**
-     * Get active entries based on URI.
+     * Get active elements based on URI.
      *
      * @return array
      */
-    private function _getActiveEntries()
+    private function _getActiveElements()
     {
-        $entries = array();
+        $elements = array();
         $segments = craft()->request->getSegments();
 
         // Add homepage
-        $entry = craft()->elements->getElementByUri('__home__');
-        if ($entry) {
-            $entries[] = $entry;
+        $element = craft()->elements->getElementByUri('__home__');
+        if ($element) {
+            $elements[] = $element;
         }
 
-        // Find other entries
+        // Find other elements
         if (count($segments)) {
             $count = 0; // Start at second
             $segmentString = $segments[0]; // Add first
             while ($count < count($segments)) {
-                // Get entry
-                $entry = craft()->elements->getElementByUri($segmentString);
+                // Get element
+                $element = craft()->elements->getElementByUri($segmentString);
 
-                // Add entry to active entries
-                if ($entry) {
-                    $entries[] = $entry;
+                // Add element to active elements
+                if ($element) {
+                    $elements[] = $element;
                 }
 
-                // Search for next possible entry
+                // Search for next possible element
                 $count ++;
                 if (isset($segments[$count])) {
                     $segmentString .= '/' . $segments[$count];
                 }
             }
         }
-        return $entries;
+        return $elements;
     }
 
     /**
@@ -700,34 +700,34 @@ class AmNavService extends BaseApplicationComponent
      */
     private function _buildBreadcrumbsHtml()
     {
-        // Get active entries
-        $activeEntries = $this->_getActiveEntries();
+        // Get active elements
+        $activeElements = $this->_getActiveElements();
 
         // Create breadcrumbs
-        $length = count($activeEntries);
+        $length = count($activeElements);
         $breadcrumbs = "\n" . sprintf('<%1$s%2$s%3$s xmlns:v="http://rdf.data-vocabulary.org/#">',
             $this->_getParam('wrapper', 'ol'),
             $this->_getParam('id', false) ? ' id="' . $this->_getParam('id', '') . '"' : '',
             $this->_getParam('class', false) ? ' class="' . $this->_getParam('class', '') . '"' : ''
         );
-        foreach ($activeEntries as $index => $entry) {
+        foreach ($activeElements as $index => $element) {
             // First
             if ($index == 0) {
                 $breadcrumbs .= sprintf("\n" . '<li typeof="v:Breadcrumb"><a href="%1$s" title="%2$s" rel="v:url" property="v:title">%2$s</a></li>',
-                    $entry->url,
-                    $this->_getParam('renameHome', $entry->title)
+                    $element->url,
+                    $this->_getParam('renameHome', $element->title)
                 );
             }
             // Last
             elseif ($index == $length - 1)
             {
                 $breadcrumb = sprintf('<span property="v:title">%1$s</span>',
-                    $entry->title
+                    $element->title
                 );
                 if ($this->_getParam('lastIsLink', false)) {
                     $breadcrumb = sprintf('<a href="%1$s" title="%2$s" rel="v:url" property="v:title">%2$s</a>',
-                        $entry->url,
-                        $entry->title
+                        $element->url,
+                        $element->title
                     );
                 }
                 $breadcrumbs .= sprintf("\n" . '<li class="%1$s" typeof="v:Breadcrumb">%2$s</li>',
@@ -737,8 +737,8 @@ class AmNavService extends BaseApplicationComponent
             }
             else {
                 $breadcrumbs .= sprintf("\n" . '<li typeof="v:Breadcrumb"><a href="%1$s" title="%2$s" rel="v:url" property="v:title">%2$s</a></li>',
-                    $entry->url,
-                    $entry->title
+                    $element->url,
+                    $element->title
                 );
             }
         }
