@@ -504,9 +504,7 @@ class AmNavService extends BaseApplicationComponent
         $segments = craft()->request->getSegments();
 
         // Add homepage
-        $criteria = craft()->elements->getCriteria(ElementType::Entry);
-        $criteria->uri = '__home__';
-        $entry = $criteria->first();
+        $entry = craft()->elements->getElementByUri('__home__');
         if ($entry) {
             $entries[] = $entry;
         }
@@ -517,10 +515,7 @@ class AmNavService extends BaseApplicationComponent
             $segmentString = $segments[0]; // Add first
             while ($count < count($segments)) {
                 // Get entry
-                $criteria = craft()->elements->getCriteria(ElementType::Entry);
-                $criteria->uri = $segmentString;
-                $criteria->status = null;
-                $entry = $criteria->first();
+                $entry = craft()->elements->getElementByUri($segmentString);
 
                 // Add entry to active entries
                 if ($entry) {
