@@ -1,5 +1,13 @@
 [
     {
+        "version": "1.7.3",
+        "downloadUrl": "https://github.com/am-impact/amnav/archive/master.zip",
+        "date": "2016-04-18T10:00:00+01:00",
+        "notes": [
+            "[Added] Added plugin icons."
+        ]
+    },
+    {
         "version": "1.7.2",
         "downloadUrl": "https://github.com/am-impact/amnav/archive/master.zip",
         "date": "2016-04-15T12:00:00+01:00",
