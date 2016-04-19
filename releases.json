@@ -1,5 +1,13 @@
 [
     {
+        "version": "1.7.4",
+        "downloadUrl": "https://github.com/am-impact/amnav/archive/master.zip",
+        "date": "2016-04-19T10:00:00+01:00",
+        "notes": [
+            "[Added] Added schema version."
+        ]
+    },
+    {
         "version": "1.7.3",
         "downloadUrl": "https://github.com/am-impact/amnav/archive/master.zip",
         "date": "2016-04-18T10:00:00+01:00",
