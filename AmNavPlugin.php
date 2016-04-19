@@ -28,6 +28,11 @@ class AmNavPlugin extends BasePlugin
         return '1.7.3';
     }
 
+    public function getSchemaVersion()
+    {
+        return '1.7.3';
+    }
+
     public function getDeveloper()
     {
         return 'a&m impact';
