@@ -425,6 +425,8 @@ class AmNavService extends BaseApplicationComponent
         $this->_activeNodeIdsForLevel[ $this->_navigation->handle ] = array();
 
         foreach ($nodes as $node) {
+            if ($node['elementType'] == 'Asset') { continue; }
+            
             $url = ! empty($node['elementId']) ? $node['elementUrl'] : $node['url'];
             $url = str_replace('{siteUrl}', '', $url);
             $url = str_replace('__home__', '', $url);
