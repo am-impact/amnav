@@ -15,6 +15,10 @@ class m150403_093000_AmNav_nodesWithElements extends BaseMigration
 
         // Edit stuff!
         $this->renameColumn('amnav_nodes', 'entryId', 'elementId');
+        $this->alterColumn('amnav_nodes', 'url', array(
+            'column' => ColumnType::Varchar,
+            'null' => true
+        ));
 
         // Add stuff!
         $this->addColumnAfter('amnav_nodes', 'elementType', array(ColumnType::Varchar, 'default' => null), 'elementId');
