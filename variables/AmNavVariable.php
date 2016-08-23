@@ -122,6 +122,7 @@ class AmNavVariable
      * - id             ID for the breadcrumbs wrapper.
      * - class          Class name for the breadcrumbs wrapper.
      * - classDefault   Default class name for every breadcrumb.
+     * - classFirst     Class name for the first breadcrumb. 
      * - classLast      Class name for the last breadcrumb.
      * - wrapper        Wrapper element without the < and >.
      * - beforeText     Text before the first item, like 'You are here:'.

@@ -728,6 +728,7 @@ class AmNavService extends BaseApplicationComponent
 
             // First
             if ($index == 0) {
+                $childClasses[] = $this->_getParam('classFirst', 'first');
                 $breadcrumbs .= sprintf("\n" . '<li%1$s typeof="v:Breadcrumb"><a href="%2$s" title="%3$s" rel="v:url" property="v:title">%3$s</a></li>',
                     $childClasses ? ' class="' . implode(' ', $childClasses) . '"' : '',
                     $element->url,
