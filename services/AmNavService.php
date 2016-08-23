@@ -710,6 +710,15 @@ class AmNavService extends BaseApplicationComponent
             $this->_getParam('id', false) ? ' id="' . $this->_getParam('id', '') . '"' : '',
             $this->_getParam('class', false) ? ' class="' . $this->_getParam('class', '') . '"' : ''
         );
+
+        // Before text
+        if ($this->_getParam('beforeText', false)) {
+            $breadcrumbs .= sprintf("\n" . '<li%1$s><span>%2$s</span></li>',
+                $this->_getParam('classDefault', false) ? ' class="' . $this->_getParam('classDefault', '') . '"' : '',
+                $this->_getParam('beforeText', '')
+            );
+        }
+
         foreach ($activeElements as $index => $element) {
             $childClasses = array();
 

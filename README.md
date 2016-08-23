@@ -157,6 +157,7 @@ or with parameters..
 | classDefault | Default class name for every breadcrumb. |
 | classLast | Class name for the last breadcrumb. |
 | wrapper | Wrapper element without the < and >. |
+| beforeText | Text before the first item, like 'You are here:'. |
 | renameHome | Change the title of the home entry. |
 | lastIsLink | Whether the last breadcrumb should be a link. |
 
