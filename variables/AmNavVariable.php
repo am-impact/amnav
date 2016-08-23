@@ -121,6 +121,7 @@ class AmNavVariable
      * Params possibilities:
      * - id             ID for the breadcrumbs wrapper.
      * - class          Class name for the breadcrumbs wrapper.
+     * - classDefault   Default class name for every breadcrumb.
      * - classLast      Class name for the last breadcrumb.
      * - wrapper        Wrapper element without the < and >.
      * - renameHome     Change the title of the home entry.
