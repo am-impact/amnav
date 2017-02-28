@@ -208,7 +208,7 @@ class AmNav_NodeService extends BaseApplicationComponent
             foreach ($nodeRecords as $nodeRecord) {
                 // Set update data
                 $updateData = array(
-                    'enabled' => $element->enabled,
+                    'enabled' => (int) $element->enabled,
                 );
 
                 // Only update the node name if they were the same before the element was saved
