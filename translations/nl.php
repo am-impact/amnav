@@ -57,6 +57,7 @@ return array(
     'The URL of this node.' => 'De URL van deze node.',
     'There are no navigations yet.' => 'Er zijn nog geen navigaties.',
     'There are no nodes yet.' => 'Er zijn nog geen nodes.',
+    'Unknown' => 'Onbekend',
     'Whether non-admins can add, edit and delete navigations.' => 'Of gebruikers die geen systeembeheerders zijn, navigaties kunnen toevoegen, wijzigen en verwijderen.',
     'Whether non-admins can delete nodes from a specific level. Leave blank if you don’t care.' => 'Of gebruikers die geen systeembeheerders zijn, de nodes vanaf een specifiek niveau kunnen verwijderen. Laat leeg als dit niet uitmaakt.',
     'Whether non-admins can move nodes from a specific level. Leave blank if you don’t care.' => 'Of gebruikers die geen systeembeheerders zijn, de nodes vanaf een specifiek niveau kunnen verplaatsen. Laat leeg als dit niet uitmaakt.',

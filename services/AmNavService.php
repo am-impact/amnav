@@ -426,7 +426,7 @@ class AmNavService extends BaseApplicationComponent
 
         foreach ($nodes as $node) {
             if ($node['elementType'] == 'Asset') { continue; }
-            
+
             $url = ! empty($node['elementId']) ? $node['elementUrl'] : $node['url'];
             $url = str_replace('{siteUrl}', '', $url);
             $url = str_replace('__home__', '', $url);
@@ -703,10 +703,16 @@ class AmNavService extends BaseApplicationComponent
     private function _buildBreadcrumbsHtml()
     {
         // Get active elements
-        $activeElements = $this->_getActiveElements();
+        $nodes = $this->_getActiveElements();
+
+        // Do we have custom nodes?
+        $customNodes = $this->_getParam('customNodes', false);
+        if ($customNodes && is_array($customNodes) && count($customNodes)) {
+            $nodes = array_merge($nodes, $customNodes);
+        }
 
         // Create breadcrumbs
-        $length = count($activeElements);
+        $length = count($nodes);
         $breadcrumbs = "\n" . sprintf('<%1$s%2$s%3$s xmlns:v="http://rdf.data-vocabulary.org/#">',
             $this->_getParam('wrapper', 'ol'),
             $this->_getParam('id', false) ? ' id="' . $this->_getParam('id', '') . '"' : '',
@@ -721,9 +727,12 @@ class AmNavService extends BaseApplicationComponent
             );
         }
 
-        foreach ($activeElements as $index => $element) {
-            $childClasses = array();
+        foreach ($nodes as $index => $node) {
+            $nodeTitle = is_array($node) ? (isset($node['title']) ? $node['title'] : Craft::t('Unknown')) : $node->title;
+            $nodeUrl = is_array($node) ? (isset($node['url']) ? $node['url'] : '') : $node->url;
 
+            // Gather node classes
+            $childClasses = array();
             if ($this->_getParam('classDefault', false)) {
                 $childClasses[] = $this->_getParam('classDefault', '');
             }
@@ -733,8 +742,8 @@ class AmNavService extends BaseApplicationComponent
                 $childClasses[] = $this->_getParam('classFirst', 'first');
                 $breadcrumbs .= sprintf("\n" . '<li%1$s typeof="v:Breadcrumb"><a href="%2$s" title="%3$s" rel="v:url" property="v:title">%3$s</a></li>',
                     $childClasses ? ' class="' . implode(' ', $childClasses) . '"' : '',
-                    $element->url,
-                    $this->_getParam('renameHome', $element->title)
+                    $nodeUrl,
+                    $this->_getParam('renameHome', $nodeTitle)
                 );
             }
             // Last
@@ -742,12 +751,12 @@ class AmNavService extends BaseApplicationComponent
             {
                 $childClasses[] = $this->_getParam('classLast', 'last');
                 $breadcrumb = sprintf('<span property="v:title">%1$s</span>',
-                    $element->title
+                    $nodeTitle
                 );
                 if ($this->_getParam('lastIsLink', false)) {
                     $breadcrumb = sprintf('<a href="%1$s" title="%2$s" rel="v:url" property="v:title">%2$s</a>',
-                        $element->url,
-                        $element->title
+                        $nodeUrl,
+                        $nodeTitle
                     );
                 }
                 $breadcrumbs .= sprintf("\n" . '<li%1$s typeof="v:Breadcrumb">%2$s</li>',
@@ -758,8 +767,8 @@ class AmNavService extends BaseApplicationComponent
             else {
                 $breadcrumbs .= sprintf("\n" . '<li%1$s typeof="v:Breadcrumb"><a href="%2$s" title="%3$s" rel="v:url" property="v:title">%3$s</a></li>',
                     $childClasses ? ' class="' . implode(' ', $childClasses) . '"' : '',
-                    $element->url,
-                    $element->title
+                    $nodeUrl,
+                    $nodeTitle
                 );
             }
         }
