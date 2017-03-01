@@ -710,10 +710,27 @@ class AmNavService extends BaseApplicationComponent
             $this->_getParam('id', false) ? ' id="' . $this->_getParam('id', '') . '"' : '',
             $this->_getParam('class', false) ? ' class="' . $this->_getParam('class', '') . '"' : ''
         );
+
+        // Before text
+        if ($this->_getParam('beforeText', false)) {
+            $breadcrumbs .= sprintf("\n" . '<li%1$s><span>%2$s</span></li>',
+                $this->_getParam('classDefault', false) ? ' class="' . $this->_getParam('classDefault', '') . '"' : '',
+                $this->_getParam('beforeText', '')
+            );
+        }
+
         foreach ($activeElements as $index => $element) {
+            $childClasses = array();
+
+            if ($this->_getParam('classDefault', false)) {
+                $childClasses[] = $this->_getParam('classDefault', '');
+            }
+
             // First
             if ($index == 0) {
-                $breadcrumbs .= sprintf("\n" . '<li typeof="v:Breadcrumb"><a href="%1$s" title="%2$s" rel="v:url" property="v:title">%2$s</a></li>',
+                $childClasses[] = $this->_getParam('classFirst', 'first');
+                $breadcrumbs .= sprintf("\n" . '<li%1$s typeof="v:Breadcrumb"><a href="%2$s" title="%3$s" rel="v:url" property="v:title">%3$s</a></li>',
+                    $childClasses ? ' class="' . implode(' ', $childClasses) . '"' : '',
                     $element->url,
                     $this->_getParam('renameHome', $element->title)
                 );
@@ -721,6 +738,7 @@ class AmNavService extends BaseApplicationComponent
             // Last
             elseif ($index == $length - 1)
             {
+                $childClasses[] = $this->_getParam('classLast', 'last');
                 $breadcrumb = sprintf('<span property="v:title">%1$s</span>',
                     $element->title
                 );
@@ -730,13 +748,14 @@ class AmNavService extends BaseApplicationComponent
                         $element->title
                     );
                 }
-                $breadcrumbs .= sprintf("\n" . '<li class="%1$s" typeof="v:Breadcrumb">%2$s</li>',
-                    $this->_getParam('classLast', 'last'),
+                $breadcrumbs .= sprintf("\n" . '<li%1$s typeof="v:Breadcrumb">%2$s</li>',
+                    $childClasses ? ' class="' . implode(' ', $childClasses) . '"' : '',
                     $breadcrumb
                 );
             }
             else {
-                $breadcrumbs .= sprintf("\n" . '<li typeof="v:Breadcrumb"><a href="%1$s" title="%2$s" rel="v:url" property="v:title">%2$s</a></li>',
+                $breadcrumbs .= sprintf("\n" . '<li%1$s typeof="v:Breadcrumb"><a href="%2$s" title="%3$s" rel="v:url" property="v:title">%3$s</a></li>',
+                    $childClasses ? ' class="' . implode(' ', $childClasses) . '"' : '',
                     $element->url,
                     $element->title
                 );
