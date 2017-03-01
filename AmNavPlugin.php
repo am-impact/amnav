@@ -25,7 +25,7 @@ class AmNavPlugin extends BasePlugin
 
     public function getVersion()
     {
-        return '1.7.4';
+        return '1.8.0';
     }
 
     public function getSchemaVersion()
