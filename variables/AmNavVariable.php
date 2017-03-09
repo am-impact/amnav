@@ -137,4 +137,14 @@ class AmNavVariable
     {
         return craft()->amNav->getBreadcrumbs($params);
     }
+
+    /**
+     * Get a breadcrumbs without any HTML.
+     *
+     * @return array
+     */
+    public function getBreadcrumbsRaw()
+    {
+        return craft()->amNav->getBreadcrumbsRaw();
+    }
 }
