@@ -354,6 +354,17 @@ class AmNavService extends BaseApplicationComponent
     }
 
     /**
+     * Get breadcrumbs without HTML.
+     *
+     * @return array
+     */
+    public function getBreadcrumbsRaw()
+    {
+        // Return the active URI elements
+        return $this->_getActiveElements();
+    }
+
+    /**
      * Set parameters for the navigation HTML output.
      *
      * @param array $params
