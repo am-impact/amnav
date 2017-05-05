@@ -1,5 +1,16 @@
 [
     {
+        "version": "1.8.0",
+        "downloadUrl": "https://github.com/am-impact/amnav/archive/master.zip",
+        "date": "2017-05-05T10:00:00+01:00",
+        "notes": [
+            "[Added] Get active elements from URL with getBreadcrumbsRaw.",
+            "[Added] Custom crumbs to the breadcrumbs function with customNodes parameter.",
+            "[Improved] Breadcrumbs should now support any element with an URL.",
+            "[Fixed] Fixed always active asset URLs."
+        ]
+    },
+    {
         "version": "1.7.4",
         "downloadUrl": "https://github.com/am-impact/amnav/archive/master.zip",
         "date": "2016-04-19T10:00:00+01:00",

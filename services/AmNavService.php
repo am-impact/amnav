@@ -739,7 +739,7 @@ class AmNavService extends BaseApplicationComponent
         }
 
         foreach ($nodes as $index => $node) {
-            $nodeTitle = is_array($node) ? (isset($node['title']) ? $node['title'] : Craft::t('Unknown')) : $node->title;
+            $nodeTitle = is_array($node) ? (isset($node['title']) ? $node['title'] : Craft::t('Unknown')) : $node->__toString();
             $nodeUrl = is_array($node) ? (isset($node['url']) ? $node['url'] : '') : $node->url;
 
             // Gather node classes
